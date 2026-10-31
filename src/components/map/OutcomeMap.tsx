@@ -12,7 +12,7 @@ import type { MapArc, MapFocus, MapLayerMode, MapPin, MapStartup } from "./types
 // Turbopack/webpack do not emit the worker beside its shared chunk, so the worker is vendored in public/maplibre (copy from node_modules/maplibre-gl/dist when upgrading).
 maplibre.setWorkerUrl("/maplibre/maplibre-gl-worker.mjs");
 
-const STYLE_URL = "https://tiles.openfreemap.org/styles/liberty";
+const STYLE_URL = "https://tiles.openfreemap.org/styles/positron";
 const ARC_SOURCE = "arcs";
 const DASH_FRAMES = [
   [0, 4, 3],
@@ -79,18 +79,22 @@ export default function OutcomeMap({ startups, arcs, pins, mode, selectedId, foc
     map.on("load", () => {
       map.addSource(ARC_SOURCE, { type: "geojson", data: { type: "FeatureCollection", features: [] } });
       map.addLayer({
-        id: "arcs-glow",
-        type: "line",
-        source: ARC_SOURCE,
-        layout: { "line-cap": "round", "line-join": "round" },
-        paint: { "line-color": ["get", "color"], "line-width": ["min", 20, ["+", 6, ["*", 3, ["get", "count"]]]], "line-opacity": 0.18, "line-blur": 4 },
-      });
-      map.addLayer({
         id: "arcs-line",
         type: "line",
         source: ARC_SOURCE,
-        layout: { "line-cap": "butt", "line-join": "round" },
-        paint: { "line-color": ["get", "color"], "line-width": ["min", 9, ["+", 2, ["*", 1.2, ["get", "count"]]]], "line-opacity": 0.95, "line-dasharray": DASH_FRAMES[0] },
+        layout: { "line-cap": "round", "line-join": "round" },
+        paint: {
+          "line-color": ["get", "color"],
+          "line-width": ["min", 6, ["+", 1.5, ["*", 0.6, ["get", "count"]]]],
+          "line-opacity": 0.55,
+        },
+      });
+      map.addLayer({
+        id: "arcs-flow",
+        type: "line",
+        source: ARC_SOURCE,
+        layout: { "line-cap": "butt", "visibility": "none" },
+        paint: { "line-color": "#ffffff", "line-width": 1.6, "line-opacity": 0.9, "line-dasharray": DASH_FRAMES[0] },
       });
       setReady(true);
     });
@@ -101,9 +105,9 @@ export default function OutcomeMap({ startups, arcs, pins, mode, selectedId, foc
     let raf = 0;
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const tick = (time: number) => {
-      if (!reduced && map.getLayer("arcs-line") && time - last > 60) {
+      if (!reduced && map.getLayer("arcs-flow") && time - last > 60) {
         frame = (frame + 1) % DASH_FRAMES.length;
-        map.setPaintProperty("arcs-line", "line-dasharray", DASH_FRAMES[frame]);
+        map.setPaintProperty("arcs-flow", "line-dasharray", DASH_FRAMES[frame]);
         last = time;
       }
       raf = requestAnimationFrame(tick);
@@ -136,14 +140,14 @@ export default function OutcomeMap({ startups, arcs, pins, mode, selectedId, foc
     const map = mapRef.current;
     if (!ready || !map) return;
     const showArcs = mode === "outcomes";
-    const dim = showArcs && selectedId !== null;
-    const visibility = showArcs ? "visible" : "none";
-    map.setLayoutProperty("arcs-glow", "visibility", visibility);
-    map.setLayoutProperty("arcs-line", "visibility", visibility);
-    const emphasis = (on: number, off: number) =>
-      dim ? ["case", ["==", ["get", "startupId"], selectedId], on, off] : on;
-    map.setPaintProperty("arcs-line", "line-opacity", emphasis(1, 0.12) as maplibre.ExpressionSpecification | number);
-    map.setPaintProperty("arcs-glow", "line-opacity", emphasis(0.3, 0.03) as maplibre.ExpressionSpecification | number);
+    map.setLayoutProperty("arcs-line", "visibility", showArcs ? "visible" : "none");
+    map.setLayoutProperty("arcs-flow", "visibility", showArcs && selectedId !== null ? "visible" : "none");
+    map.setPaintProperty("arcs-line", "line-opacity", selectedId !== null ? 0.9 : 0.5);
+    map.setPaintProperty(
+      "arcs-line",
+      "line-width",
+      selectedId !== null ? ["+", 3, ["*", 0.8, ["get", "count"]]] : ["min", 6, ["+", 1.5, ["*", 0.6, ["get", "count"]]]],
+    );
   }, [mode, selectedId, ready]);
 
   useEffect(() => {
@@ -158,7 +162,7 @@ export default function OutcomeMap({ startups, arcs, pins, mode, selectedId, foc
         const html = renderToStaticMarkup(<CompanyLogo id={startup.id} name={startup.name} size={selected ? 46 : 38} />);
         const el = markerElement(
           `${startup.isCurrent ? '<span class="map-pulse"></span>' : ""}${html}<span class="map-tag">${escapeHtml(startup.name)}</span>`,
-          `map-marker ${selected ? "is-selected" : ""}`,
+          `map-marker ${selected ? "is-selected" : ""} ${startup.isCurrent ? "is-current" : ""}`,
           `${startup.name}, ${startup.country}`,
         );
         el.style.animationDelay = `${i * 70}ms`;
@@ -185,6 +189,16 @@ export default function OutcomeMap({ startups, arcs, pins, mode, selectedId, foc
       });
     }
   }, [startups, pins, mode, selectedId, ready]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!ready || !map || !selectedId || arcs.length === 0) return;
+    const bounds = new maplibre.LngLatBounds();
+    arcs.forEach((arc) => arc.coordinates.forEach((point) => bounds.extend(point)));
+    map.fitBounds(bounds, { padding: 90, maxZoom: 6.5, duration: 900 });
+    // Re-fit only when the selection changes, not when the type filter reshuffles arcs.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedId, ready]);
 
   useEffect(() => {
     const map = mapRef.current;

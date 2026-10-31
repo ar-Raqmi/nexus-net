@@ -8,7 +8,7 @@ import PixelIcon from "@/components/PixelIcon";
 import { ASEAN_VIEW, arcBetween, COUNTRY_CENTERS, QUEST_TYPE_COLOR, spreadAround } from "@/lib/geo";
 import { COUNTRY_NAMES, getLevel } from "@/lib/game";
 import { QUEST_TYPE_STYLE } from "@/lib/tiers";
-import type { Country, LumaEvent, QuestType } from "@/lib/types";
+import type { Country, LumaEvent, Quest, QuestType } from "@/lib/types";
 import { seedEvents, seedQuests, seedStartups } from "@/seed";
 import { selectVerified } from "@/store/selectors";
 import { useGameStore, useHasHydrated } from "@/store/useGameStore";
@@ -22,6 +22,8 @@ const OutcomeMap = dynamic(() => import("./OutcomeMap"), {
 });
 
 const COUNTRY_ZOOM = 5.6;
+const MAX_CORRIDORS = 8;
+const CORRIDOR_COLOR = "#405CEE";
 const QUEST_TYPES = Object.keys(QUEST_TYPE_COLOR) as QuestType[];
 
 function useLumaPins(): MapPin[] {
@@ -47,6 +49,32 @@ function useLumaPins(): MapPin[] {
         })),
     [events],
   );
+}
+
+type CrossBorderQuest = Quest & { startupId: string };
+
+function lanesFor(
+  quests: CrossBorderQuest[],
+  keyOf: (q: CrossBorderQuest) => string,
+  byId: Map<string, MapStartup>,
+  kind: "startup" | "corridor",
+): MapArc[] {
+  const groups = new Map<string, CrossBorderQuest[]>();
+  quests.forEach((q) => groups.set(keyOf(q), [...(groups.get(keyOf(q)) ?? []), q]));
+  return [...groups.entries()].map(([key, group], i) => {
+    const top = group.reduce((best, q) => (QUEST_TYPES.indexOf(q.type) > QUEST_TYPES.indexOf(best.type) ? q : best));
+    const home = byId.get(top.startupId)!;
+    const from = kind === "startup" ? home.position : COUNTRY_CENTERS[home.country];
+    return {
+      id: `${kind}:${key}`,
+      startupId: top.startupId,
+      type: top.type,
+      color: kind === "startup" ? QUEST_TYPE_COLOR[top.type] : CORRIDOR_COLOR,
+      xp: group.reduce((sum, q) => sum + q.xp, 0),
+      count: group.length,
+      coordinates: arcBetween(from, COUNTRY_CENTERS[top.targetCountry], 0.16 + (i % 3) * 0.05),
+    };
+  });
 }
 
 export default function MapView() {
@@ -83,24 +111,12 @@ export default function MapView() {
       const home = byId.get(q.startupId);
       return home && home.country !== q.targetCountry;
     });
-    // One arc per startup->country pair: 40 individual lines read as spaghetti, a weighted route reads as a trade lane.
-    const lanes = new Map<string, typeof crossBorder>();
-    crossBorder.forEach((q) => {
-      const key = `${q.startupId}>${q.targetCountry}`;
-      lanes.set(key, [...(lanes.get(key) ?? []), q]);
-    });
-    const arcs: MapArc[] = [...lanes.entries()].map(([key, group], i) => {
-      const top = group.reduce((best, q) => (QUEST_TYPES.indexOf(q.type) > QUEST_TYPES.indexOf(best.type) ? q : best));
-      return {
-        id: key,
-        startupId: top.startupId,
-        type: top.type,
-        color: QUEST_TYPE_COLOR[top.type],
-        xp: group.reduce((sum, q) => sum + q.xp, 0),
-        count: group.length,
-        coordinates: arcBetween(byId.get(top.startupId)!.position, COUNTRY_CENTERS[top.targetCountry], 0.16 + (i % 3) * 0.05),
-      };
-    });
+    // Default view shows the biggest country-to-country corridors in one calm colour; picking a startup swaps in its own lanes, coloured by outcome type.
+    const arcs: MapArc[] = selectedId
+      ? lanesFor(crossBorder.filter((q) => q.startupId === selectedId), (q) => q.targetCountry, byId, "startup")
+      : lanesFor(crossBorder, (q) => `${byId.get(q.startupId)!.country}>${q.targetCountry}`, byId, "corridor")
+          .sort((x, y) => y.count - x.count)
+          .slice(0, MAX_CORRIDORS);
     const countryTotals = (Object.keys(COUNTRY_NAMES) as Country[])
       .map((country) => ({
         country,
@@ -109,7 +125,7 @@ export default function MapView() {
       }))
       .sort((a, b) => b.inbound - a.inbound);
     return { mapStartups, arcs, crossBorder, countryTotals };
-  }, [startups, quests, currentId, typeFilter]);
+  }, [startups, quests, currentId, typeFilter, selectedId]);
 
   const pins = useMemo<MapPin[]>(() => {
     const seeded = seedEvents.map((e, i) => ({

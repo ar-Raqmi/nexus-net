@@ -23,7 +23,7 @@ export const QUEST_TYPE_COLOR: Record<QuestType, string> = {
 };
 
 /** Deterministic spread so startups sharing a country don't stack on one pixel. */
-export function spreadAround(center: LngLat, index: number, radius = 0.55): LngLat {
+export function spreadAround(center: LngLat, index: number, radius = 1.3): LngLat {
   if (index === 0) return center;
   const angle = (index * 137.5 * Math.PI) / 180;
   const r = radius * Math.sqrt(index);
