@@ -1,0 +1,10 @@
+{
+  "startupId": "paylah-lite",
+  "legalName": "PayLah Lite",
+  "registrationNumber": "MY-DEMO-2026-001",
+  "website": "https://paylah-lite.example/",
+  "country": "MY",
+  "sector": "Fintech",
+  "stage": "seed",
+  "description": "Lightweight QR payments and instant settlement for hawker stalls and micro-merchants."
+}

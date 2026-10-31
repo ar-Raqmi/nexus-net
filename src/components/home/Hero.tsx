@@ -43,7 +43,7 @@ export default function Hero() {
 
       <p className="max-w-[560px] text-base text-ink/70 text-balance">
         Earn XP by turning connections into investments, partnerships and cross-border POCs.
-        Gemma 4 writes the quests and checks the proof.
+        Complete your company profile and document review to receive your network passport.
       </p>
 
       <div className="flex flex-col items-center gap-1">
@@ -55,18 +55,18 @@ export default function Hero() {
 
       {current ? (
         <Link
-          href="/quests"
+          href="/profile"
           className="rounded-full bg-primary px-8 py-3.5 text-white font-bold shadow-card hover:brightness-110 transition"
         >
           Continue as {current.name} →
         </Link>
       ) : (
-        <a
-          href="#startups"
+        <Link
+          href="/register"
           className="rounded-full bg-primary px-8 py-3.5 text-white font-bold shadow-card hover:brightness-110 transition"
         >
-          Pick your startup ↓
-        </a>
+          Register your company →
+        </Link>
       )}
 
       <dl className="flex items-center divide-x divide-ink/10 rounded-full bg-white shadow-card py-2 text-sm">

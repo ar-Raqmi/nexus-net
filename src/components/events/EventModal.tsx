@@ -3,6 +3,7 @@
 import { useEffect, useId, useRef } from "react";
 import { CATEGORY_BY_KEY } from "@/lib/events";
 import type { LumaEvent } from "@/lib/types";
+import PixelIcon from "@/components/PixelIcon";
 
 const FOCUSABLE = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
@@ -58,8 +59,8 @@ export default function EventModal({ event, onClose }: { event: LumaEvent; onClo
             // eslint-disable-next-line @next/next/no-img-element
             <img src={event.coverUrl} alt="" className="h-full w-full object-cover" />
           ) : (
-            <div className={`h-full w-full ${category.className} flex items-center justify-center text-5xl`}>
-              {category.icon}
+            <div className={`h-full w-full ${category.className} flex items-center justify-center`}>
+              <PixelIcon name={category.icon} size={72} />
             </div>
           )}
           <button
@@ -73,7 +74,7 @@ export default function EventModal({ event, onClose }: { event: LumaEvent; onClo
         </div>
         <div className="p-6 flex flex-col gap-3">
           <span className={`self-start rounded-full px-3 py-1 text-xs font-bold ${category.className}`}>
-            {category.icon} {category.label}
+            <PixelIcon name={category.icon} size={16} className="inline-block mr-1 align-middle" />{category.label}
           </span>
           <h2 id={titleId} className="text-xl font-bold">
             {event.name}

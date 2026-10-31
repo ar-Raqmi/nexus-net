@@ -1,0 +1,23 @@
+main-calendars branch - Changes Summary
+Feature: Event Calendar + XP Booster
+
+What it does:
+Adds an Event Calendar to the project. It pulls public events from the Luma
+Kuala Lumpur feed so startups can browse what's happening around them, matched
+to their sector. Startups earn XP for subscribing to events, and earn extra XP
+when an event is relevant to their sector.
+
+Main additions:
+- A new Events section, reachable from the top navigation.
+- A calendar view with both month and week layouts, plus a list view, with
+  events sorted into categories and a filter to narrow them down.
+- Each startup sees the events most relevant to them, picked out automatically.
+- Clicking an event opens its details, and you can subscribe or unsubscribe
+  with one click.
+- An XP booster: subscribing earns XP once per event, with a bigger reward
+  for events that match the startup's sector.
+- Events are loaded live from Luma, so the calendar always shows current
+  listings, with proper loading, error and retry handling.
+
+It also updates the saved game state so subscriptions and the XP already
+earned are remembered between visits.

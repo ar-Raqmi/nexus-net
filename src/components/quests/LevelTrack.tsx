@@ -1,5 +1,6 @@
 import { LEVELS, getLevel, getLevelProgress, getNextLevel } from "@/lib/game";
 import { TIER_STYLE } from "@/lib/tiers";
+import PixelIcon from "@/components/PixelIcon";
 
 export default function LevelTrack({ xp }: { xp: number }) {
   const current = getLevel(xp);
@@ -15,7 +16,7 @@ export default function LevelTrack({ xp }: { xp: number }) {
       <div className="relative mx-[10%]">
         <div className="h-5 rounded-full bg-purple/15 overflow-hidden">
           <div
-            className="h-full rounded-full bg-primary transition-[width] duration-700"
+            className="h-full rounded-full bg-primary transition-[width] duration-1000 ease-out starting:w-0"
             style={{ width: `${fill * 100}%` }}
           />
         </div>
@@ -56,7 +57,7 @@ export default function LevelTrack({ xp }: { xp: number }) {
                 level.index === current.index ? "text-primary" : "text-ink"
               }`}
             >
-              <span className="hidden sm:inline">{TIER_STYLE[level.name].icon} </span>
+              <PixelIcon name={TIER_STYLE[level.name].icon} size={18} className="hidden sm:inline-block align-middle mr-1" />
               {level.name}
             </p>
             <p className="font-score text-xs text-subtle">{level.minXp} XP</p>

@@ -1,3 +1,4 @@
+import type { PixelIconName } from "@/components/PixelIcon";
 import type { EventCategory, LumaEvent, Startup } from "./types";
 
 // Kuala Lumpur discovery place on Luma. Public events feed, no auth required.
@@ -13,19 +14,19 @@ export const EVENT_RELEVANT_XP = 100;
 export interface CategoryMeta {
   key: EventCategory;
   label: string;
-  icon: string;
+  icon: PixelIconName;
   className: string;
   /** Solid colour used for the compact dot markers on small screens. */
   dot: string;
 }
 
 export const EVENT_CATEGORIES: CategoryMeta[] = [
-  { key: "startup", label: "Startup", icon: "🚀", className: "bg-primary text-white", dot: "bg-primary" },
-  { key: "tech", label: "Tech", icon: "💻", className: "bg-purple-dark text-white", dot: "bg-purple-dark" },
-  { key: "meetup", label: "Meetup", icon: "🤝", className: "bg-green text-white", dot: "bg-green" },
-  { key: "workshop", label: "Workshop", icon: "🛠️", className: "bg-yellow text-ink", dot: "bg-yellow" },
-  { key: "social", label: "Social", icon: "🎉", className: "bg-ink text-white", dot: "bg-ink" },
-  { key: "other", label: "Other", icon: "📌", className: "bg-ink/10 text-ink", dot: "bg-muted" },
+  { key: "startup", label: "Startup", icon: "rocket", className: "bg-primary text-white", dot: "bg-primary" },
+  { key: "tech", label: "Tech", icon: "laptop", className: "bg-purple-dark text-white", dot: "bg-purple-dark" },
+  { key: "meetup", label: "Meetup", icon: "partnership", className: "bg-green text-white", dot: "bg-green" },
+  { key: "workshop", label: "Workshop", icon: "wrench", className: "bg-yellow text-ink", dot: "bg-yellow" },
+  { key: "social", label: "Social", icon: "party", className: "bg-ink text-white", dot: "bg-ink" },
+  { key: "other", label: "Other", icon: "pin", className: "bg-ink/10 text-ink", dot: "bg-muted" },
 ];
 
 export const CATEGORY_BY_KEY: Record<EventCategory, CategoryMeta> = EVENT_CATEGORIES.reduce(

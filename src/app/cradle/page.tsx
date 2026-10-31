@@ -7,7 +7,7 @@ export default function CradlePage() {
         <div className="flex flex-wrap items-center gap-3">
           <h1 className="font-display text-3xl text-ink sm:text-4xl">Cradle view</h1>
           <span className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 text-xs font-bold text-ink shadow-card">
-            <span className="size-2 rounded-full bg-green motion-safe:animate-pulse" />
+            <span className="size-2 rounded-full bg-green animate-pulse-ring" />
             Live
           </span>
         </div>

@@ -27,10 +27,10 @@ export default function Funnel({ stages }: { stages: FunnelStage[] }) {
           const width = Math.max((stage.count / max) * 100, MIN_WIDTH);
           const drop = i > 0 ? dropOff(stages[i - 1].count, stage.count) : null;
           return (
-            <li key={stage.key}>
+            <li key={stage.key} className="animate-fade-up" style={{ animationDelay: `${i * 120}ms` }}>
               {drop !== null && (
                 <div className="my-2 pl-1">
-                  <span className="rounded-full bg-paper px-3 py-1 text-xs font-bold text-muted">
+                  <span style={{ animationDelay: `${i * 120 + 300}ms` }} className="animate-pop inline-block rounded-full bg-paper px-3 py-1 text-xs font-bold text-muted">
                     −{drop}%
                   </span>
                 </div>
@@ -40,7 +40,7 @@ export default function Funnel({ stages }: { stages: FunnelStage[] }) {
                 className={`flex h-12 items-center justify-end rounded-2xl px-4 motion-safe:transition-[width] motion-safe:duration-700 motion-safe:ease-out ${
                   COLORS[Math.min(i, COLORS.length - 1)]
                 } ${i === 3 ? "text-ink" : "text-white"}`}
-                style={{ width: grown ? `${width}%` : `${MIN_WIDTH}%` }}
+                style={{ width: grown ? `${width}%` : `${MIN_WIDTH}%`, transitionDelay: `${i * 120}ms` }}
               >
                 <span className="font-score text-xl font-bold">{stage.count}</span>
               </div>

@@ -33,6 +33,7 @@ Rules:
 - why: one sentence tying this gap to winning customers or partners in the target country.
 - Do not invent company names, people, prices or numbers.
 - Keep each gapId exactly as given.
+- Do not use emoji.
 Return ONLY a JSON array, no prose, no code fences:
 [{"gapId":"website","title":"...","why":"..."}]
 Startup: ${JSON.stringify({ name: startup.name, sector: startup.sector, stage: startup.stage, description: startup.description, country: startup.country })}

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import PixelIcon from "@/components/PixelIcon";
 import { useState } from "react";
 import { QUESTIONS, type NeedsAnswers } from "@/lib/needs";
 import { selectStartup } from "@/store/selectors";
@@ -32,9 +33,7 @@ export default function NeedsWizard() {
     return (
       <section className="mx-auto max-w-md py-16 text-center">
         <div className="rounded-3xl bg-white shadow-card p-10 flex flex-col items-center gap-4">
-          <span className="text-5xl" aria-hidden>
-            🧭
-          </span>
+          <PixelIcon name="compass" size={56} />
           <h1 className="font-display text-2xl">Pick a startup first</h1>
           <p className="text-muted">Choose a startup to play as, then we find what it is missing.</p>
           <Link
@@ -113,7 +112,7 @@ export default function NeedsWizard() {
             onClick={() => analysis.analyze(answers as NeedsAnswers, blocker)}
             className="rounded-full bg-primary px-6 py-3 font-bold text-white hover:brightness-110"
           >
-            ✨ Find my gaps
+            <PixelIcon name="sparkle" size={20} className="mr-2 inline-block align-text-bottom" />Find my gaps
           </button>
         </section>
       )}

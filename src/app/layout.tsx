@@ -29,7 +29,7 @@ const rammetto = Rammetto_One({
 
 const title = "Nexus Net · ASEAN Quest";
 const description =
-  "Startups earn XP by turning ecosystem connections into real outcomes. Gemma 4 generates quests and verifies proof.";
+  "Company onboarding, AI review of registration evidence, and cross-border growth for ASEAN startups.";
 
 export const metadata: Metadata = {
   // Absolute OG/Twitter image URLs need a base; set NEXT_PUBLIC_SITE_URL in production.

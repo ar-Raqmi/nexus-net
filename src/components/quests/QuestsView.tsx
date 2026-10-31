@@ -12,6 +12,7 @@ import QuestGrid from "./QuestGrid";
 import StartupHeader from "./StartupHeader";
 import TierCards from "./TierCards";
 import { useQuestGenerator } from "./useQuestGenerator";
+import PixelIcon from "@/components/PixelIcon";
 
 export default function QuestsView() {
   const hydrated = useHasHydrated();
@@ -39,9 +40,7 @@ export default function QuestsView() {
     return (
       <section className="mx-auto max-w-md py-16 text-center">
         <div className="rounded-3xl bg-white shadow-card p-10 flex flex-col items-center gap-4">
-          <span className="text-5xl" aria-hidden>
-            🎮
-          </span>
+          <PixelIcon name="gamepad" size={64} className="motion-safe:animate-bounce" />
           <h1 className="font-display text-2xl">Pick a startup first</h1>
           <p className="text-muted">Choose a startup to play as, then your quests show up here.</p>
           <Link
@@ -61,10 +60,10 @@ export default function QuestsView() {
       <LevelTrack xp={startup.xp} />
       <TierCards xp={startup.xp} />
 
-      <section>
+      <section id="active-quests">
         <SectionTitle
           title="Active quests"
-          subtitle="Complete a quest, upload proof, and Gemma verifies it for XP."
+          subtitle="Your next steps toward cross-border growth."
         />
         <div className="flex flex-col items-center gap-3 mb-6">
           {(active.length > 0 || generator.status === "loading") && (
@@ -82,9 +81,7 @@ export default function QuestsView() {
             role="alert"
             className="mb-6 rounded-3xl bg-[#FFEBEB] border border-[#FFB2B3] p-5 flex flex-col sm:flex-row sm:items-center gap-3"
           >
-            <span className="text-2xl" aria-hidden>
-              ⚠️
-            </span>
+            <PixelIcon name="warning" size={32} />
             <div className="flex-1">
               <p className="font-bold">Couldn&apos;t generate quests</p>
               <p className="text-sm text-muted">{generator.error}</p>

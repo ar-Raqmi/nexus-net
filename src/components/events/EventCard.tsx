@@ -1,5 +1,6 @@
 import { CATEGORY_BY_KEY, EVENT_RELEVANT_XP, EVENT_SUBSCRIBE_XP, formatEventDay, formatEventTime, isPast } from "@/lib/events";
 import type { LumaEvent } from "@/lib/types";
+import PixelIcon from "@/components/PixelIcon";
 
 interface Props {
   event: LumaEvent;
@@ -37,7 +38,13 @@ export default function EventCard({
             subscribed ? "bg-green text-white hover:brightness-110" : "bg-ink text-white hover:bg-primary"
           }`}
         >
-          {subscribed ? "Subscribed ✓" : "Subscribe"}
+          {subscribed ? (
+            <span className="inline-flex items-center gap-1.5">
+              <PixelIcon name="check" size={16} /> Subscribed
+            </span>
+          ) : (
+            "Subscribe"
+          )}
         </button>
       )}
       <a
@@ -78,18 +85,18 @@ export default function EventCard({
   }
 
   return (
-    <article className="h-full flex flex-col rounded-3xl bg-white shadow-card overflow-hidden transition hover:-translate-y-1 hover:shadow-xl">
+    <article className="group h-full flex flex-col rounded-3xl bg-white shadow-card overflow-hidden transition duration-300 motion-safe:starting:translate-y-4 starting:opacity-0 motion-safe:hover:-translate-y-1 hover:shadow-xl">
       <div className="relative h-28 bg-ink/5">
         {event.coverUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={event.coverUrl} alt="" className="h-full w-full object-cover" loading="lazy" />
         ) : (
-          <div className={`h-full w-full ${category.className} flex items-center justify-center text-4xl`}>
-            {category.icon}
+          <div className={`h-full w-full ${category.className} flex items-center justify-center`}>
+            <PixelIcon name={category.icon} size={56} className="transition-transform duration-200 motion-safe:group-hover:-rotate-6 motion-safe:group-hover:scale-110" />
           </div>
         )}
         <span className={`absolute top-3 left-3 rounded-full px-2.5 py-1 text-xs font-bold ${category.className}`}>
-          {category.icon} {category.label}
+          <PixelIcon name={category.icon} size={14} className="inline-block mr-1 align-middle" />{category.label}
         </span>
 
         {/* XP booster badge */}
@@ -100,7 +107,9 @@ export default function EventCard({
             }`}
             title={relevant ? "Relevant events earn double XP" : "Subscribe to earn XP"}
           >
-            +{xp} XP {relevant ? "★" : ""}
+            <span className="inline-flex items-center gap-1">
+              +{xp} XP {relevant && <PixelIcon name="star" size={14} />}
+            </span>
           </span>
         )}
         {!canSubscribe && past && (
@@ -133,7 +142,7 @@ export default function EventCard({
           <div className="flex flex-wrap gap-1.5">
             {event.reasons.map((reason) => (
               <span key={reason} className="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-bold text-primary">
-                ✦ {reason}
+                <PixelIcon name="sparkle" size={14} className="inline-block mr-1 align-middle" />{reason}
               </span>
             ))}
           </div>

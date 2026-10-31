@@ -1,5 +1,6 @@
 import { EVENT_CATEGORIES } from "@/lib/events";
 import type { EventCategory } from "@/lib/types";
+import PixelIcon from "@/components/PixelIcon";
 
 export type Filter = "all" | EventCategory;
 export type Mode = "month" | "week" | "list";
@@ -46,7 +47,7 @@ export default function EventControls({ filter, mode, onFilter, onMode }: Props)
         </FilterChip>
         {EVENT_CATEGORIES.map((c) => (
           <FilterChip key={c.key} active={filter === c.key} onClick={() => onFilter(c.key)}>
-            {c.icon} {c.label}
+            <PixelIcon name={c.icon} size={16} className="inline-block mr-1 align-middle" />{c.label}
           </FilterChip>
         ))}
       </div>

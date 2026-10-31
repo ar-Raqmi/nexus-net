@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
+import Flag from "@/components/Flag";
 import {
   EVENT_RELEVANT_XP,
   EVENT_SUBSCRIBE_XP,
@@ -54,6 +55,7 @@ export default function EventsView() {
   const creditedEventsMap = useGameStore((s) => s.creditedEvents);
   const subscribeToEvent = useGameStore((s) => s.subscribeToEvent);
   const unsubscribeFromEvent = useGameStore((s) => s.unsubscribeFromEvent);
+  const login = useGameStore((s) => s.login);
 
   const startups = hydrated ? storeStartups : seedStartups;
   const startup = selectStartup(startups, currentStartupId);
@@ -231,12 +233,28 @@ export default function EventsView() {
       ) : hydrated ? (
         <section className="rounded-3xl border-2 border-dashed border-ink/10 bg-white/60 p-6 text-center">
           <p className="text-muted">
-            Pick a startup on the{" "}
-            <Link href="/#startups" className="font-bold text-primary">
-              home page
-            </Link>{" "}
-            to see events matched to your sector.
+            Pick a startup to subscribe to events and earn XP. Events will be matched to
+            your sector automatically.
           </p>
+          <div className="mt-4 flex flex-wrap justify-center gap-2">
+            {startups.map((s) => (
+              <button
+                key={s.id}
+                type="button"
+                onClick={() => login(s.id)}
+                className="inline-flex items-center gap-1.5 rounded-full bg-white shadow-card px-4 py-2 text-sm font-bold text-ink hover:bg-primary hover:text-white"
+              >
+                <Flag country={s.country} size={16} />
+                {s.name}
+              </button>
+            ))}
+          </div>
+          <Link
+            href="/#startups"
+            className="mt-4 inline-block text-sm font-bold text-primary hover:underline"
+          >
+            Or browse all startups →
+          </Link>
         </section>
       ) : null}
 

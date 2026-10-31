@@ -1,4 +1,5 @@
 import Flag from "@/components/Flag";
+import PixelIcon, { type PixelIconName } from "@/components/PixelIcon";
 import { COUNTRY_NAMES } from "@/lib/game";
 import type { Country } from "@/lib/types";
 import type { LeaderboardRow } from "@/store/selectors";
@@ -25,11 +26,11 @@ const PODIUM_WIDTH = PODIUM.reduce((sum, b) => sum + b.width, 0);
 const PODIUM_LEFT = (SHELF.width - PODIUM_WIDTH - PODIUM_DEPTH) / 2;
 
 // Small floating icons around the podium, in scene coordinates.
-const FLOATERS = [
-  { icon: "⭐", left: 70, top: 120, rotate: -10, delay: "0s" },
-  { icon: "💎", left: 150, top: 40, rotate: 8, delay: "-1.5s" },
-  { icon: "🎯", left: 600, top: 50, rotate: -6, delay: "-3s" },
-  { icon: "📈", left: 680, top: 130, rotate: 10, delay: "-4.5s" },
+const FLOATERS: { icon: PixelIconName; left: number; top: number; rotate: number; delay: string }[] = [
+  { icon: "star", left: 70, top: 120, rotate: -10, delay: "0s" },
+  { icon: "gem", left: 150, top: 40, rotate: 8, delay: "-1.5s" },
+  { icon: "target", left: 600, top: 50, rotate: -6, delay: "-3s" },
+  { icon: "chart", left: 680, top: 130, rotate: 10, delay: "-4.5s" },
 ];
 
 export default function PodiumScene({
@@ -58,7 +59,7 @@ export default function PodiumScene({
             className="absolute flex size-11 items-center justify-center rounded-xl bg-white text-xl shadow-card motion-safe:animate-float [animation-duration:5s]"
             style={{ left: f.left, top: f.top, rotate: `${f.rotate}deg`, animationDelay: f.delay }}
           >
-            {f.icon}
+            <PixelIcon name={f.icon} size={28} />
           </span>
         ))}
 
@@ -188,7 +189,7 @@ export default function PodiumScene({
             style={{ left: 558 }}
             frontClassName="flex items-center justify-center text-xl"
           >
-            <span aria-hidden>🤝</span>
+            <PixelIcon name="partnership" size={26} />
           </Voxel>
 
           {/* Map pin */}

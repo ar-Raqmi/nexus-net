@@ -3,6 +3,7 @@ import { COUNTRY_NAMES } from "@/lib/game";
 import { TIER_STYLE } from "@/lib/tiers";
 import type { Startup } from "@/lib/types";
 import { selectLevelInfo } from "@/store/selectors";
+import PixelIcon from "@/components/PixelIcon";
 
 export default function StartupHeader({ startup }: { startup: Startup }) {
   const { level, next, progress } = selectLevelInfo(startup.xp);
@@ -22,7 +23,7 @@ export default function StartupHeader({ startup }: { startup: Startup }) {
           </p>
           <h1 className="font-display text-3xl sm:text-4xl truncate">{startup.name}</h1>
           <span className="mt-1 inline-flex items-center gap-1 rounded-full bg-purple-dark px-3 py-1 text-xs font-bold text-white">
-            {tier.icon} Level {level.index} · {level.name}
+            <PixelIcon name={tier.icon} size={16} /> Level {level.index} · {level.name}
           </span>
         </div>
       </div>
@@ -42,13 +43,13 @@ export default function StartupHeader({ startup }: { startup: Startup }) {
                 {next.name}
               </>
             ) : (
-              "Max level reached 🎉"
+              <span className="inline-flex items-center gap-1">Max level reached <PixelIcon name="party" size={16} /></span>
             )}
           </p>
         </div>
         <div className="h-4 rounded-full bg-purple/15 overflow-hidden">
           <div
-            className="h-full rounded-full bg-signature transition-[width] duration-700"
+            className="h-full rounded-full bg-signature transition-[width] duration-1000 ease-out starting:w-0"
             style={{ width: `${Math.round(progress * 100)}%` }}
           />
         </div>

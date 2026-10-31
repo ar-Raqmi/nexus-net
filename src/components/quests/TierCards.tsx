@@ -1,5 +1,6 @@
 import { LEVELS, getLevel } from "@/lib/game";
 import { TIER_STYLE } from "@/lib/tiers";
+import PixelIcon from "@/components/PixelIcon";
 
 const TIER_BLURB: Record<string, string> = {
   Connected: "You're in the network.",
@@ -28,23 +29,29 @@ export default function TierCards({ xp }: { xp: number }) {
           return (
             <li
               key={level.name}
-              className={`relative w-44 shrink-0 snap-start overflow-hidden rounded-3xl bg-white shadow-card lg:w-auto ${
+              style={{ transitionDelay: `${level.index * 60}ms` }}
+              className={`group relative w-44 shrink-0 snap-start overflow-hidden rounded-3xl bg-white shadow-card transition duration-300 motion-safe:hover:-translate-y-1 hover:shadow-xl motion-safe:starting:translate-y-3 starting:opacity-0 lg:w-auto ${
                 isCurrent ? "ring-4 ring-primary" : ""
               }`}
             >
               <span
-                className={`absolute top-3 right-3 rounded-full px-2.5 py-0.5 text-xs font-bold ${
+                className={`absolute top-3 right-3 inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-bold ${
                   unlocked ? "bg-green text-white" : "bg-ink/70 text-white"
                 }`}
               >
-                {unlocked ? "Unlocked" : "🔒 Locked"}
+                {!unlocked && <PixelIcon name="lock" size={14} />}
+                {unlocked ? "Unlocked" : "Locked"}
               </span>
               <div
-                className={`${tier.bg} h-20 flex items-center justify-center text-4xl ${
+                className={`${tier.bg} h-20 flex items-center justify-center ${
                   unlocked ? "" : "opacity-50"
                 }`}
               >
-                <span aria-hidden>{tier.icon}</span>
+                <PixelIcon
+                  name={tier.icon}
+                  size={44}
+                  className="transition-transform duration-200 motion-safe:group-hover:-rotate-6 motion-safe:group-hover:scale-110"
+                />
               </div>
               <div className="p-4 flex flex-col items-center text-center gap-2">
                 <h3 className="font-bold">{level.name}</h3>

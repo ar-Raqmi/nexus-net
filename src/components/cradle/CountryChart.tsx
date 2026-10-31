@@ -19,7 +19,8 @@ export default function CountryChart({ data }: { data: Row[] }) {
     <Card title="Outcomes by country" subtitle="Verified outcomes by target market">
       <ul className="flex flex-col gap-3" aria-label="Verified outcomes by country">
         {rows.map((row, i) => (
-          <li key={row.country} className="grid grid-cols-[7.5rem_1fr_2rem] items-center gap-3">
+          <li key={row.country} className="animate-fade-up grid grid-cols-[7.5rem_1fr_2rem] items-center gap-3"
+            style={{ animationDelay: `${Math.min(i * 80, 600)}ms` }}>
             <span className="flex items-center gap-2 text-sm font-semibold text-ink">
               <Flag country={row.country} size={20} />
               {row.name}

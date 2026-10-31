@@ -22,8 +22,8 @@ export default function RankList({
         return (
           <li
             key={row.id}
-            style={{ transitionDelay: `${(i + 3) * 60}ms` }}
-            className={`flex items-center gap-3 rounded-2xl bg-white p-3 pr-4 transition duration-300 hover:-translate-y-0.5 hover:shadow-card starting:translate-y-4 starting:opacity-0 motion-reduce:transition-none motion-reduce:hover:translate-y-0 sm:gap-4 ${
+            style={{ animationDelay: `${Math.min(i * 60 + 300, 600)}ms` }}
+            className={`animate-fade-up flex items-center gap-3 rounded-2xl bg-white p-3 pr-4 transition duration-300 hover:-translate-y-0.5 hover:shadow-card motion-reduce:transition-none motion-reduce:hover:translate-y-0 sm:gap-4 ${
               isYou ? "ring-4 ring-yellow" : ""
             }`}
           >

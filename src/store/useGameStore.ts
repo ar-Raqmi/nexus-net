@@ -3,7 +3,8 @@
 import { useSyncExternalStore } from "react";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { Quest, Startup } from "@/lib/types";
+import type { CompanyProfile, CompanyVerification, Quest, Startup } from "@/lib/types";
+import { parseCompanyProfile } from "@/lib/proof";
 import { seedQuests, seedStartups } from "@/seed";
 
 interface GameState {
@@ -31,9 +32,15 @@ interface GameState {
   /** Remove a subscription. XP already earned is kept. */
   unsubscribeFromEvent: (startupId: string, eventId: string) => void;
   resetDemo: () => void;
+  companyProfiles: Record<string, CompanyProfile>;
+  companyVerifications: Record<string, CompanyVerification>;
+  saveCompanyProfile: (profile: CompanyProfile) => void;
+  recordCompanyVerification: (verification: CompanyVerification) => void;
 }
 
 const initialData = () => ({
+  companyProfiles: {} as Record<string, CompanyProfile>,
+  companyVerifications: {} as Record<string, CompanyVerification>,
   currentStartupId: null,
   startups: seedStartups,
   quests: seedQuests,
@@ -48,6 +55,33 @@ export const useGameStore = create<GameState>()(
 
       login: (startupId) => set({ currentStartupId: startupId }),
       logout: () => set({ currentStartupId: null }),
+
+      saveCompanyProfile: (input) => set(state => {
+        const profile = parseCompanyProfile(input);
+        const existing = state.companyProfiles[profile.startupId];
+        const changed = JSON.stringify(existing) !== JSON.stringify(profile);
+        const verifications = { ...state.companyVerifications };
+        if (changed) delete verifications[profile.startupId];
+        const previous = state.startups.find(s => s.id === profile.startupId);
+        const startup: Startup = {
+          id: profile.startupId, name: profile.legalName, country: profile.country,
+          sector: profile.sector, stage: profile.stage, description: profile.description, xp: previous?.xp ?? 0,
+        };
+        return {
+          currentStartupId: startup.id,
+          startups: previous ? state.startups.map(s => s.id === startup.id ? startup : s) : [...state.startups, startup],
+          companyProfiles: { ...state.companyProfiles, [startup.id]: profile },
+          companyVerifications: verifications,
+        };
+      }),
+
+      recordCompanyVerification: (verification) => set(state => {
+        const id = verification.profile.startupId;
+        const profile = state.companyProfiles[id];
+        // Ignore responses for a profile that was edited while a request was in flight.
+        if (!profile || state.currentStartupId !== id || JSON.stringify(profile) !== JSON.stringify(verification.profile)) return state;
+        return { companyVerifications: { ...state.companyVerifications, [id]: verification } };
+      }),
 
       addQuests: (quests) =>
         set((state) => ({ quests: [...state.quests, ...quests] })),
