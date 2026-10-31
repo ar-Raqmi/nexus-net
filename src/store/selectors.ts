@@ -138,26 +138,92 @@ const FUNNEL_LABELS = [
   { key: "investments", label: "Investments" },
 ];
 
+export const FUNNEL_STAGES = FUNNEL_LABELS;
+
+/** Monotonic per-stage counts for already-verified quests. */
+function countStages(verified: Quest[]): number[] {
+  return FUNNEL_LABELS.map(
+    (_, rank) => verified.filter((q) => STAGE_RANK[q.type] >= rank).length,
+  );
+}
+
+/** Share of connections that reached POC or beyond, as a 0-100 percentage. */
+function pocConversion(stages: number[]): number {
+  return stages[0] === 0 ? 0 : Math.round((stages[2] / stages[0]) * 100);
+}
+
 export function selectFunnel(quests: Quest[]): FunnelStage[] {
-  const verified = selectVerified(quests);
-  return FUNNEL_LABELS.map((stage, rank) => ({
-    ...stage,
-    count: verified.filter((q) => STAGE_RANK[q.type] >= rank).length,
-  }));
+  const counts = countStages(selectVerified(quests));
+  return FUNNEL_LABELS.map((stage, rank) => ({ ...stage, count: counts[rank] }));
 }
 
 /** Share of connections that reached POC or beyond, as a 0-100 percentage. */
 export function selectConversionRate(quests: Quest[]): number {
-  const funnel = selectFunnel(quests);
-  const connections = funnel[0].count;
-  return connections === 0 ? 0 : Math.round((funnel[2].count / connections) * 100);
+  return pocConversion(countStages(selectVerified(quests)));
 }
 
-export function selectOutcomesByCountry(quests: Quest[]) {
+export interface OutcomeBreakdown {
+  id: string;
+  name: string;
+  outcomes: number;
+  xp: number;
+  /** Count per funnel stage, same order as FUNNEL_STAGES. */
+  stages: number[];
+  /** Connection-to-POC conversion, 0-100. */
+  conversion: number;
+}
+
+function breakdown(id: string, name: string, verified: Quest[]): OutcomeBreakdown {
+  const stages = countStages(verified);
+  return {
+    id,
+    name,
+    outcomes: verified.length,
+    xp: verified.reduce((sum, q) => sum + q.xp, 0),
+    stages,
+    conversion: pocConversion(stages),
+  };
+}
+
+const byOutcomes = (a: OutcomeBreakdown, b: OutcomeBreakdown) =>
+  b.outcomes - a.outcomes || b.xp - a.xp || a.name.localeCompare(b.name);
+
+/** Verified outcomes grouped by the country the outcome happened in. */
+export function selectOutcomesByCountry(
+  quests: Quest[],
+): (OutcomeBreakdown & { country: Country })[] {
   const verified = selectVerified(quests);
-  return (Object.keys(COUNTRY_NAMES) as Country[]).map((country) => ({
-    country,
-    name: COUNTRY_NAMES[country],
-    outcomes: verified.filter((q) => q.targetCountry === country).length,
-  }));
+  return (Object.keys(COUNTRY_NAMES) as Country[])
+    .map((country) => ({
+      country,
+      ...breakdown(
+        country,
+        COUNTRY_NAMES[country],
+        verified.filter((q) => q.targetCountry === country),
+      ),
+    }))
+    .sort(byOutcomes);
+}
+
+export const NO_EVENT_ID = "no-event";
+
+/**
+ * Verified outcomes grouped by the event that sparked them. Outcomes without a
+ * known event are collected in a trailing "No event" row when there are any.
+ */
+export function selectOutcomesByEvent(
+  events: Event[],
+  quests: Quest[],
+): (OutcomeBreakdown & { event: Event | null })[] {
+  const verified = selectVerified(quests);
+  const known = new Set(events.map((e) => e.id));
+  const rows = events
+    .map((event) => ({
+      event,
+      ...breakdown(event.id, event.name, verified.filter((q) => q.eventId === event.id)),
+    }))
+    .sort(byOutcomes);
+  const unattributed = verified.filter((q) => !q.eventId || !known.has(q.eventId));
+  if (unattributed.length === 0) return rows;
+  return [...rows, { event: null, ...breakdown(NO_EVENT_ID, "No event", unattributed) }];
 }
