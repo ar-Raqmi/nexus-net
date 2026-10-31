@@ -1,0 +1,17 @@
+{
+  "quests": [
+    { "title": "Connect with a Jakarta QRIS acquirer at Jakarta Fintech Meetup", "why": "Builds the first relationship needed to accept Indonesian QR payments.", "type": "connect", "targetCountry": "ID", "xp": 20, "proofRequired": "Screenshot of a LinkedIn connection or exchanged contact details", "eventId": "ev-jkt-fintech" },
+    { "title": "Book a demo with a Singapore payments sandbox mentor", "why": "Gets expert feedback on running cross-border settlement under the sandbox.", "type": "meeting", "targetCountry": "SG", "xp": 50, "proofRequired": "Calendar invite naming PayLah Lite and the mentor's organisation" },
+    { "title": "Apply to the Regional Payments Sandbox cross-border track", "why": "Unlocks regulatory cover for a live MY–SG settlement pilot.", "type": "programme", "targetCountry": "SG", "xp": 75, "proofRequired": "Programme acceptance or application confirmation email" },
+    { "title": "Run a 3-week POC with a Ho Chi Minh City street-food chain", "why": "Proves instant settlement works for Vietnamese micro-merchants.", "type": "poc", "targetCountry": "VN", "xp": 150, "proofRequired": "Signed POC agreement or letter of intent with both company names" },
+    { "title": "Sign a merchant-acquisition partnership with a Bangkok retail group", "why": "Creates a commercial channel into Thai hawker markets.", "type": "partnership", "targetCountry": "TH", "xp": 250, "proofRequired": "First page of a signed partnership MOU" }
+  ],
+  "verdict": {
+    "decision": "approved",
+    "confidence": 0.86,
+    "documentType": "POC letter of intent",
+    "parties": ["PayLah Lite", "Saigon Street Eats Co."],
+    "date": "2026-10-28",
+    "reason": "The letter names PayLah Lite and a Vietnamese partner, describes a payments pilot, and is signed and dated this week."
+  }
+}

@@ -1,0 +1,92 @@
+[
+  {
+    "id": "paylah-lite",
+    "name": "PayLah Lite",
+    "country": "MY",
+    "sector": "Fintech",
+    "stage": "seed",
+    "description": "Lightweight QR payments and instant settlement for hawker stalls and micro-merchants.",
+    "xp": 250
+  },
+  {
+    "id": "tanipintar",
+    "name": "TaniPintar",
+    "country": "ID",
+    "sector": "Agritech",
+    "stage": "series-a",
+    "description": "Soil sensors and crop-yield forecasting for smallholder rice and palm farmers.",
+    "xp": 1015
+  },
+  {
+    "id": "medilink",
+    "name": "MediLink",
+    "country": "SG",
+    "sector": "Healthtech",
+    "stage": "series-a",
+    "description": "Cross-border telehealth referrals connecting clinics with specialist hospitals.",
+    "xp": 490
+  },
+  {
+    "id": "greenhaul",
+    "name": "GreenHaul",
+    "country": "VN",
+    "sector": "Logistics",
+    "stage": "seed",
+    "description": "Electric last-mile delivery fleets with route optimisation for city couriers.",
+    "xp": 270
+  },
+  {
+    "id": "learnloop",
+    "name": "LearnLoop",
+    "country": "PH",
+    "sector": "Edtech",
+    "stage": "pre-seed",
+    "description": "Bite-sized upskilling courses for BPO workers, delivered over chat apps.",
+    "xp": 90
+  },
+  {
+    "id": "shopsiam",
+    "name": "ShopSiam",
+    "country": "TH",
+    "sector": "E-commerce",
+    "stage": "seed",
+    "description": "Social-commerce storefronts that let Thai SMEs sell through live-stream shopping.",
+    "xp": 420
+  },
+  {
+    "id": "voltnest",
+    "name": "VoltNest",
+    "country": "SG",
+    "sector": "Cleantech",
+    "stage": "pre-seed",
+    "description": "Battery-as-a-service for rooftop solar in shophouses and small factories.",
+    "xp": 0
+  },
+  {
+    "id": "halaltrace",
+    "name": "HalalTrace",
+    "country": "MY",
+    "sector": "Supply chain",
+    "stage": "pre-seed",
+    "description": "Blockchain-free halal certification tracking from abattoir to shelf.",
+    "xp": 0
+  },
+  {
+    "id": "kopistack",
+    "name": "KopiStack",
+    "country": "ID",
+    "sector": "SaaS",
+    "stage": "seed",
+    "description": "Inventory and POS software for multi-outlet coffee chains.",
+    "xp": 0
+  },
+  {
+    "id": "carebridge",
+    "name": "CareBridge",
+    "country": "PH",
+    "sector": "Healthtech",
+    "stage": "pre-seed",
+    "description": "Home-care nurse matching for elderly patients in secondary cities.",
+    "xp": 0
+  }
+]

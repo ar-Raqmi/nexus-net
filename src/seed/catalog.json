@@ -1,0 +1,10 @@
+[
+  { "id": "prg-sg-bridge", "name": "Lion City Market Bridge", "country": "SG", "type": "programme", "description": "6-week soft-landing programme pairing founders with Singapore corporates." },
+  { "id": "prg-id-pilot", "name": "Nusantara Pilot Fund", "country": "ID", "type": "poc", "description": "Co-funds paid pilots between startups and Indonesian enterprises." },
+  { "id": "prg-vn-agri", "name": "Mekong Agri Sandbox", "country": "VN", "type": "poc", "description": "Field-trial sites with Vietnamese farm cooperatives for agritech POCs." },
+  { "id": "prg-th-retail", "name": "Bangkok Retail Partners Circle", "country": "TH", "type": "partnership", "description": "Matchmaking with Thai retail chains looking for commercial partners." },
+  { "id": "prg-ph-health", "name": "Manila Health Innovation Desk", "country": "PH", "type": "meeting", "description": "Office hours with hospital groups and HMOs in the Philippines." },
+  { "id": "prg-my-angels", "name": "KL Angel Syndicate Night", "country": "MY", "type": "funding", "description": "Monthly pitch night with a cross-border angel syndicate." },
+  { "id": "prg-sg-payments", "name": "Regional Payments Sandbox", "country": "SG", "type": "programme", "description": "Regulatory sandbox access for cross-border payment pilots." },
+  { "id": "prg-asean-mentors", "name": "ASEAN Mentor Mesh", "country": "MY", "type": "connect", "description": "Warm intros to operators and mentors in all six markets." }
+]
