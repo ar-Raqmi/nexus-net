@@ -41,6 +41,8 @@ export interface Quest {
   targetCountry: Country;
   xp: number;
   proofRequired: string;
+  /** Set when a talent (not the founder) does the work, e.g. "Web developer". */
+  talentRole?: string;
   status: QuestStatus;
   verdict?: Verdict;
   completedAt?: string;
@@ -60,6 +62,16 @@ export interface Programme {
   country: Country;
   type: QuestType;
   description: string;
+}
+
+export interface Talent {
+  id: string;
+  name: string;
+  role: string;
+  country: Country;
+  skills: string[];
+  rating: number;
+  gigsDone: number;
 }
 
 /** Company onboarding is separate from quests and never awards XP. */

@@ -1,86 +1,72 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Nexus Net (ASEAN Quest)
 
-## Completed
+Startups earn XP by turning ecosystem connections into real outcomes. Gemma 4 generates their quests and verifies their proof, and Cradle sees the conversion funnel live.
 
-- Company onboarding, document review and a professional company passport, separate from quests and XP.
-- Approved, rejected and retry flows, saved profiles, and re-verification after company details change.
-- Matching [demo profiles and evidence](public/demo-evidence/README.md) for all 10 startups, two negative samples, editable sources, and a **Use sample company** simulation shortcut.
-- Registration-to-passport browser checks, refresh persistence and mobile layouts verified. Live AI rejection tested; demo approval is explicitly labelled.
+Built at Hacktoberfest Hack Day KL, 31 Oct 2026.
 
-Start at `/register`, choose **Use sample company**, save, download the sample image, choose **Instant simulation (no AI)** at upload, and submit to receive a demo passport. Account data is browser-local; live authentication and registry checks are not implemented.
+## Problem statement #1: Outcome Conversion
 
+> "How can Startup ASEAN successfully convert ecosystem connections into measurable outcomes, including investments, commercial partnerships, market expansion, and cross-border POCs?"
 
-## Event Calendar
+**Category:** Best Use of Gemma 4 (via the Gemini API)
 
-The `/events` page is the ecosystem-discovery layer of Nexus Net. It pulls live public
-events from Luma's Kuala Lumpur feed (`api.lu.ma`) so startups can find the meetups,
-workshops, and conferences that move them toward real outcomes.
+## Features
 
-**Purpose for gaining XP:** attending the right rooms is how connections turn into
-outcomes, so browsing alone isn't rewarded — committing is. When a startup logs in and
-subscribes to an event calendar, it earns **+50 XP**, or **+100 XP** when the event
-matches its sector (fintech, agritech, healthtech, etc.). XP is credited once per startup
-per event, and relevance is scored from the startup's sector, description, and the event's
-title, hosts, and category. This ties the calendar directly into the same XP and level
-track as quests, giving startups a lightweight, always-available way to earn progress
-between quests.
+- **Startup profile + demo login:** pick a seeded startup on `/` (no real auth).
+- **AI quest generator:** Gemma 4 writes 5 personalised, mostly cross-border quests from the profile and the programme/event catalog.
+- **AI needs assessment (`/needs`):** a few fixed questions; code detects and ranks the startup's gaps; Gemma words each option; add any option as a quest done by a talent.
+- **Quest proof verification:** upload a screenshot or document for a quest; Gemma 4 vision approves, rejects or flags it. Approval awards XP and counts as a verified outcome.
+- **Company verification (`/register`, `/profile`):** onboarding identity check of a registration document; issues a company passport, never XP.
+- **XP & levels:** Connected → Engaged → POC → Partnership → Funded, derived from XP.
+- **Leaderboards:** startups, countries and events.
+- **Cradle dashboard (`/cradle`):** funnel from connections to investments, outcomes by country, results by event.
+- **Events calendar (`/events`):** public Kuala Lumpur events from Luma; subscribing earns bonus XP.
 
-## Getting Started
+## Tech stack
 
-First, run the development server:
+Next.js (App Router, TypeScript) · Tailwind CSS · Zustand (persisted to localStorage) · Recharts · `@google/genai` for Gemma 4.
+
+## Setup
+
+```bash
+npm install
+```
+
+Create `.env.local` (see `.env.example`):
+
+```bash
+GEMINI_API_KEY=your_key_here
+GEMMA_MODEL=gemma-4-26b-a4b-it
+```
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000. Add `?demo=1` to `/quests` to fall back to a saved quest list if Gemma is unreachable.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Architecture
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Client:** pages under `src/app`, components under `src/components`, game state in a persisted Zustand store (`src/store`). No database.
+- **Server:** Gemma is only ever called from server route handlers (`/api/quests/generate`, `/api/needs/analyze`, `/api/proof/verify`, `/api/company/verify`). The API key never reaches the browser.
+- **Gemma calls** (`src/lib/gemma.ts`): JSON-only prompts, code fences stripped before parsing, one retry, then a readable error. Model output is validated; XP values always come from our own table, never from the model.
 
-## Learn More
+## Honesty notes
 
-To learn more about Next.js, take a look at the following resources:
+- All seed data (startups, programmes, events, past quests), talent profiles and the demo proof images in `demo-assets/` are **fictional**.
+- The `/events` calendar shows real public listings from Luma; nothing else uses real Startup ASEAN data.
+- The needs-assessment questions are fixed, not AI-generated, and the gaps are found by code. Gemma only writes the wording.
+- Gemma's confidence scores are not calibrated (they come back near 1.0), so approvals don't rely on the confidence threshold alone.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Two separate proof checks
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. **Company identity (onboarding, no XP).** `/register` → `/profile`: upload an incorporation certificate or registry extract (PNG/JPEG/WebP). Gemma compares the legal name, registration number and jurisdiction with the profile; approval issues a company passport. It never grants XP or changes quests. Sample profiles and evidence for all 10 startups are in `public/demo-evidence/`.
+2. **Quest proof (outcomes, XP).** `/quests`: each open quest has **Submit proof**. Gemma checks the image against the quest (prompt 2 in `CLAUDE.md`, with today's date). Approved proof marks the quest verified, awards its XP and counts in the Cradle funnel. Test images are in `demo-assets/`.
 
-## Deploy on Vercel
+Both offer a clearly labelled **simulation (no AI)** mode for demos; live Gemma is the default. Event-calendar XP never counts as a verified outcome.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Checks: `node --test tests/company_verification.test.mjs` (company route with a stubbed provider), `npm run lint`, `npm run build`.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Team & license
 
-
-## Company registration, verification and passport
-
-Company verification belongs to onboarding and the company profile. It is separate from quests and never grants XP or changes quest status.
-
-- `/register`: enter the legal company name, registration number, jurisdiction, website, sector, stage and description. New profiles are added to the local company list; selecting a seeded startup lets you onboard that company instead.
-- `/profile`: complete the company record, upload registration evidence, view the result, retry, and view the issued company passport after approval. Editing company details invalidates the previous review and passport until the revised profile is reviewed.
-- `/quests`: startup activities and XP only. No identity upload, sample proof task or passport.
-
-Set `GEMINI_API_KEY` and the image-capable model ID in `GEMMA_MODEL` in `.env.local`. Run `npm install` and `npm run dev`, then open `/register`, or select a demo startup from `/`.
-
-The document review accepts PNG, JPEG and WebP images up to 10 MB. The browser resizes images to at most 1280 pixels wide and 1800 pixels high before submitting them to Google AI. Upload a company incorporation certificate or business registry extract; the model compares the legal name, registration number and jurisdiction with the profile. A quest screenshot, meeting invite or POC agreement is not company identity evidence. Approval with confidence at least 0.7 issues a passport ID. Rejection, uncertainty, low confidence or API failure does not issue a passport.
-
-`POST /api/company/verify` accepts `{ profile, imageBase64, mimeType }` and returns `{ verification: { profile, verdict, mode, checkedAt, passportId? } }`. The old quest proof endpoint has been removed. The server validates inputs and model output, retries only an unusable model answer within one 25-second deadline, and returns specific upload, credential, rate-limit and timeout errors. Live verification uses the configured Gemma model with minimal thinking, a compact prompt and no SDK retry backoff. Failed calls do not silently switch to a canned result.
-
-**Live Gemma AI** is the default, including after filling sample data. The upload dialog also offers **Instant simulation (no AI)**; `/profile?demo=1` preselects that canned mode. Demo passports are clearly labelled. A real review is available by leaving demo mode and submitting another document.
-
-This remains a prototype registration flow, with browser-local profiles and review records in `nexus-net-game` localStorage. No password, live authentication, shared database, official registry lookup, ownership check or tamper-proof credential is implemented. Images are sent to Google AI but are not stored in localStorage. All seeded company data is fictional. Legacy quest verdicts do not count as company identity verification.
-
-### Checks
-
-`node --test tests/company_verification.test.mjs` tests the real route with a stubbed provider, including retry limits, timeout handling, quota errors and model configuration.
-
-Run `npm run lint` and `npm run build`. For browser regression checks, start `npm run start -- --port 3100`, then run `python tests/proof_verification.py` in an environment with Python Playwright installed. Set `BASE_URL` and `CHROME_PATH` as needed (defaults: `http://localhost:3100` and `/usr/bin/google-chrome`). The checks cover onboarding, rejection, uncertainty, low confidence, API errors, approval and persistence, no XP or quest changes, profile edit invalidation, company separation, new company registration, demo labels, image validation, mobile layouts and removal of the old endpoint. Approval cases use controlled model responses; demo requests use the actual local endpoint without a model call.
+Built by the Nexus Net team. Released under the [MIT License](LICENSE).

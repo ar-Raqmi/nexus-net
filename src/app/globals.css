@@ -30,6 +30,25 @@
   }
 }
 
+/* Tailwind v4 preflight resets buttons to cursor: default; restore pointer app-wide */
+@layer base {
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  a[href],
+  label[for],
+  select,
+  summary,
+  input[type="file"],
+  input[type="checkbox"],
+  input[type="radio"] {
+    cursor: pointer;
+  }
+  button:disabled,
+  [aria-disabled="true"] {
+    cursor: not-allowed;
+  }
+}
+
 /* Signature highlight gradient for badges and accents */
 @utility bg-signature {
   background-image: linear-gradient(90deg, #ffd44e, #ff8d22 39%, #fb88ff 73%, #55ffda);

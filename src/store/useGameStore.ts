@@ -90,7 +90,7 @@ export const useGameStore = create<GameState>()(
         set((state) => ({
           quests: [
             ...state.quests.filter(
-              (q) => !(q.startupId === startupId && q.status === "open"),
+              (q) => !(q.startupId === startupId && q.status === "open" && !q.talentRole),
             ),
             ...quests,
           ],

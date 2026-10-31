@@ -28,6 +28,11 @@ export default function QuestCard({ quest }: { quest: Quest }) {
           <span className="inline-flex items-center gap-1.5 rounded-full bg-ink/5 px-2.5 py-1 text-ink">
             <Flag country={quest.targetCountry} size={12} /> {COUNTRY_NAMES[quest.targetCountry]}
           </span>
+          {quest.talentRole && (
+            <span className="rounded-full bg-signature px-2.5 py-1 text-ink">
+              🧑‍💻 Talent: {quest.talentRole}
+            </span>
+          )}
           <span className={`ml-auto rounded-full px-2.5 py-1 ${status.className}`}>
             {status.label}
           </span>
