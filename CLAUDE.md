@@ -93,6 +93,7 @@ Inspired by a gamified "creator fund" landing page. Recreate the STYLE only. Do 
 - Colours: primary blue `#405CEE` (CTAs, links, scores); purple `#6E68FF` / `#4E4BA6` (progress track, rank tabs); yellow `#FFDD56`; green `#01C16B`; text `#222222`, muted `#666666` / `#999999`.
 - Signature gradient: `linear-gradient(90deg, #FFD44E, #FF8D22 39%, #FB88FF 73%, #55FFDA)` for highlights/badges.
 - Tier card backgrounds (pastel vertical gradients): red `#FFEBEB→#FFB2B3`, silver `#EDF2F6→#BCC6D4`, yellow, blue, lavender, peach.
+- Country flags: always use <Flag /> SVG component, never flag emojis.
 - Typography: huge black pixel number in the hero (Micro 5), section titles bold Inter ~40px centred with a one-line muted subtitle; scores in Quantico, blue.
 - Components to build:
   - Hero: countdown pill at the top ("Q4 season ends in 0d 20h 40m"), small kicker line, giant pixel counter (e.g. "1,284" outcomes verified), one pill CTA in primary blue, small scattered pixel-style icons (simple inline SVG/emoji, no external art).

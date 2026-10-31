@@ -83,3 +83,36 @@ export interface CompanyVerification {
   model?: string;
   durationMs?: number;
 }
+
+/** A category we bucket Luma events into for the startup-facing calendar. */
+export type EventCategory =
+  | "startup"
+  | "tech"
+  | "meetup"
+  | "workshop"
+  | "social"
+  | "other";
+
+/** Normalised public event pulled from the Luma Kuala Lumpur discovery feed. */
+export interface LumaEvent {
+  id: string;
+  name: string;
+  url: string;
+  startAt: string;
+  endAt: string | null;
+  timezone: string;
+  coverUrl: string | null;
+  hosts: string[];
+  city: string | null;
+  address: string | null;
+  locationType: string;
+  registration: string;
+  isFree: boolean;
+  priceLabel: string | null;
+  guestCount: number;
+  category: EventCategory;
+  /** Keyword score against the startup profile; 0 when nothing matches. */
+  relevance: number;
+  /** Why this event matched the startup, e.g. "fintech", "seed-stage". */
+  reasons: string[];
+}

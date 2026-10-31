@@ -24,6 +24,24 @@ export function selectVerified(quests: Quest[]) {
   return quests.filter((q) => q.status === "verified");
 }
 
+/** Event IDs a startup has subscribed to. */
+export function selectSubscriptions(
+  subscriptions: Record<string, string[]>,
+  startupId: string | null,
+): string[] {
+  if (!startupId) return [];
+  return subscriptions[startupId] ?? [];
+}
+
+/** Event IDs that have already granted XP for a startup. */
+export function selectCreditedEvents(
+  creditedEvents: Record<string, string[]>,
+  startupId: string | null,
+): string[] {
+  if (!startupId) return [];
+  return creditedEvents[startupId] ?? [];
+}
+
 // --- Leaderboards ---
 
 export interface LeaderboardRow {

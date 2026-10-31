@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 const links = [
   { href: "/profile", label: "Company" },
   { href: "/quests", label: "Quests" },
+  { href: "/events", label: "Events" },
   { href: "/leaderboard", label: "Leaderboard" },
   { href: "/cradle", label: "Cradle view" },
 ];
@@ -19,14 +20,14 @@ export default function TopNav() {
         <Link href="/" className="font-display text-lg sm:text-xl tracking-tight text-ink">
           Nexus<span className="text-primary"> Net</span>
         </Link>
-        <ul className="flex items-center gap-1 sm:gap-2">
+        <ul className="flex max-w-full flex-wrap items-center justify-center gap-1 sm:gap-2">
           {links.map((link) => {
             const active = pathname.startsWith(link.href);
             return (
               <li key={link.href}>
                 <Link
                   href={link.href}
-                  className={`rounded-full px-2.5 sm:px-4 py-2 text-xs sm:text-sm font-semibold transition-colors ${
+                  className={`inline-block rounded-full px-2.5 sm:px-4 py-2 text-xs sm:text-sm font-semibold transition-colors ${
                     active
                       ? "bg-primary text-white"
                       : "text-muted hover:bg-white hover:text-ink"

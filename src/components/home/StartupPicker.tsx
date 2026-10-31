@@ -1,7 +1,8 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { COUNTRY_FLAGS, COUNTRY_NAMES, getLevel } from "@/lib/game";
+import Flag from "@/components/Flag";
+import { COUNTRY_NAMES, getLevel } from "@/lib/game";
 import { TIER_STYLE } from "@/lib/tiers";
 import type { Startup } from "@/lib/types";
 import { seedStartups } from "@/seed";
@@ -72,9 +73,7 @@ function StartupCard({
       }`}
     >
       <div className={`${tier.bg} relative h-24 px-5 flex items-center gap-3`}>
-        <span className="text-4xl" aria-hidden>
-          {COUNTRY_FLAGS[startup.country]}
-        </span>
+        <Flag country={startup.country} size={28} />
         <span className="text-sm font-semibold text-ink/70">
           {COUNTRY_NAMES[startup.country]}
         </span>
