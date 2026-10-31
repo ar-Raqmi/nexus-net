@@ -50,6 +50,11 @@
   background-image: linear-gradient(180deg, #fff1e6, #ffc49b);
 }
 
+/* Flat-top hexagon for level-track nodes */
+@utility hexagon {
+  clip-path: polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0% 50%);
+}
+
 /* Faint graph-paper grid on light backgrounds */
 @utility bg-grid {
   background-color: var(--color-paper);
