@@ -1,14 +1,11 @@
-import PagePlaceholder from "@/components/PagePlaceholder";
-import StoreCheck from "@/components/StoreCheck";
+import Hero from "@/components/home/Hero";
+import StartupPicker from "@/components/home/StartupPicker";
 
 export default function Home() {
   return (
-    <PagePlaceholder
-      title="Turn connections into outcomes"
-      subtitle="Pick a startup to log in, earn XP by completing cross-border quests."
-      phase={2}
-    >
-      <StoreCheck />
-    </PagePlaceholder>
+    <>
+      <Hero />
+      <StartupPicker />
+    </>
   );
 }
