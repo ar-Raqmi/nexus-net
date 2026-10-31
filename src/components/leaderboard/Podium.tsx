@@ -1,47 +1,46 @@
+import PixelIcon from "@/components/PixelIcon";
 import type { LeaderboardRow } from "@/store/selectors";
-import { CrownIcon } from "./icons";
 import RowAvatar from "./RowAvatar";
 import Score from "./Score";
 import type { LeaderboardTab } from "./types";
 
+// Solid colours only. DOM order is 1,2,3 (mobile stack); md+ reorders to 2,1,3.
 const SLOTS = [
-  { rank: 2, tier: "tier-red", height: "min-h-40 sm:min-h-48", tilt: "-rotate-3" },
-  { rank: 1, tier: "tier-yellow", height: "min-h-52 sm:min-h-64", tilt: "" },
-  { rank: 3, tier: "tier-blue", height: "min-h-36 sm:min-h-44", tilt: "rotate-3" },
+  { rank: 1, bg: "bg-[#FFDD56]", order: "md:order-2", height: "md:min-h-72" },
+  { rank: 2, bg: "bg-[#FFB2B3]", order: "md:order-1", height: "md:min-h-60" },
+  { rank: 3, bg: "bg-[#A9BBFF]", order: "md:order-3", height: "md:min-h-48" },
 ] as const;
-
-// Indexed by rank-1: TOP3 rises first, TOP1 last.
-const DELAYS = [300, 150, 0];
 
 export default function Podium({ rows, tab }: { rows: LeaderboardRow[]; tab: LeaderboardTab }) {
   return (
-    <ol className="grid grid-cols-3 items-end gap-2 sm:gap-5 pt-8">
-      {SLOTS.map(({ rank, tier, height, tilt }) => {
+    <ol className="grid grid-cols-1 gap-4 pt-2 md:grid-cols-3 md:items-end md:gap-6">
+      {SLOTS.map(({ rank, bg, order, height }) => {
         const row = rows[rank - 1];
-        if (!row) return <li key={rank} aria-hidden />;
+        if (!row) return <li key={rank} aria-hidden className={`hidden ${order}`} />;
         return (
-          <li
-            key={row.id}
-            className="relative min-w-0"
-          >
-            {rank === 1 && (
-              <CrownIcon className="animate-bob absolute -top-8 left-1/2 h-8 w-10 -translate-x-1/2 sm:-top-10 sm:h-10 sm:w-12" />
-            )}
+          <li key={row.id} className={`relative min-w-0 ${order}`}>
             <div
-              style={{ animationDelay: `${DELAYS[rank - 1]}ms`, transformOrigin: "bottom" }}
-              className={`animate-rise ${tier} ${height} ${tilt} flex flex-col items-center justify-between gap-2 rounded-2xl p-2.5 text-center text-ink shadow-card sm:rounded-3xl sm:p-4`}
+              style={{ animationDelay: `${Math.min((rank - 1) * 120, 400)}ms` }}
+              className={`motion-safe:animate-fade-up ${bg} ${height} flex flex-col items-center justify-between gap-3 rounded-2xl border-2 border-ink p-4 text-center text-ink shadow-[4px_4px_0_#222]`}
             >
-              <span className="rounded-full bg-ink px-2.5 py-0.5 font-pixel text-base tracking-wide text-white sm:text-xl">
-                TOP{rank}
-              </span>
+              <div className="flex flex-col items-center gap-1">
+                {rank === 1 && (
+                  <span className="grid place-items-center rounded-md bg-ink p-1 text-white motion-safe:animate-bob">
+                    <PixelIcon name="crown" size={32} />
+                  </span>
+                )}
+                <span className="rounded-md bg-ink px-2.5 py-0.5 font-pixel text-xl tracking-wide text-white">
+                  TOP{rank}
+                </span>
+              </div>
               <div className="flex min-w-0 flex-col items-center gap-1.5">
-                <RowAvatar tab={tab} id={row.id} name={row.name} size={30} />
-                <span className="line-clamp-3 break-words font-display text-xs leading-tight sm:text-base">
+                <RowAvatar tab={tab} id={row.id} name={row.name} size={rank === 1 ? 40 : 32} />
+                <span className="line-clamp-3 break-words font-display text-base leading-tight sm:text-lg">
                   {row.name}
                 </span>
-                <span className="text-xs font-medium text-ink/70">{row.outcomes} outcomes</span>
+                <span className="text-xs font-medium text-ink">{row.outcomes} outcomes</span>
               </div>
-              <Score value={row.score} className="text-base text-primary sm:text-2xl" />
+              <Score value={row.score} className="text-3xl text-ink" />
             </div>
           </li>
         );

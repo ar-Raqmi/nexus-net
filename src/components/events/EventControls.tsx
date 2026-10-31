@@ -21,17 +21,14 @@ interface Props {
 export default function EventControls({ filter, mode, onFilter, onMode }: Props) {
   return (
     <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-      <div className="inline-flex self-start rounded-full bg-white p-1 shadow-card" role="group" aria-label="Event layout">
+      <div className="seg self-start" role="group" aria-label="Event layout">
         {MODES.map((m) => (
           <button
             key={m.key}
             type="button"
             aria-pressed={mode === m.key}
             onClick={() => onMode(m.key)}
-            className={`rounded-full px-4 py-2 text-sm font-bold transition ${
-              mode === m.key ? "bg-ink text-white" : "text-muted hover:text-ink"
-            }`}
-          >
+                      >
             {m.label}
           </button>
         ))}
@@ -69,9 +66,7 @@ function FilterChip({
       type="button"
       aria-pressed={active}
       onClick={onClick}
-      className={`shrink-0 whitespace-nowrap rounded-full px-4 py-2 text-sm font-bold transition ${
-        active ? "bg-primary text-white" : "bg-white shadow-card text-muted hover:text-ink"
-      }`}
+      className="chip shrink-0 whitespace-nowrap"
     >
       {children}
     </button>
