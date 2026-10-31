@@ -25,6 +25,7 @@ Hackathon: Hacktoberfest Hack Day KL, 31 Oct 2026. Hard deadline: feature freeze
 - F4 XP and levels: XP per type connect 20, meeting 50, programme 75, poc 150, partnership 250, funding 400. Levels by total XP: Connected 0, Engaged 100, POC 300, Partnership 600, Funded 1000 (derived, never stored).
 - F5 Leaderboards: tabs Startups / Countries / Events. Top-3 podium + ranked list.
 - F6 Cradle dashboard `/cradle`: funnel (connections → meetings → POCs → partnerships → investments), outcomes by country (bar chart), table by event, headline conversion %.
+- F7 AI needs assessment `/needs`: a fixed set of questions (not AI-generated); code detects and ranks the gaps deterministically; Gemma only words each option's title/why, with template wording as fallback if Gemma fails. Each option can be added as a quest with a talent role (Talent badge on `/quests`). Talent profiles are SAMPLE data.
 - Out of scope: real auth, real Startup ASEAN data, notifications, reviewer queue, mobile app.
 
 ## Stack
@@ -109,6 +110,9 @@ Inspired by a gamified "creator fund" landing page. Recreate the STYLE only. Do 
 3. `/quests` static UI: header with startup, level badge, XP bar; level track + 5 tier cards; quest cards rendered from store (seeded quests). No AI yet.
 4. Quest generation: `/api/quests/generate` with prompt 1 + "Generate my quests" button, loading state, errors shown nicely, `?demo=1` fallback.
 5. Proof verification: upload modal, client-side resize, `/api/proof/verify` with prompt 2, verdict panel, XP + level update with a simple animation.
+   - Put today's date in the proof prompt so Gemma can judge "recent".
+   - Gemma's confidence is uncalibrated (comes back ~1.0 almost always): don't rely on the 0.7 threshold alone; also require decision "approved" plus sane fields (parties, document type).
+   - Test with the images in `demo-assets/` (good_*, bad_*, wrong_*, blank_*, hard_*).
 6. `/leaderboard`: tabs Startups / Countries / Events, dark podium panel + ranked list.
 7. `/cradle`: funnel, outcomes by country bar chart (recharts), table by event, headline conversion %.
 8. Polish: empty/loading states, responsive check, README (problem statement, features, setup, env vars, how to run, architecture, "seed data is fictional"), `.env.example`.

@@ -1,5 +1,11 @@
 [
   { "id": "ev-kl-founders", "name": "ASEAN Founders Connect KL", "country": "MY", "date": "2026-08-20" },
   { "id": "ev-jkt-fintech", "name": "Jakarta Fintech Meetup", "country": "ID", "date": "2026-09-12" },
-  { "id": "ev-hanoi-agritech", "name": "Hanoi Agritech Day", "country": "VN", "date": "2026-10-03" }
+  { "id": "ev-hanoi-agritech", "name": "Hanoi Agritech Day", "country": "VN", "date": "2026-10-03" },
+
+  {"id": "ev-ph-care", "name": "Manila Care Tech Forum", "country": "PH", "date": "2026-09-18"},
+  {"id": "ev-sg-lion", "name": "Lion City Founders Night", "country": "SG", "date": "2026-09-25"},
+  {"id": "ev-th-retail", "name": "Bangkok Retail Connect", "country": "TH", "date": "2026-10-10"},
+  {"id": "ev-kl-ai", "name": "KL Applied AI Showcase", "country": "MY", "date": "2026-11-14"},
+  {"id": "ev-sg-demo", "name": "Lion City Demo Day", "country": "SG", "date": "2026-11-20"}
 ]

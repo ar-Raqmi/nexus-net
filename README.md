@@ -1,51 +1,62 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Nexus Net (ASEAN Quest)
 
-## Event Calendar
+Startups earn XP by turning ecosystem connections into real outcomes. Gemma 4 generates their quests and verifies their proof, and Cradle sees the conversion funnel live.
 
-The `/events` page is the ecosystem-discovery layer of Nexus Net. It pulls live public
-events from Luma's Kuala Lumpur feed (`api.lu.ma`) so startups can find the meetups,
-workshops, and conferences that move them toward real outcomes.
+Built at Hacktoberfest Hack Day KL, 31 Oct 2026.
 
-**Purpose for gaining XP:** attending the right rooms is how connections turn into
-outcomes, so browsing alone isn't rewarded — committing is. When a startup logs in and
-subscribes to an event calendar, it earns **+50 XP**, or **+100 XP** when the event
-matches its sector (fintech, agritech, healthtech, etc.). XP is credited once per startup
-per event, and relevance is scored from the startup's sector, description, and the event's
-title, hosts, and category. This ties the calendar directly into the same XP and level
-track as quests, giving startups a lightweight, always-available way to earn progress
-between quests.
+## Problem statement #1: Outcome Conversion
 
-## Getting Started
+> "How can Startup ASEAN successfully convert ecosystem connections into measurable outcomes, including investments, commercial partnerships, market expansion, and cross-border POCs?"
 
-First, run the development server:
+**Category:** Best Use of Gemma 4 (via the Gemini API)
+
+## Features
+
+- **Startup profile + demo login:** pick a seeded startup on `/` (no real auth).
+- **AI quest generator:** Gemma 4 writes 5 personalised, mostly cross-border quests from the profile and the programme/event catalog.
+- **AI needs assessment (`/needs`):** a few fixed questions; code detects and ranks the startup's gaps; Gemma words each option; add any option as a quest done by a talent.
+- **Proof verification** *(in progress)*: upload a screenshot or document; Gemma 4 vision approves, rejects or flags it.
+- **XP & levels:** Connected → Engaged → POC → Partnership → Funded, derived from XP.
+- **Leaderboards:** startups, countries and events.
+- **Cradle dashboard (`/cradle`):** funnel from connections to investments, outcomes by country, results by event.
+- **Events calendar (`/events`):** public Kuala Lumpur events from Luma; subscribing earns bonus XP.
+
+## Tech stack
+
+Next.js (App Router, TypeScript) · Tailwind CSS · Zustand (persisted to localStorage) · Recharts · `@google/genai` for Gemma 4.
+
+## Setup
+
+```bash
+npm install
+```
+
+Create `.env.local` (see `.env.example`):
+
+```bash
+GEMINI_API_KEY=your_key_here
+GEMMA_MODEL=gemma-4-26b-a4b-it
+```
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000. Add `?demo=1` to `/quests` to fall back to a saved quest list if Gemma is unreachable.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Architecture
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Client:** pages under `src/app`, components under `src/components`, game state in a persisted Zustand store (`src/store`). No database.
+- **Server:** Gemma is only ever called from server route handlers (`/api/quests/generate`, `/api/needs/analyze`, proof verification next). The API key never reaches the browser.
+- **Gemma calls** (`src/lib/gemma.ts`): JSON-only prompts, code fences stripped before parsing, one retry, then a readable error. Model output is validated; XP values always come from our own table, never from the model.
 
-## Learn More
+## Honesty notes
 
-To learn more about Next.js, take a look at the following resources:
+- All seed data (startups, programmes, events, past quests), talent profiles and the demo proof images in `demo-assets/` are **fictional**.
+- The `/events` calendar shows real public listings from Luma; nothing else uses real Startup ASEAN data.
+- The needs-assessment questions are fixed, not AI-generated, and the gaps are found by code. Gemma only writes the wording.
+- Gemma's confidence scores are not calibrated (they come back near 1.0), so approvals don't rely on the confidence threshold alone.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Team & license
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Built by the Nexus Net team. Released under the [MIT License](LICENSE).
