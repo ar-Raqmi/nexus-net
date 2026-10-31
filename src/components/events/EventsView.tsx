@@ -46,6 +46,7 @@ export default function EventsView() {
   const creditedEventsMap = useGameStore((s) => s.creditedEvents);
   const subscribeToEvent = useGameStore((s) => s.subscribeToEvent);
   const unsubscribeFromEvent = useGameStore((s) => s.unsubscribeFromEvent);
+  const login = useGameStore((s) => s.login);
 
   const startups = hydrated ? storeStartups : seedStartups;
   const startup = selectStartup(startups, currentStartupId);
@@ -58,7 +59,7 @@ export default function EventsView() {
     error: null,
   });
 
-  const [layout, setLayout] = useState<"list" | "calendar">("calendar");
+  const [layout, setLayout] = useState<"list" | "calendar">("list");
   const [calendarView, setCalendarView] = useState<CalendarView>("month");
   const [filter, setFilter] = useState<Filter>("all");
   const [selected, setSelected] = useState<LumaEvent | null>(null);
@@ -252,12 +253,28 @@ export default function EventsView() {
       ) : hydrated ? (
         <section className="rounded-3xl border-2 border-dashed border-ink/10 bg-white/60 p-6 text-center">
           <p className="text-muted">
-            Pick a startup on the{" "}
-            <Link href="/#startups" className="font-bold text-primary">
-              home page
-            </Link>{" "}
-            to see events matched to your sector.
+            Pick a startup to subscribe to events and earn XP. Events will be matched to
+            your sector automatically.
           </p>
+          <div className="mt-4 flex flex-wrap justify-center gap-2">
+            {startups.map((s) => (
+              <button
+                key={s.id}
+                type="button"
+                onClick={() => login(s.id)}
+                className="inline-flex items-center gap-1.5 rounded-full bg-white shadow-card px-4 py-2 text-sm font-bold text-ink hover:bg-primary hover:text-white"
+              >
+                <Flag country={s.country} size={16} />
+                {s.name}
+              </button>
+            ))}
+          </div>
+          <Link
+            href="/#startups"
+            className="mt-4 inline-block text-sm font-bold text-primary hover:underline"
+          >
+            Or browse all startups →
+          </Link>
         </section>
       ) : null}
 
@@ -402,7 +419,12 @@ export default function EventsView() {
         </>
       )}
 
-      {selected && <EventModal event={selected} onClose={() => setSelected(null)} />}
+      {selected && (
+        <EventModal
+          {...cardProps(selected)}
+          onClose={() => setSelected(null)}
+        />
+      )}
 
       {toast && (
         <div
@@ -469,8 +491,23 @@ function ToggleButton({
   );
 }
 
-function EventModal({ event, onClose }: { event: LumaEvent; onClose: () => void }) {
+function EventModal({
+  event,
+  subscribed,
+  relevant,
+  canSubscribe,
+  onToggleSubscribe,
+  onClose,
+}: {
+  event: LumaEvent;
+  subscribed: boolean;
+  relevant: boolean;
+  canSubscribe: boolean;
+  onToggleSubscribe: (event: LumaEvent) => void;
+  onClose: () => void;
+}) {
   const category = CATEGORY_BY_KEY[event.category];
+  const xp = relevant ? EVENT_RELEVANT_XP : EVENT_SUBSCRIBE_XP;
   return (
     <div
       className="fixed inset-0 z-40 flex items-center justify-center bg-ink/50 p-4"
@@ -535,14 +572,33 @@ function EventModal({ event, onClose }: { event: LumaEvent; onClose: () => void 
               {event.guestCount}
             </div>
           </dl>
-          <a
-            href={event.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-2 rounded-full bg-primary px-5 py-3 text-center font-bold text-white hover:brightness-110"
-          >
-            View on Luma →
-          </a>
+          <div className="mt-2 flex flex-col gap-2 sm:flex-row">
+            {canSubscribe ? (
+              <button
+                type="button"
+                onClick={() => onToggleSubscribe(event)}
+                className={`flex-1 rounded-full px-5 py-3 font-bold text-white transition ${
+                  subscribed ? "bg-green hover:brightness-110" : "bg-primary hover:brightness-110"
+                }`}
+              >
+                {subscribed
+                  ? "Subscribed ✓"
+                  : `Subscribe · +${xp} XP${relevant ? " ★" : ""}`}
+              </button>
+            ) : (
+              <span className="flex-1 rounded-full bg-ink/5 px-5 py-3 text-center text-sm font-semibold text-muted">
+                Pick a startup to subscribe and earn XP
+              </span>
+            )}
+            <a
+              href={event.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="rounded-full bg-primary/10 px-5 py-3 text-center font-bold text-primary hover:bg-primary hover:text-white"
+            >
+              View on Luma →
+            </a>
+          </div>
         </div>
       </div>
     </div>
