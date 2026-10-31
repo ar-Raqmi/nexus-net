@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import PixelIcon, { type PixelIconName } from "@/components/PixelIcon";
 import { getLevel } from "@/lib/game";
 import { resizeProof } from "@/lib/resizeProof";
@@ -35,6 +36,12 @@ function ProofModal({ quest, onClose }: { quest: Quest; onClose: () => void }) {
   const updateQuest = useGameStore((s) => s.updateQuest);
   const startup = selectStartup(startups, quest.startupId);
 
+  // The quest card this modal is triggered from lifts on hover
+  // (`hover:-translate-y-1`). A transformed ancestor becomes the containing
+  // block for `position: fixed`, so a modal rendered inside the card would jump
+  // and flicker as the hover state toggles. Portal it to <body> instead. This
+  // component only mounts on the client (after the button click), so
+  // `document` is always available here.
   const [image, setImage] = useState<Awaited<ReturnType<typeof resizeProof>> | null>(null);
   const [simulate, setSimulate] = useState(
     () => new URLSearchParams(window.location.search).get("demo") === "1",
@@ -94,12 +101,15 @@ function ProofModal({ quest, onClose }: { quest: Quest; onClose: () => void }) {
     onClose();
   }
 
-  return (
+  return createPortal(
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-ink/50 p-4"
       role="dialog"
       aria-modal="true"
       aria-labelledby={`proof-${quest.id}`}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) close();
+      }}
     >
       <div className="w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-3xl bg-white p-6 shadow-card flex flex-col gap-4">
         <div className="flex items-start justify-between gap-4">
@@ -116,7 +126,7 @@ function ProofModal({ quest, onClose }: { quest: Quest; onClose: () => void }) {
             type="button"
             onClick={close}
             aria-label="Close"
-            className="rounded-full px-2 text-2xl leading-none text-subtle hover:text-ink"
+            className="shrink-0 rounded-full px-2 text-2xl leading-none text-subtle transition-colors hover:text-ink"
           >
             ×
           </button>
@@ -179,7 +189,8 @@ function ProofModal({ quest, onClose }: { quest: Quest; onClose: () => void }) {
           </>
         )}
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 
