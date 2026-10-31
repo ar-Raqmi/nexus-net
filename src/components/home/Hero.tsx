@@ -61,23 +61,23 @@ export default function Hero() {
 
       <p className="max-w-xl text-muted">
         Turn ecosystem connections into real investments, partnerships and POCs.
-        Gemma 4 writes your quests and checks your proof. Every outcome earns XP.
+        Build a trusted company profile, discover cross-border opportunities, and turn connections into measurable outcomes.
       </p>
 
       {current ? (
         <Link
-          href="/quests"
+          href="/profile"
           className="rounded-full bg-primary px-8 py-3.5 text-white font-bold shadow-card hover:brightness-110 transition"
         >
           Continue as {current.name} →
         </Link>
       ) : (
-        <a
-          href="#startups"
+        <Link
+          href="/register"
           className="rounded-full bg-primary px-8 py-3.5 text-white font-bold shadow-card hover:brightness-110 transition"
         >
-          Pick your startup ↓
-        </a>
+          Register your company →
+        </Link>
       )}
 
       <dl className="mt-4 flex flex-wrap justify-center gap-3">

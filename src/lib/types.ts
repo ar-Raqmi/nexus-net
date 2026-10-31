@@ -61,3 +61,23 @@ export interface Programme {
   type: QuestType;
   description: string;
 }
+
+/** Company onboarding is separate from quests and never awards XP. */
+export interface CompanyProfile {
+  startupId: string;
+  legalName: string;
+  registrationNumber: string;
+  website: string;
+  country: Country;
+  sector: string;
+  stage: Stage;
+  description: string;
+}
+
+export interface CompanyVerification {
+  profile: CompanyProfile;
+  verdict: Verdict;
+  mode: "live" | "demo";
+  checkedAt: string;
+  passportId?: string;
+}

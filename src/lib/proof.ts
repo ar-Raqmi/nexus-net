@@ -1,4 +1,4 @@
-import type { Quest, Startup, Verdict } from "./types";
+import type { CompanyProfile, Verdict } from "./types";
 
 export function parseVerdict(text: string): Verdict {
   const value = JSON.parse(text.trim().replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, ""));
@@ -16,14 +16,20 @@ export function parseVerdict(text: string): Verdict {
     reason: value.reason, ...(value.date ? { date: value.date } : {}) };
 }
 
-/** A sample task makes F3 usable before the quest generator is available. */
-export function sampleProofQuest(startup: Startup): Quest {
-  const targetCountry = startup.country === "VN" ? "MY" : "VN";
+export function parseCompanyProfile(value: unknown): CompanyProfile {
+  if (!value || typeof value !== "object") throw new Error("Complete your company details first.");
+  const p = value as Record<string, unknown>;
+  for (const [key, max] of Object.entries({ startupId: 100, legalName: 160, registrationNumber: 80, website: 300, sector: 80, description: 2000 })) {
+    if (typeof p[key] !== "string" || !(p[key] as string).trim() || (p[key] as string).length > max) throw new Error("Complete all company fields with valid details.");
+  }
+  if (!["MY", "SG", "ID", "VN", "TH", "PH"].includes(p.country as string) || !["pre-seed", "seed", "series-a"].includes(p.stage as string)) throw new Error("Choose a supported country and company stage.");
+  let website: URL;
+  try { website = new URL(p.website as string); } catch { throw new Error("Enter a valid company website, including https://."); }
+  if (!["https:", "http:"].includes(website.protocol) || website.username || website.password) throw new Error("Enter a valid public company website.");
   return {
-    id: `proof-sample-${startup.id}`, startupId: startup.id,
-    title: `Agree a cross-border pilot with a partner in ${targetCountry === "VN" ? "Vietnam" : "Malaysia"}`,
-    why: "Turn a regional connection into a concrete pilot agreement.",
-    type: "poc", targetCountry, xp: 150, status: "open",
-    proofRequired: `A signed POC agreement or LOI naming ${startup.name} and a partner in ${targetCountry === "VN" ? "Vietnam" : "Malaysia"}, with a recent date and pilot scope.`,
+    startupId: (p.startupId as string).trim(), legalName: (p.legalName as string).trim(),
+    registrationNumber: (p.registrationNumber as string).trim(), website: website.href,
+    country: p.country as CompanyProfile["country"], sector: (p.sector as string).trim(),
+    stage: p.stage as CompanyProfile["stage"], description: (p.description as string).trim(),
   };
 }

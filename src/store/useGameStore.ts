@@ -3,9 +3,8 @@
 import { useSyncExternalStore } from "react";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { Quest, Startup, Verdict } from "@/lib/types";
-import { isApproved, XP_BY_TYPE } from "@/lib/game";
-import { sampleProofQuest } from "@/lib/proof";
+import type { CompanyProfile, CompanyVerification, Quest, Startup } from "@/lib/types";
+import { parseCompanyProfile } from "@/lib/proof";
 import { seedQuests, seedStartups } from "@/seed";
 
 interface GameState {
@@ -20,11 +19,15 @@ interface GameState {
   /** Mark a quest verified and credit its XP to the owning startup. */
   completeQuest: (questId: string, patch?: Partial<Quest>) => void;
   resetDemo: () => void;
-  addSampleQuest: (startupId: string) => void;
-  recordProof: (questId: string, verdict: Verdict, mode: "live" | "demo") => void;
+  companyProfiles: Record<string, CompanyProfile>;
+  companyVerifications: Record<string, CompanyVerification>;
+  saveCompanyProfile: (profile: CompanyProfile) => void;
+  recordCompanyVerification: (verification: CompanyVerification) => void;
 }
 
 const initialData = () => ({
+  companyProfiles: {} as Record<string, CompanyProfile>,
+  companyVerifications: {} as Record<string, CompanyVerification>,
   currentStartupId: null,
   startups: seedStartups,
   quests: seedQuests,
@@ -38,25 +41,31 @@ export const useGameStore = create<GameState>()(
       login: (startupId) => set({ currentStartupId: startupId }),
       logout: () => set({ currentStartupId: null }),
 
-      addSampleQuest: (startupId) => set(state => {
-        const startup = state.startups.find(s => s.id === startupId);
-        if (!startup) return state;
-        const quest = sampleProofQuest(startup);
-        return state.quests.some(q => q.id === quest.id) ? state : { quests: [...state.quests, quest] };
+      saveCompanyProfile: (input) => set(state => {
+        const profile = parseCompanyProfile(input);
+        const existing = state.companyProfiles[profile.startupId];
+        const changed = JSON.stringify(existing) !== JSON.stringify(profile);
+        const verifications = { ...state.companyVerifications };
+        if (changed) delete verifications[profile.startupId];
+        const previous = state.startups.find(s => s.id === profile.startupId);
+        const startup: Startup = {
+          id: profile.startupId, name: profile.legalName, country: profile.country,
+          sector: profile.sector, stage: profile.stage, description: profile.description, xp: previous?.xp ?? 0,
+        };
+        return {
+          currentStartupId: startup.id,
+          startups: previous ? state.startups.map(s => s.id === startup.id ? startup : s) : [...state.startups, startup],
+          companyProfiles: { ...state.companyProfiles, [startup.id]: profile },
+          companyVerifications: verifications,
+        };
       }),
 
-      recordProof: (questId, verdict, mode) => set(state => {
-        const quest = state.quests.find(q => q.id === questId);
-        if (!quest || quest.status === "verified" || quest.startupId !== state.currentStartupId) return state;
-        const approved = isApproved(verdict);
-        return {
-          quests: state.quests.map(q => q.id !== questId ? q : {
-            ...q, verdict, verificationMode: mode,
-            status: approved ? "verified" : verdict.decision === "rejected" ? "rejected" : "open",
-            ...(approved ? { completedAt: new Date().toISOString().slice(0, 10) } : {}),
-          }),
-          startups: approved ? state.startups.map(s => s.id === quest.startupId ? { ...s, xp: s.xp + XP_BY_TYPE[quest.type] } : s) : state.startups,
-        };
+      recordCompanyVerification: (verification) => set(state => {
+        const id = verification.profile.startupId;
+        const profile = state.companyProfiles[id];
+        // Ignore responses for a profile that was edited while a request was in flight.
+        if (!profile || state.currentStartupId !== id || JSON.stringify(profile) !== JSON.stringify(verification.profile)) return state;
+        return { companyVerifications: { ...state.companyVerifications, [id]: verification } };
       }),
 
       addQuests: (quests) =>
@@ -72,7 +81,7 @@ export const useGameStore = create<GameState>()(
       completeQuest: (questId, patch) =>
         set((state) => {
           const quest = state.quests.find((q) => q.id === questId);
-          if (!quest || quest.status === "verified" || !patch?.verdict || !isApproved(patch.verdict)) return state;
+          if (!quest || quest.status === "verified") return state;
           return {
             quests: state.quests.map((q) =>
               q.id === questId

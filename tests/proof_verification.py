@@ -1,70 +1,169 @@
+"""Company onboarding regression. Approval cases use controlled responses, not live AI.
+Start the production server first. No uploaded files or API keys are stored here.
+"""
+import json
+import os
+from pathlib import Path
+import tempfile
 from playwright.sync_api import sync_playwright
-import json, os, pathlib, tempfile
-# Start the production server first. All approval responses below are mocked.
-base=os.environ.get('BASE_URL', 'http://localhost:3100')
-fixture=str(pathlib.Path(tempfile.gettempdir()) / 'nexus-proof-unrelated.png')
-out=pathlib.Path(tempfile.gettempdir()) / 'nexus-proof-qa';out.mkdir(exist_ok=True)
+
+BASE = os.environ.get("BASE_URL", "http://localhost:3100")
+OUT = Path(tempfile.gettempdir()) / "nexus-company-qa"
+OUT.mkdir(exist_ok=True)
+FIXTURE = str(OUT / "unrelated.png")
+
+
+def state(page):
+    return page.evaluate('JSON.parse(localStorage.getItem("nexus-net-game")).state')
+
+
+def register(page, new_company=False):
+    if new_company:
+        page.goto(BASE + "/register")
+        page.get_by_label("Legal company name", exact=True).fill("Regional Test Labs")
+        page.get_by_label("Sector", exact=True).fill("Software")
+        page.get_by_label("What does your company do?").fill("Software tools for regional businesses.")
+    else:
+        page.goto(BASE)
+        page.get_by_role("button").filter(has_text="PayLah Lite").click()
+        page.get_by_role("link", name="Complete company details", exact=True).first.click()
+    page.get_by_label("Registration number", exact=True).fill("QA-MY-001")
+    page.get_by_label("Company website", exact=True).fill("https://company.example")
+    page.get_by_role("button", name="Save and continue").click()
+    page.get_by_role("button", name="Verify company →", exact=True).wait_for()
+
+
+def open_upload(page):
+    page.locator(".onboarding-review-main .onboarding-primary").click()
+    dialog = page.get_by_role("dialog")
+    dialog.locator("input[type=file]").set_input_files(FIXTURE)
+    dialog.get_by_alt_text("Selected company document preview").wait_for()
+    return dialog
+
+
 with sync_playwright() as p:
- browser=p.chromium.launch(headless=True,executable_path=os.environ.get('CHROME_PATH','/usr/bin/google-chrome'),args=['--no-sandbox'])
- fixture_page=browser.new_page()
- fixture_page.set_content('<h1>Feature list</h1><p>Unrelated screenshot for automated testing. Not a pilot agreement.</p>')
- fixture_page.screenshot(path=fixture);fixture_page.close()
- page=browser.new_page(viewport={'width':1440,'height':1000})
- errors=[];page.on('pageerror',lambda e:errors.append(str(e)))
- page.goto(base);page.wait_for_load_state('networkidle')
- page.get_by_role('button').filter(has_text='PayLah Lite').click()
- page.get_by_role('heading',name='Company passport',exact=True).wait_for()
- page.get_by_role('button',name='Add sample proof quest').click()
- page.get_by_role('button',name='Upload proof',exact=True).click()
- page.locator('input[type=file]').set_input_files({'name':'wrong.txt','mimeType':'text/plain','buffer':b'not an image'})
- page.get_by_role('alert').get_by_text('Choose a PNG, JPEG or WebP image.').wait_for()
- page.locator('input[type=file]').set_input_files(fixture)
- page.get_by_alt_text('Selected proof preview').wait_for()
- page.screenshot(path=str(out/'upload-desktop.png'))
- # Capture the exact resized payload used by the UI, and exercise live API separately.
- payloads=[]
- def rejected(route):
-  payloads.append(route.request.post_data_json)
-  route.fulfill(json={'mode':'live','verdict':{'decision':'rejected','confidence':0.95,'documentType':'Unrelated screenshot','parties':[],'reason':'This is a feature table, not a signed pilot agreement.'}})
- page.route('**/api/proof/verify',rejected)
- page.get_by_role('button',name='Check proof',exact=True).click()
- page.get_by_role('heading',name='Proof rejected').wait_for()
- page.get_by_text('No XP awarded.',exact=False).wait_for()
- page.get_by_role('button',name='Back to quests').click()
- assert page.evaluate('JSON.parse(localStorage.getItem("nexus-net-game")).state.startups.find(s=>s.id==="paylah-lite").xp')==250
- page.unroute('**/api/proof/verify')
- # Low-confidence approval must remain retryable, with no stamp or XP.
- page.route('**/api/proof/verify',lambda route: route.fulfill(json={'mode':'live','verdict':{'decision':'approved','confidence':0.69,'documentType':'Blurry agreement','parties':['PayLah Lite'],'reason':'The signature cannot be read.'}}))
- page.get_by_role('button',name='Upload new proof').click();page.locator('input[type=file]').set_input_files(fixture)
- page.get_by_role('button',name='Check proof',exact=True).click();page.get_by_role('heading',name='More evidence needed').wait_for()
- page.get_by_role('button',name='Back to quests').click()
- assert page.evaluate('JSON.parse(localStorage.getItem("nexus-net-game")).state.startups.find(s=>s.id==="paylah-lite").xp')==250
- page.unroute('**/api/proof/verify')
- page.route('**/api/proof/verify',lambda route: route.fulfill(json={'mode':'live','verdict':{'decision':'approved','confidence':0.9,'documentType':'Pilot agreement','parties':['PayLah Lite','Test partner'],'date':'2026-10-31','reason':'Both parties signed a pilot agreement.'}}))
- page.get_by_role('button',name='Upload new proof').click();page.locator('input[type=file]').set_input_files(fixture)
- page.get_by_role('button',name='Check proof',exact=True).click();page.get_by_role('heading',name='Proof approved ✓').wait_for()
- page.get_by_role('button',name='View company passport').click()
- page.get_by_text('1 AI-checked',exact=True).wait_for()
- assert page.evaluate('JSON.parse(localStorage.getItem("nexus-net-game")).state.startups.find(s=>s.id==="paylah-lite").xp')==400
- page.reload();page.get_by_text('1 AI-checked',exact=True).wait_for()
- page.screenshot(path=str(out/'passport-desktop.png'),full_page=True)
- page.set_viewport_size({'width':390,'height':844});page.screenshot(path=str(out/'passport-mobile.png'),full_page=True)
- assert page.evaluate('document.documentElement.scrollWidth<=window.innerWidth'), 'mobile horizontal overflow'
- # Switch startup: the passport cannot leak the previous startup's stamps.
- page.goto(base);page.get_by_role('button').filter(has_text='TaniPintar').click()
- page.get_by_text('Awaiting first proof',exact=True).wait_for()
- # A fresh browser goes through the actual demo route, without a model call.
- demo=browser.new_page();demo.goto(base)
- demo.get_by_role('button').filter(has_text='PayLah Lite').click()
- demo.goto(base+'/quests?demo=1');demo.get_by_role('button',name='Add sample proof quest').click()
- demo.get_by_role('button',name='Upload proof',exact=True).click();demo.locator('input[type=file]').set_input_files(fixture)
- demo.get_by_role('button',name='Check proof',exact=True).click();demo.get_by_text('Demo result · image was not checked by AI',exact=True).wait_for()
- demo.get_by_role('button',name='View company passport').click();demo.get_by_text('Demo passport',exact=True).wait_for()
- # Actual API input validation.
- assert page.request.post(base+'/api/proof/verify',data='invalid').status==400
- bad={**payloads[0],'imageBase64':'aGVsbG8='}
- assert page.request.post(base+'/api/proof/verify',data=bad).status==400
- assert page.request.post(base+'/api/proof/verify',data={**payloads[0],'quest':{**payloads[0]['quest'],'startupId':'other'}}).status==400
- print(json.dumps({'browser_checks':'passed','page_errors':errors,'screenshots':str(out)}))
- assert not errors
- browser.close()
+    browser = p.chromium.launch(headless=True, executable_path=os.environ.get("CHROME_PATH", "/usr/bin/google-chrome"), args=["--no-sandbox"])
+    fixture = browser.new_page()
+    fixture.set_content("<h1>Unrelated screenshot</h1><p>Test fixture. Not a company registration document.</p>")
+    fixture.screenshot(path=FIXTURE)
+    fixture.close()
+    page = browser.new_page(viewport={"width": 1440, "height": 1050})
+    errors = []
+    page.on("pageerror", lambda error: errors.append(str(error)))
+    page.goto(BASE + "/profile")
+    page.get_by_role("link", name="Register company →").wait_for()
+    register(page)
+    initial = state(page)
+    assert initial["startups"][0]["xp"] == 250
+    assert not initial["companyVerifications"]
+    assert page.locator("#company-passport").count() == 0
+    page.screenshot(path=str(OUT / "pending-desktop.png"), full_page=True)
+    payloads = []
+
+    def mock(decision, confidence, error=False):
+        page.unroute("**/api/company/verify")
+        def respond(route):
+            payload = route.request.post_data_json
+            payloads.append(payload)
+            if error:
+                route.fulfill(status=502, json={"error": "Temporary verification failure."})
+                return
+            result = {"profile": payload["profile"], "mode": "live", "checkedAt": "2026-10-31T05:00:00Z", "verdict": {
+                "decision": decision, "confidence": confidence, "documentType": "Company registration document",
+                "parties": [payload["profile"]["legalName"]], "reason": "Controlled company review response.",
+            }}
+            if decision == "approved" and confidence >= .7:
+                result["passportId"] = "NN-QA-IDENTITY"
+            route.fulfill(json={"verification": result})
+        page.route("**/api/company/verify", respond)
+
+    for decision, confidence, heading in [("rejected", .98, "Document rejected"), ("approved", .69, "More evidence needed"), ("unclear", .6, "More evidence needed")]:
+        mock(decision, confidence)
+        dialog = open_upload(page)
+        dialog.get_by_role("button", name="Verify company", exact=True).click()
+        dialog.get_by_role("heading", name=heading, exact=True).wait_for()
+        dialog.get_by_role("button", name="Back to company profile").click()
+        assert page.locator("#company-passport").count() == 0
+        assert state(page)["startups"][0]["xp"] == 250
+
+    mock("approved", .9, error=True)
+    dialog = open_upload(page)
+    dialog.get_by_role("button", name="Verify company", exact=True).click()
+    dialog.get_by_role("alert").get_by_text("Temporary verification failure.").wait_for()
+    assert page.locator("#company-passport").count() == 0
+    dialog.get_by_role("button", name="Close company verification").click()
+
+    mock("approved", .9)
+    dialog = open_upload(page)
+    dialog.locator("input[type=file]").set_input_files({"name": "wrong.txt", "mimeType": "text/plain", "buffer": b"bad file"})
+    dialog.get_by_role("alert").get_by_text("Choose a PNG, JPEG or WebP image.").wait_for()
+    dialog.locator("input[type=file]").set_input_files(FIXTURE)
+    dialog.get_by_role("button", name="Verify company", exact=True).click()
+    dialog.get_by_role("heading", name="Company document approved ✓").wait_for()
+    dialog.get_by_role("button", name="View company passport").click()
+    page.get_by_role("heading", name="Company passport", exact=True).wait_for()
+    after = state(page)
+    assert after["startups"][0]["xp"] == 250, "Company review must not award XP"
+    assert after["quests"] == initial["quests"], "Company review must not change quests"
+    assert "quest" not in payloads[-1]
+    assert after["companyVerifications"]["paylah-lite"]["passportId"] == "NN-QA-IDENTITY"
+    page.reload()
+    page.get_by_text("NN-QA-IDENTITY", exact=True).wait_for()
+    page.locator(".passport-evidence summary").click()
+    page.locator("#company-passport").get_by_text("Controlled company review response.", exact=True).wait_for()
+    page.screenshot(path=str(OUT / "identity-desktop.png"), full_page=True)
+    for width in [320, 390, 768]:
+        page.set_viewport_size({"width": width, "height": 900})
+        assert page.evaluate("document.documentElement.scrollWidth <= innerWidth"), width
+    page.set_viewport_size({"width": 390, "height": 900})
+    page.screenshot(path=str(OUT / "identity-mobile.png"), full_page=True)
+    page.goto(BASE + "/quests")
+    page.get_by_role("heading", name="Active quests", exact=True).wait_for()
+    assert page.locator("#company-passport").count() == 0
+    assert page.get_by_role("button", name="Upload proof").count() == 0
+    assert page.get_by_role("button", name="Add sample proof quest").count() == 0
+    page.goto(BASE + "/profile")
+    page.get_by_role("link", name="Edit company details").click()
+    page.get_by_label("Registration number", exact=True).fill("QA-MY-CHANGED")
+    page.get_by_role("button", name="Save and continue").click()
+    page.get_by_role("button", name="Verify company →", exact=True).wait_for()
+    assert "paylah-lite" not in state(page)["companyVerifications"], "Editing details must invalidate review"
+    assert page.locator("#company-passport").count() == 0
+    page.goto(BASE)
+    page.get_by_role("button").filter(has_text="TaniPintar").click()
+    assert page.locator("#company-passport").count() == 0
+    assert page.get_by_text("QA-MY-001", exact=True).count() == 0
+
+    # A newly registered company, rather than a seeded one, uses the real demo endpoint.
+    demo = browser.new_page(viewport={"width": 390, "height": 900})
+    register(demo, new_company=True)
+    demo.goto(BASE + "/profile?demo=1")
+    dialog = open_upload(demo)
+    dialog.get_by_role("button", name="Verify company", exact=True).click()
+    dialog.get_by_text("Demo result · image was not checked by AI", exact=True).wait_for()
+    dialog.get_by_role("button", name="View company passport").click()
+    demo.locator("#company-passport").get_by_text("Demo passport", exact=True).wait_for()
+    demo_state = state(demo)
+    new_id = demo_state["currentStartupId"]
+    assert new_id.startswith("company-")
+    assert next(s for s in demo_state["startups"] if s["id"] == new_id)["xp"] == 0
+    assert demo_state["companyVerifications"][new_id]["mode"] == "demo"
+    assert page.request.post(BASE + "/api/company/verify", data="invalid").status == 400
+    assert page.request.post(BASE + "/api/company/verify", data={**payloads[-1], "imageBase64": "aGVsbG8="}).status == 400
+    assert page.request.post(BASE + "/api/company/verify", data={**payloads[-1], "profile": {**payloads[-1]["profile"], "registrationNumber": ""}}).status == 400
+    assert page.request.post(BASE + "/api/proof/verify", data=payloads[-1]).status == 404
+    # Older v1 browser data has quest verdicts, but no company identity review.
+    root = Path(__file__).resolve().parents[1]
+    old_quests = json.loads((root / "src/seed/quests.json").read_text())
+    old_quests[0]["verdict"] = {"decision": "approved", "confidence": .99, "documentType": "Old quest proof", "parties": ["PayLah Lite"], "reason": "Legacy test."}
+    old_quests[0]["verificationMode"] = "live"
+    legacy_state = {"version": 1, "state": {"currentStartupId": "paylah-lite", "startups": json.loads((root / "src/seed/startups.json").read_text()), "quests": old_quests}}
+    legacy = browser.new_page()
+    legacy.add_init_script("localStorage.setItem('nexus-net-game', " + json.dumps(json.dumps(legacy_state)) + ");")
+    legacy.goto(BASE + "/profile")
+    legacy.get_by_role("link", name="Complete company details", exact=True).first.wait_for()
+    assert legacy.locator("#company-passport").count() == 0
+    assert legacy.get_by_text("Old quest proof", exact=True).count() == 0
+    assert not errors, errors
+    print(json.dumps({"company_onboarding_checks": "passed", "page_errors": errors, "screenshots": str(OUT)}))
+    browser.close()
