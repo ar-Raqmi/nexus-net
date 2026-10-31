@@ -1,5 +1,20 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Event Calendar
+
+The `/events` page is the ecosystem-discovery layer of Nexus Net. It pulls live public
+events from Luma's Kuala Lumpur feed (`api.lu.ma`) so startups can find the meetups,
+workshops, and conferences that move them toward real outcomes.
+
+**Purpose for gaining XP:** attending the right rooms is how connections turn into
+outcomes, so browsing alone isn't rewarded — committing is. When a startup logs in and
+subscribes to an event calendar, it earns **+50 XP**, or **+100 XP** when the event
+matches its sector (fintech, agritech, healthtech, etc.). XP is credited once per startup
+per event, and relevance is scored from the startup's sector, description, and the event's
+title, hosts, and category. This ties the calendar directly into the same XP and level
+track as quests, giving startups a lightweight, always-available way to earn progress
+between quests.
+
 ## Getting Started
 
 First, run the development server:

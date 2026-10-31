@@ -34,15 +34,6 @@ export const COUNTRY_NAMES: Record<Country, string> = {
   PH: "Philippines",
 };
 
-export const COUNTRY_FLAGS: Record<Country, string> = {
-  MY: "🇲🇾",
-  SG: "🇸🇬",
-  ID: "🇮🇩",
-  VN: "🇻🇳",
-  TH: "🇹🇭",
-  PH: "🇵🇭",
-};
-
 export function getLevel(xp: number): Level {
   let current = LEVELS[0];
   for (const level of LEVELS) {

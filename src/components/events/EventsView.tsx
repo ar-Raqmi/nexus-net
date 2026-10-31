@@ -2,7 +2,8 @@
 
 import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
-import { COUNTRY_FLAGS, COUNTRY_NAMES } from "@/lib/game";
+import Flag from "@/components/Flag";
+import { COUNTRY_NAMES } from "@/lib/game";
 import {
   CATEGORY_BY_KEY,
   EVENT_CATEGORIES,
@@ -213,7 +214,8 @@ export default function EventsView() {
               Browsing as
             </p>
             <p className="text-xl font-bold">
-              {COUNTRY_FLAGS[startup.country]} {startup.name}{" "}
+              <Flag country={startup.country} size={18} className="mr-1.5 -mt-0.5" />
+              {startup.name}{" "}
               <span className="text-sm font-semibold text-muted">
                 · {startup.sector} · {COUNTRY_NAMES[startup.country]}
               </span>

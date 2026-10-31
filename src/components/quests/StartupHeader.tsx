@@ -1,4 +1,5 @@
-import { COUNTRY_FLAGS, COUNTRY_NAMES } from "@/lib/game";
+import Flag from "@/components/Flag";
+import { COUNTRY_NAMES } from "@/lib/game";
 import { TIER_STYLE } from "@/lib/tiers";
 import type { Startup } from "@/lib/types";
 import { selectLevelInfo } from "@/store/selectors";
@@ -11,10 +12,9 @@ export default function StartupHeader({ startup }: { startup: Startup }) {
     <section className="rounded-3xl bg-white shadow-card p-6 sm:p-8 flex flex-col gap-6 md:flex-row md:items-center">
       <div className="flex items-center gap-4 flex-1 min-w-0">
         <span
-          className={`${tier.bg} size-16 shrink-0 rounded-2xl flex items-center justify-center text-4xl`}
-          aria-hidden
+          className={`${tier.bg} size-16 shrink-0 rounded-2xl flex items-center justify-center`}
         >
-          {COUNTRY_FLAGS[startup.country]}
+          <Flag country={startup.country} size={26} />
         </span>
         <div className="min-w-0">
           <p className="text-xs font-semibold uppercase tracking-wide text-subtle">
