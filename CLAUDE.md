@@ -22,6 +22,10 @@ Hackathon: Hacktoberfest Hack Day KL, 31 Oct 2026. Hard deadline: feature freeze
 - F1 Startup profile + demo login: pick a seeded startup on `/` (stored in Zustand + localStorage).
 - F2 AI quest generator (Gemma, text): 5 personalised, mostly cross-border quests from the profile + catalog.
 - F3 AI proof verification (Gemma, vision): upload image → approved / rejected / unclear + confidence + reason. Count only approved with confidence >= 0.7.
+- Two SEPARATE proof checks, never mix them:
+  - Quest proof (F3, outcomes): `POST /api/proof/verify` with prompt 2 + today's date; "Submit proof" on open quest cards (`QuestProof.tsx`). Approved (also needs parties + documentType, since confidence is uncalibrated) → `completeQuest` → XP, level, counts as a verified outcome. `?demo=1` / "Simulation (no AI)" returns a clearly-labelled canned approval.
+  - Company identity (onboarding): `/register`, `/profile`, `POST /api/company/verify`. Issues a company passport; NEVER grants XP or changes quests.
+  - Event-calendar subscription XP is NOT a verified outcome (never creates verified quests).
 - F4 XP and levels: XP per type connect 20, meeting 50, programme 75, poc 150, partnership 250, funding 400. Levels by total XP: Connected 0, Engaged 100, POC 300, Partnership 600, Funded 1000 (derived, never stored).
 - F5 Leaderboards: tabs Startups / Countries / Events. Top-3 podium + ranked list.
 - F6 Cradle dashboard `/cradle`: funnel (connections → meetings → POCs → partnerships → investments), outcomes by country (bar chart), table by event, headline conversion %.

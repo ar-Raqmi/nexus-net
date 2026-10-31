@@ -3,6 +3,7 @@ import { COUNTRY_NAMES } from "@/lib/game";
 import { QUEST_TYPE_STYLE, STATUS_STYLE } from "@/lib/tiers";
 import type { Quest } from "@/lib/types";
 import { seedEvents } from "@/seed";
+import QuestProof from "./QuestProof";
 
 export default function QuestCard({ quest }: { quest: Quest }) {
   const type = QUEST_TYPE_STYLE[quest.type];
@@ -53,6 +54,7 @@ export default function QuestCard({ quest }: { quest: Quest }) {
             </p>
           )}
         </div>
+        <QuestProof quest={quest} />
       </div>
     </article>
   );
