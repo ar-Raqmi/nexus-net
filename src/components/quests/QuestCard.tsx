@@ -3,7 +3,7 @@ import { QUEST_TYPE_STYLE, STATUS_STYLE } from "@/lib/tiers";
 import type { Quest } from "@/lib/types";
 import { seedEvents } from "@/seed";
 
-export default function QuestCard({ quest }: { quest: Quest }) {
+export default function QuestCard({ quest, onVerify }: { quest: Quest; onVerify?: () => void }) {
   const type = QUEST_TYPE_STYLE[quest.type];
   const status = STATUS_STYLE[quest.status];
   const event = seedEvents.find((e) => e.id === quest.eventId);
@@ -50,6 +50,8 @@ export default function QuestCard({ quest }: { quest: Quest }) {
             </p>
           )}
         </div>
+        {quest.verdict && <p className="text-xs text-muted">{quest.verificationMode === "demo" ? "Demo: " : ""}{quest.verdict.reason}</p>}
+        {quest.status !== "verified" && onVerify && <button type="button" onClick={onVerify} className="mt-2 rounded-full bg-primary px-5 py-3 text-sm font-bold text-white hover:brightness-110">{quest.verdict ? "Upload new proof" : "Upload proof"}</button>}
       </div>
     </article>
   );

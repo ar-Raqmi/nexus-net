@@ -44,6 +44,7 @@ export interface Quest {
   status: QuestStatus;
   verdict?: Verdict;
   completedAt?: string;
+  verificationMode?: "live" | "demo";
 }
 
 export interface Event {

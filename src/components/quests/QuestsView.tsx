@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import type { Quest } from "@/lib/types";
 import { selectQuestsFor, selectStartup } from "@/store/selectors";
 import { useGameStore, useHasHydrated } from "@/store/useGameStore";
@@ -9,12 +9,16 @@ import LevelTrack from "./LevelTrack";
 import QuestCard from "./QuestCard";
 import StartupHeader from "./StartupHeader";
 import TierCards from "./TierCards";
+import CompanyPassport from "./CompanyPassport";
+import ProofDialog from "./ProofDialog";
 
 export default function QuestsView() {
   const hydrated = useHasHydrated();
   const startups = useGameStore((s) => s.startups);
   const quests = useGameStore((s) => s.quests);
   const currentStartupId = useGameStore((s) => s.currentStartupId);
+  const addSampleQuest = useGameStore(s => s.addSampleQuest);
+  const [proofQuest, setProofQuest] = useState<Quest | null>(null);
 
   const startup = selectStartup(startups, currentStartupId);
   const { active, completed } = useMemo(() => {
@@ -54,6 +58,7 @@ export default function QuestsView() {
   return (
     <div className="flex flex-col gap-8">
       <StartupHeader startup={startup} />
+      <CompanyPassport startup={startup} quests={quests} />
       <LevelTrack xp={startup.xp} />
       <TierCards xp={startup.xp} />
 
@@ -64,12 +69,15 @@ export default function QuestsView() {
         />
         {active.length === 0 ? (
           <div className="rounded-3xl border-2 border-dashed border-ink/10 bg-white/60 p-10 text-center text-muted">
-            No active quests yet. Personalised quests from Gemma 4 arrive in the next step.
+            <p>{quests.some(q => q.id === `proof-sample-${startup.id}`) ? "No active quests. Your sample POC is complete and recorded in your passport." : "No active quests yet. Add a sample POC quest to try proof verification."}</p>
+            <button type="button" onClick={() => addSampleQuest(startup.id)} disabled={quests.some(q => q.id === `proof-sample-${startup.id}`)} className="mt-4 rounded-full bg-primary px-6 py-3 font-bold text-white disabled:opacity-40">{quests.some(q => q.id === `proof-sample-${startup.id}`) ? "Sample quest completed" : "Add sample proof quest"}</button>
+            <p className="mt-3 text-xs">Sample task only. Personalised quest generation is coming separately.</p>
           </div>
         ) : (
-          <QuestGrid quests={active} />
+          <QuestGrid quests={active} onVerify={setProofQuest} />
         )}
       </section>
+      {proofQuest && <ProofDialog key={proofQuest.id} quest={proofQuest} startup={startup} onClose={() => { setProofQuest(null); document.getElementById("company-passport")?.scrollIntoView({ behavior: "smooth", block: "start" }); }} />}
 
       <section>
         <SectionTitle
@@ -95,12 +103,12 @@ function SectionTitle({ title, subtitle }: { title: string; subtitle: string }) 
   );
 }
 
-function QuestGrid({ quests }: { quests: Quest[] }) {
+function QuestGrid({ quests, onVerify }: { quests: Quest[]; onVerify?: (quest: Quest) => void }) {
   return (
     <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
       {quests.map((quest) => (
         <li key={quest.id}>
-          <QuestCard quest={quest} />
+          <QuestCard quest={quest} onVerify={onVerify ? () => onVerify(quest) : undefined} />
         </li>
       ))}
     </ul>

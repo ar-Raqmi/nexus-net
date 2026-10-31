@@ -76,3 +76,8 @@
 body {
   color: var(--color-ink);
 }
+
+.passport-card {
+  scroll-margin-top: 6rem;
+  background-image: repeating-radial-gradient(ellipse at 20% 70%, transparent 0 18px, rgb(255 255 255 / 0.035) 19px 20px);
+}
