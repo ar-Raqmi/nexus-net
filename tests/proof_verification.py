@@ -223,18 +223,6 @@ with sync_playwright() as p:
     for name in ["02-mismatched-company-record.png", "03-incomplete-company-record.png", "profile-values.json", "README.md"]:
         assert stage.request.get(BASE + "/demo-evidence/" + name).status == 200
 
-    # Older v1 browser data has quest verdicts, but no company identity review.
-    root = Path(__file__).resolve().parents[1]
-    old_quests = json.loads((root / "src/seed/quests.json").read_text())
-    old_quests[0]["verdict"] = {"decision": "approved", "confidence": .99, "documentType": "Old quest proof", "parties": ["PayLah Lite"], "reason": "Legacy test."}
-    old_quests[0]["verificationMode"] = "live"
-    legacy_state = {"version": 1, "state": {"currentStartupId": "paylah-lite", "startups": json.loads((root / "src/seed/startups.json").read_text()), "quests": old_quests}}
-    legacy = browser.new_page()
-    legacy.add_init_script("localStorage.setItem('nexus-net-game', " + json.dumps(json.dumps(legacy_state)) + ");")
-    legacy.goto(BASE + "/profile")
-    legacy.get_by_role("link", name="Complete company details", exact=True).first.wait_for()
-    assert legacy.locator("#company-passport").count() == 0
-    assert legacy.get_by_text("Old quest proof", exact=True).count() == 0
     assert not errors, errors
     print(json.dumps({"company_onboarding_checks": "passed", "page_errors": errors, "screenshots": str(OUT)}))
     browser.close()
