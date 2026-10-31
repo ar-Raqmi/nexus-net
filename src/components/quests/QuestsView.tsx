@@ -9,6 +9,7 @@ import LevelTrack from "./LevelTrack";
 import QuestCard from "./QuestCard";
 import StartupHeader from "./StartupHeader";
 import TierCards from "./TierCards";
+import { useQuestGenerator } from "./useQuestGenerator";
 
 export default function QuestsView() {
   const hydrated = useHasHydrated();
@@ -26,6 +27,7 @@ export default function QuestsView() {
         .sort((a, b) => (b.completedAt ?? "").localeCompare(a.completedAt ?? "")),
     };
   }, [quests, startup]);
+  const generator = useQuestGenerator(startup);
 
   if (!hydrated) {
     return <p className="py-20 text-center text-subtle">Loading your quests…</p>;
@@ -62,9 +64,54 @@ export default function QuestsView() {
           title="Active quests"
           subtitle="Your next steps toward cross-border growth."
         />
-        {active.length === 0 ? (
+        <div className="flex flex-col items-center gap-3 mb-6">
+          <button
+            type="button"
+            onClick={generator.generate}
+            disabled={generator.status === "loading"}
+            className="rounded-full bg-primary px-8 py-3.5 font-bold text-white shadow-card transition hover:brightness-110 disabled:opacity-60 disabled:cursor-wait"
+          >
+            {generator.status === "loading"
+              ? "Gemma is crafting your quests…"
+              : active.some((q) => q.status === "open")
+                ? "✨ Regenerate open quests"
+                : "✨ Generate my quests"}
+          </button>
+          {generator.usedFallback && generator.status === "idle" && (
+            <span className="rounded-full bg-yellow px-3 py-1 text-xs font-bold">
+              Demo mode: Gemma was unreachable, showing a saved quest list
+            </span>
+          )}
+        </div>
+
+        {generator.status === "error" && (
+          <div
+            role="alert"
+            className="mb-6 rounded-3xl bg-[#FFEBEB] border border-[#FFB2B3] p-5 flex flex-col sm:flex-row sm:items-center gap-3"
+          >
+            <span className="text-2xl" aria-hidden>
+              ⚠️
+            </span>
+            <div className="flex-1">
+              <p className="font-bold">Couldn&apos;t generate quests</p>
+              <p className="text-sm text-muted">{generator.error}</p>
+            </div>
+            <button
+              type="button"
+              onClick={generator.generate}
+              className="rounded-full bg-ink px-5 py-2 text-sm font-bold text-white hover:bg-primary"
+            >
+              Try again
+            </button>
+          </div>
+        )}
+
+        {generator.status === "loading" ? (
+          <QuestSkeletons />
+        ) : active.length === 0 ? (
           <div className="rounded-3xl border-2 border-dashed border-ink/10 bg-white/60 p-10 text-center text-muted">
-            No active quests yet. Personalised quest generation is coming separately.
+            No active quests yet. Hit the button and Gemma 4 will plan 5 cross-border quests for{" "}
+            {startup.name}.
           </div>
         ) : (
           <QuestGrid quests={active} />
@@ -101,6 +148,24 @@ function QuestGrid({ quests }: { quests: Quest[] }) {
       {quests.map((quest) => (
         <li key={quest.id}>
           <QuestCard quest={quest} />
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function QuestSkeletons() {
+  return (
+    <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3" aria-busy="true" aria-label="Generating quests">
+      {Array.from({ length: 5 }, (_, i) => (
+        <li key={i} className="rounded-3xl bg-white shadow-card overflow-hidden animate-pulse">
+          <div className="h-24 bg-signature opacity-40" />
+          <div className="p-5 space-y-3">
+            <div className="h-4 w-1/3 rounded-full bg-ink/10" />
+            <div className="h-5 w-4/5 rounded-full bg-ink/10" />
+            <div className="h-4 w-full rounded-full bg-ink/5" />
+            <div className="h-4 w-2/3 rounded-full bg-ink/5" />
+          </div>
         </li>
       ))}
     </ul>

@@ -17,6 +17,17 @@
   --font-display: var(--font-rammetto), var(--font-inter), sans-serif;
 
   --shadow-card: 0 8px 24px -8px rgb(34 34 34 / 0.12), 0 2px 6px -2px rgb(34 34 34 / 0.06);
+
+  --animate-float: float 3.5s ease-in-out infinite;
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
 }
 
 /* Signature highlight gradient for badges and accents */
