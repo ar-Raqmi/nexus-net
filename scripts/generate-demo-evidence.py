@@ -59,9 +59,9 @@ dd {font-size:16px;line-height:1.45;margin:0;color:#2a3953;}
 '''
 GLOBE = '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1"><circle cx="16" cy="16" r="13"/><ellipse cx="16" cy="16" rx="6" ry="13"/><path d="M3 16h26M6 9h20M6 23h20"/></svg>'
 
-def document(case):
+def document(case, company=PROFILE):
     slug, number, label, name, reg, country, description = case
-    fields = [('Registration number', reg), ('Jurisdiction', country), ('Company stage', 'Seed / private company (simulation)'), ('Business sector', 'Fintech' if number != '02' else 'Business analytics'), ('Company website', 'https://paylah-lite.example/' if number != '02' else 'https://copperleaf.example/'), ('Record date', '31 October 2026')]
+    fields = [('Registration number', reg), ('Jurisdiction', country), ('Company stage', {'pre-seed':'Pre-seed','seed':'Seed','series-a':'Series A'}[company['stage']] + ' / private company (simulation)'), ('Business sector', company['sector'] if number != '02' else 'Business analytics'), ('Company website', company['website'] if number != '02' else 'https://copperleaf.example/'), ('Record date', '31 October 2026')]
     rows = ''.join(f'<div><dt>{html.escape(k)}</dt><dd class="{"number" if k == "Registration number" else ""}">{html.escape(v)}</dd></div>' for k, v in fields)
     return f'''<!doctype html><html lang="en"><meta charset="utf-8"><title>{html.escape(label)} — Fictional demo evidence</title><style>{CSS}</style><body><main class="sheet">
     <div class="brandbar"><div class="brand">{GLOBE} Nexus Net</div><span class="sandbox">SANDBOX / DEMONSTRATION COPY</span></div>
@@ -70,20 +70,35 @@ def document(case):
     <div class="section-head"><p>01 / COMPANY PARTICULARS</p><span>RECORD REF. NN-SIM-{number}-2026</span></div>
     <h2 class="company">{html.escape(name)}</h2><p class="subtext">{html.escape(description)}</p>
     <dl class="fields">{rows}</dl>
-    <div class="business"><div><p class="eyebrow" style="color:#7d889a;margin-bottom:12px">02 / BUSINESS PROFILE</p><p>{html.escape(PROFILE['description'] if number != '02' else 'Business analytics software for regional enterprises. Fictional business information for interface simulation.')}</p></div><div class="seal">{GLOBE}<strong>DEMO RECORD</strong><span>NOT FOR LEGAL USE</span></div></div>
+    <div class="business"><div><p class="eyebrow" style="color:#7d889a;margin-bottom:12px">02 / BUSINESS PROFILE</p><p>{html.escape(company['description'] if number != '02' else 'Business analytics software for regional enterprises. Fictional business information for interface simulation.')}</p></div><div class="seal">{GLOBE}<strong>DEMO RECORD</strong><span>NOT FOR LEGAL USE</span></div></div>
     <div class="note"><span class="index">{number}</span><div><strong>{html.escape(label)}</strong><p>This is a fictional company record created for a Nexus Net product demonstration. It was not issued by a government or business registry and does not establish a real company’s registration, ownership or legal standing.</p></div></div>
     <div class="footer"><strong>NEXUS NET / PRODUCT SIMULATION</strong><span>31 OCT 2026 &nbsp; / &nbsp; SAMPLE {number}</span><span>01 — 01</span></div>
     </main></body></html>'''
+
+COUNTRIES = {'MY':'Malaysia','SG':'Singapore','ID':'Indonesia','VN':'Vietnam','TH':'Thailand','PH':'Philippines'}
+startups = json.loads((ROOT / 'src/seed/startups.json').read_text())
+profiles = [{
+    'startupId': item['id'], 'legalName': item['name'],
+    'registrationNumber': f"{item['country']}-DEMO-2026-{i:03d}",
+    'website': f"https://{item['id']}.example/", 'country': item['country'],
+    'sector': item['sector'], 'stage': item['stage'], 'description': item['description'],
+} for i, item in enumerate(startups, 1)]
+(OUT / 'company-profiles.json').write_text(json.dumps(profiles, indent=2) + '\n')
+records = [(case, PROFILE) for case in CASES]
+for company in profiles:
+    if company['startupId'] == 'paylah-lite': continue
+    case = (company['startupId'] + '-company-record', '01', 'Matching company details', company['legalName'], company['registrationNumber'], COUNTRIES[company['country']] + ' / ' + company['country'], 'Complete simulation record')
+    records.append((case, company))
 
 (OUT / 'profile-values.json').write_text(json.dumps(PROFILE, indent=2) + '\n')
 with sync_playwright() as p:
     browser = p.chromium.launch(headless=True, executable_path=os.environ.get('CHROME_PATH', '/usr/bin/google-chrome'), args=['--no-sandbox'])
     page = browser.new_page(viewport={'width':1120, 'height':1460}, device_scale_factor=1)
-    for case in CASES:
+    for case, company in records:
         target = OUT / (case[0] + '.html')
-        target.write_text(document(case))
+        target.write_text(document(case, company))
         page.goto(target.as_uri())
         page.screenshot(path=str(OUT / (case[0] + '.png')))
         assert page.evaluate('document.documentElement.scrollWidth === 1120 && document.documentElement.scrollHeight === 1460')
     browser.close()
-print(f'Rendered {len(CASES)} sample evidence PNGs and editable HTML sources in {OUT}')
+print(f'Rendered {len(records)} sample evidence PNGs and editable HTML sources in {OUT}')

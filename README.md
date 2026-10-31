@@ -4,7 +4,7 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 - Company onboarding, document review and a professional company passport, separate from quests and XP.
 - Approved, rejected and retry flows, saved profiles, and re-verification after company details change.
-- Three presentation-ready [demo evidence images](public/demo-evidence/README.md), editable sources, and a **Use sample company** simulation shortcut.
+- Matching [demo profiles and evidence](public/demo-evidence/README.md) for all 10 startups, two negative samples, editable sources, and a **Use sample company** simulation shortcut.
 - Registration-to-passport browser checks, refresh persistence and mobile layouts verified. Live AI rejection tested; demo approval is explicitly labelled.
 
 Start at `/register`, choose **Use sample company**, save, download the sample image and upload it to receive a demo passport. Account data is browser-local; live authentication and registry checks are not implemented.

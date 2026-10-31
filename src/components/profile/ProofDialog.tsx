@@ -4,10 +4,12 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import type { CompanyProfile, CompanyVerification } from "@/lib/types";
 import { isApproved } from "@/lib/game";
+import { getDemoEvidence } from "@/lib/demoCompany";
 import { resizeProof } from "@/lib/resizeProof";
 import { useGameStore } from "@/store/useGameStore";
 
 export default function ProofDialog({ profile, onClose }: { profile: CompanyProfile; onClose: () => void }) {
+  const sampleEvidence = getDemoEvidence(profile);
   const dialog = useRef<HTMLDialogElement>(null);
   const controller = useRef<AbortController | null>(null);
   const selection = useRef(0);
@@ -66,7 +68,7 @@ export default function ProofDialog({ profile, onClose }: { profile: CompanyProf
           <span className="block mt-2 text-xs font-normal text-muted">PNG, JPEG or WebP · up to 10 MB</span>
         </label>
         {image && <div className="mt-4 rounded-xl bg-white p-2"><Image unoptimized src={image.preview} width={1280} height={900} alt="Selected company document preview" className="max-h-64 w-full object-contain" /></div>}
-        {profile.registrationNumber === "MY-DEMO-2026-001" && <a className="block mt-3 text-xs text-primary underline" href="/demo-evidence/01-matching-company-record.png" download>Download sample company record</a>}
+        {sampleEvidence && <a className="block mt-3 text-xs text-primary underline" href={sampleEvidence} download>Download sample company record</a>}
         <p className="mt-4 text-xs text-muted">Your image is sent to Google AI for this check. Only the verdict is saved in this browser.</p>
         {preparing && <p role="status" className="mt-3 text-sm">Preparing image…</p>}
         {error && <p role="alert" className="mt-4 text-sm text-red-700">{error}</p>}

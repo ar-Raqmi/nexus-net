@@ -134,6 +134,40 @@ with sync_playwright() as p:
     assert page.locator("#company-passport").count() == 0
     assert page.get_by_text("QA-MY-001", exact=True).count() == 0
 
+    # The company from the reported missing-fields case has its own complete demo.
+    page.get_by_role("link", name="Complete company details", exact=True).first.click()
+    assert page.get_by_label("Registration number", exact=True).input_value() == "ID-DEMO-2026-002"
+    assert page.get_by_label("Company website", exact=True).input_value() == "https://tanipintar.example/"
+    page.get_by_role("button", name="Use sample company", exact=True).click()
+    assert page.get_by_label("Legal company name", exact=True).input_value() == "TaniPintar"
+    page.get_by_role("button", name="Save and continue").click()
+    page.wait_for_url("**/profile?demo=1")
+    sample_link = page.get_by_role("link", name="Download sample company record ↗", exact=True)
+    assert sample_link.get_attribute("href") == "/demo-evidence/tanipintar-company-record.png"
+    page.locator(".onboarding-review-main .onboarding-primary").click()
+    dialog = page.get_by_role("dialog")
+    dialog.locator("input[type=file]").set_input_files(str(Path(__file__).resolve().parents[1] / "public/demo-evidence/tanipintar-company-record.png"))
+    dialog.get_by_role("button", name="Verify company", exact=True).click()
+    dialog.get_by_role("button", name="View company passport").click()
+    page.locator("#company-passport").get_by_text("Demo passport", exact=True).wait_for()
+    assert state(page)["companyVerifications"]["tanipintar"]["profile"]["registrationNumber"] == "ID-DEMO-2026-002"
+    assert next(s for s in state(page)["startups"] if s["id"] == "tanipintar")["xp"] == 1015
+
+    # Every seeded startup has correctly prefilled synthetic fields and an uploadable record.
+    catalogue = browser.new_page()
+    demo_profiles = json.loads((Path(__file__).resolve().parents[1] / "public/demo-evidence/company-profiles.json").read_text())
+    for company in demo_profiles:
+        catalogue.goto(BASE)
+        catalogue.get_by_role("button").filter(has_text=company["legalName"]).click()
+        catalogue.goto(BASE + "/register")
+        assert catalogue.get_by_label("Registration number", exact=True).input_value() == company["registrationNumber"]
+        assert catalogue.get_by_label("Company website", exact=True).input_value() == company["website"]
+        catalogue.get_by_role("button", name="Use sample company", exact=True).click()
+        assert catalogue.get_by_label("Legal company name", exact=True).input_value() == company["legalName"]
+        record = "01-matching-company-record" if company["startupId"] == "paylah-lite" else company["startupId"] + "-company-record"
+        assert catalogue.request.get(BASE + "/demo-evidence/" + record + ".png").status == 200
+    catalogue.close()
+
     # A newly registered company, rather than a seeded one, uses the real demo endpoint.
     demo = browser.new_page(viewport={"width": 390, "height": 900})
     register(demo, new_company=True)
