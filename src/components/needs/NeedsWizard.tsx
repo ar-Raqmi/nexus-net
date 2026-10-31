@@ -60,6 +60,7 @@ export default function NeedsWizard() {
         options={analysis.options}
         quests={quests}
         source={analysis.source}
+        demo={analysis.demo}
         onAdd={(quest) => addQuests([quest])}
         onRestart={restart}
       />

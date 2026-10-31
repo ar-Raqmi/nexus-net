@@ -67,6 +67,7 @@ function applyCopy(needs: NeedOption[], copies: Copy[]): NeedOption[] {
 }
 
 export async function POST(request: Request) {
+  const demo = new URL(request.url).searchParams.get("demo") === "1";
   let body: AnalyzeBody;
   try {
     body = await request.json();
@@ -80,6 +81,9 @@ export async function POST(request: Request) {
 
   const needs = detectNeeds(answers);
   const allowed = new Set<string>(needs.map((n) => n.gapId));
+  // ?demo=1: skip Gemma entirely and return the template wording instantly.
+  if (demo) return Response.json({ options: needs, source: "template" });
+
   const note = typeof blocker === "string" ? blocker.slice(0, MAX_BLOCKER) : "";
 
   try {

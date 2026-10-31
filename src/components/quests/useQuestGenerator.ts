@@ -32,7 +32,7 @@ export function useQuestGenerator(startup: Startup | null) {
       });
       const data = (await res.json().catch(() => ({}))) as {
         quests?: Quest[];
-        source?: "gemma" | "fallback";
+        source?: "gemma" | "fallback" | "demo";
         error?: string;
       };
       if (!res.ok || !data.quests) {

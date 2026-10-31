@@ -82,6 +82,11 @@ export async function POST(request: Request) {
     return Response.json({ error: "Missing startup or catalog." }, { status: 400 });
   }
 
+  // ?demo=1: skip Gemma entirely and return the canned quest list instantly.
+  if (demo) {
+    return Response.json({ quests: withIds(startup, fallback.quests), source: "demo" });
+  }
+
   const eventIds = new Set((catalog.events ?? []).map((e) => e.id));
 
   try {
