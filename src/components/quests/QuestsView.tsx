@@ -6,7 +6,6 @@ import type { Quest } from "@/lib/types";
 import { selectQuestsFor, selectStartup } from "@/store/selectors";
 import { useGameStore, useHasHydrated } from "@/store/useGameStore";
 import LevelTrack from "./LevelTrack";
-import MiniLeaderboard from "./MiniLeaderboard";
 import QuestCard from "./QuestCard";
 import StartupHeader from "./StartupHeader";
 import TierCards from "./TierCards";
@@ -59,14 +58,6 @@ export default function QuestsView() {
       <StartupHeader startup={startup} />
       <LevelTrack xp={startup.xp} />
       <TierCards xp={startup.xp} />
-
-      <section>
-        <SectionTitle
-          title="Leaderboard"
-          subtitle="Startups with the most XP and the quests they've completed."
-        />
-        <MiniLeaderboard />
-      </section>
 
       <section id="active-quests">
         <SectionTitle
