@@ -10,6 +10,7 @@ const links: { href: string; label: string; icon: PixelIconName }[] = [
   { href: "/needs", label: "My needs", icon: "compass" },
   { href: "/quests", label: "Quests", icon: "sparkle" },
   { href: "/events", label: "Events", icon: "meeting" },
+  { href: "/map", label: "Map", icon: "pin" },
   { href: "/leaderboard", label: "Leaderboard", icon: "trophy" },
 ];
 
@@ -63,7 +64,7 @@ export default function TopNav() {
         aria-label="Main"
         className="sm:hidden fixed inset-x-0 bottom-0 z-30 border-t border-black/10 bg-paper/95 backdrop-blur pb-[env(safe-area-inset-bottom)]"
       >
-        <ul className="grid grid-cols-5">
+        <ul className="grid grid-cols-6">
           {links.map((link) => {
             const active = isActive(link.href);
             return (

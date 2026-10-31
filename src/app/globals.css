@@ -332,3 +332,19 @@ body {
 .company-sample-download p { margin-top: 8px; font-size: 11px; color: #7e89a0; line-height: 1.7; }
 .company-sample-download p a { text-decoration: underline; }
 @media (max-width: 640px) { .company-demo-shortcut { align-items: flex-start; flex-direction: column; } }
+
+/* ASEAN map markers (MapLibre injects these DOM nodes, so plain CSS rather than Tailwind classes). */
+.map-marker { display: grid; place-items: center; padding: 0; border: 0; background: none; cursor: pointer; animation: map-pop 450ms cubic-bezier(.34,1.56,.64,1) both; }
+.map-marker > svg { filter: drop-shadow(2px 3px 0 rgb(34 34 34 / .55)); border-radius: 10px; border: 2px solid #222; background: #fff; transition: transform .2s; }
+.map-marker:hover > svg, .map-marker.is-selected > svg { transform: translateY(-3px) scale(1.08); }
+.map-tag { position: absolute; top: 100%; margin-top: 4px; padding: 1px 8px; border-radius: 999px; background: #222; color: #fff; font-size: 11px; font-weight: 700; white-space: nowrap; }
+.map-pulse { position: absolute; inset: -8px; border-radius: 16px; border: 3px solid #405cee; animation: map-ring 1.8s ease-out infinite; }
+.map-pin-dot { width: 18px; height: 18px; border-radius: 50%; border: 3px solid #222; background: #ffdd56; box-shadow: 2px 2px 0 rgb(34 34 34 / .5); }
+.map-pin-dot.is-luma { background: #405cee; }
+.map-popup .maplibregl-popup-content { display: flex; flex-direction: column; gap: 2px; padding: 10px 14px; border: 2px solid #222; border-radius: 16px; box-shadow: 3px 3px 0 #222; font-family: var(--font-inter), sans-serif; max-width: 240px; }
+.map-popup strong { font-size: 13px; color: #222; }
+.map-popup span { font-size: 12px; color: #595959; }
+/* Animate the standalone `scale` property: MapLibre positions markers via `transform`, which a transform animation would overwrite. */
+@keyframes map-pop { from { scale: .3; opacity: 0; } to { scale: 1; opacity: 1; } }
+@keyframes map-ring { from { transform: scale(.85); opacity: .9; } to { transform: scale(1.5); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .map-marker, .map-pulse { animation: none; } }
