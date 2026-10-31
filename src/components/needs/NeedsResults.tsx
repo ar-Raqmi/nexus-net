@@ -10,11 +10,12 @@ interface Props {
   options: NeedOption[];
   quests: Quest[];
   source: "gemma" | "template";
+  demo?: boolean;
   onAdd: (quest: Quest) => void;
   onRestart: () => void;
 }
 
-export default function NeedsResults({ startup, options, quests, source, onAdd, onRestart }: Props) {
+export default function NeedsResults({ startup, options, quests, source, demo, onAdd, onRestart }: Props) {
   const isAdded = (option: NeedOption) =>
     quests.some((q) => q.id === needQuestId(startup.id, option.gapId));
 
@@ -27,13 +28,13 @@ export default function NeedsResults({ startup, options, quests, source, onAdd, 
         <p className="mt-2 text-muted">
           Pick the options that fit {startup.name}. Each becomes a quest you can finish for XP.
         </p>
-        <span
+        {!demo && <span
           className={`mt-3 inline-block rounded-full px-3 py-1 text-xs font-bold ${
             source === "gemma" ? "bg-purple-dark text-white" : "bg-yellow text-ink"
           }`}
         >
           {source === "gemma" ? "Worded by Gemma 4" : "Template wording: Gemma was unreachable"}
-        </span>
+        </span>}
       </div>
 
       <p className="self-center rounded-3xl bg-ink px-6 py-3 text-white">

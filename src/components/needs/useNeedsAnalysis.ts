@@ -17,7 +17,7 @@ export function useNeedsAnalysis(startup: Startup | null) {
     setStatus("loading");
     setError(null);
     try {
-      const res = await fetch("/api/needs/analyze", {
+      const res = await fetch(`/api/needs/analyze${isDemo() ? "?demo=1" : ""}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ startup, answers, blocker }),
@@ -43,5 +43,10 @@ export function useNeedsAnalysis(startup: Startup | null) {
     setError(null);
   }
 
-  return { analyze, reset, status, options, source, error };
+  return { analyze, reset, status, options, source, error, demo: isDemo() };
+}
+
+// Pass ?demo=1 through from the page URL so the API skips Gemma.
+function isDemo() {
+  return typeof window !== "undefined" && new URLSearchParams(window.location.search).get("demo") === "1";
 }
