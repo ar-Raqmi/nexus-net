@@ -10,12 +10,14 @@ export interface VoxelColors {
  * Oblique-projection block: a flat front face (holds content) plus a skewed top face
  * and right side face, each `depth` px deep. Faces overflow the box up and to the right,
  * so callers leave room (margin-top / margin-right) where needed.
+ * Pass `absolute` instead of an "absolute" class: the wrapper's default `relative` would win.
  */
 export default function Voxel({
   width,
   height,
   depth,
   colors,
+  absolute = false,
   className = "",
   frontClassName = "",
   style,
@@ -25,13 +27,14 @@ export default function Voxel({
   height: number;
   depth: number;
   colors: VoxelColors;
+  absolute?: boolean;
   className?: string;
   frontClassName?: string;
   style?: CSSProperties;
   children?: ReactNode;
 }) {
   return (
-    <div className={`relative shrink-0 ${className}`} style={{ width, height, ...style }}>
+    <div className={`${absolute ? "absolute" : "relative"} shrink-0 ${className}`} style={{ width, height, ...style }}>
       <div
         className="absolute left-0 bottom-full"
         style={{
