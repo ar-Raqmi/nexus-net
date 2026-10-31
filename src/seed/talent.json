@@ -1,0 +1,12 @@
+[
+  { "id": "tl-01", "name": "Nurul Aina", "role": "Web developer", "country": "MY", "skills": ["Next.js", "Webflow", "SEO"], "rating": 4.9, "gigsDone": 31 },
+  { "id": "tl-02", "name": "Quang Huy", "role": "Web developer", "country": "VN", "skills": ["React", "Landing pages", "Vietnamese localisation"], "rating": 4.8, "gigsDone": 24 },
+  { "id": "tl-03", "name": "Grace Tan", "role": "Web developer", "country": "SG", "skills": ["Shopify", "UX writing", "Analytics"], "rating": 4.7, "gigsDone": 19 },
+  { "id": "tl-04", "name": "Dewi Lestari", "role": "Content creator", "country": "ID", "skills": ["Short video", "Instagram", "Bahasa copy"], "rating": 4.9, "gigsDone": 42 },
+  { "id": "tl-05", "name": "Mai Anh", "role": "Content creator", "country": "VN", "skills": ["TikTok ads", "Product shoots", "Vietnamese copy"], "rating": 4.6, "gigsDone": 27 },
+  { "id": "tl-06", "name": "Farhan Zulkifli", "role": "Bug fixer", "country": "MY", "skills": ["TypeScript", "QA testing", "Node.js"], "rating": 4.8, "gigsDone": 38 },
+  { "id": "tl-07", "name": "Kittipong S.", "role": "Bug fixer", "country": "TH", "skills": ["Python", "Mobile QA", "API debugging"], "rating": 4.7, "gigsDone": 22 },
+  { "id": "tl-08", "name": "Joaquin Reyes", "role": "Bug fixer", "country": "PH", "skills": ["React Native", "Regression tests"], "rating": 4.5, "gigsDone": 16 },
+  { "id": "tl-09", "name": "Siti Rahimah", "role": "Pitch deck designer", "country": "SG", "skills": ["Investor decks", "Data storytelling", "Figma"], "rating": 4.9, "gigsDone": 29 },
+  { "id": "tl-10", "name": "Arun Pillai", "role": "Pitch deck designer", "country": "MY", "skills": ["Seed decks", "Brand design", "Figma"], "rating": 4.6, "gigsDone": 18 }
+]
