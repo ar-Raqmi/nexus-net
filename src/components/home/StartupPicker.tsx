@@ -123,7 +123,7 @@ function StartupCard({
             </span>
           )}
         </div>
-        <span className="absolute bottom-3 left-[72px] text-sm font-bold drop-shadow-[1px_1px_0_rgba(0,0,0,.5)]">
+        <span className="absolute bottom-3 left-[100px] text-sm font-bold drop-shadow-[1px_1px_0_rgba(0,0,0,.5)]">
           {COUNTRY_NAMES[startup.country]}
         </span>
       </div>
