@@ -6,10 +6,10 @@ These are fictional sample records for a product demonstration, not official com
 
 1. Open `/register`, click **Use sample company**, then **Save and continue**.
 2. Download `01-matching-company-record.png` using the sample download link on the company profile.
-3. Click **Verify company**, upload that PNG, then **Verify company** in the dialog.
+3. Click **Verify company**, select **Instant simulation (no AI)**, upload that PNG, then **Verify company** in the dialog.
 4. View the labelled **Demo passport**. Refresh to confirm it is saved.
 
-**Use sample company** enables canned demo approval (`/profile?demo=1`) so the presentation does not depend on a model call. It is not an AI or registry check.
+**Use sample company** fills the profile only. **Live Gemma AI** is the default verification mode. Choose **Instant simulation (no AI)** explicitly for a canned demo approval, or open `/profile?demo=1`. Simulation is not an AI or registry check.
 
 ## Profile values
 
@@ -36,7 +36,7 @@ Recreate the PNGs from the repository root with `python scripts/generate-demo-ev
 
 ## All seeded companies
 
-Selecting a seeded startup now prefills its fictional registration number and website. Click **Use sample company** to enable its labelled demo simulation.
+Selecting a seeded startup now prefills its fictional registration number and website. Click **Use sample company** to fill its profile, then choose **Instant simulation (no AI)** at upload for a labelled demo result.
 
 | Company | Registration number | Website | Matching upload |
 | --- | --- | --- | --- |

@@ -25,14 +25,14 @@ function CompanyForm({ startup, profile }: { startup: Startup | null; profile?: 
   const save = useGameStore(s => s.saveCompanyProfile);
   const [error, setError] = useState("");
   const formRef = useRef<HTMLFormElement>(null);
-  const [sampleMode, setSampleMode] = useState(false);
+  const [sampleFilled, setSampleFilled] = useState(false);
   function useSample() {
     if (!demoCompany) return;
     for (const [name, value] of Object.entries(demoCompany)) {
       const field = formRef.current?.elements.namedItem(name);
       if (field instanceof HTMLInputElement || field instanceof HTMLSelectElement || field instanceof HTMLTextAreaElement) field.value = value;
     }
-    setSampleMode(true);
+    setSampleFilled(true);
     setError("");
   }
   function submit(event: React.FormEvent<HTMLFormElement>) {
@@ -45,7 +45,7 @@ function CompanyForm({ startup, profile }: { startup: Startup | null; profile?: 
         website: String(data.get("website") ?? ""), country: data.get("country") as CompanyProfile["country"],
         sector: String(data.get("sector") ?? ""), stage: data.get("stage") as CompanyProfile["stage"], description: String(data.get("description") ?? ""),
       });
-      const demo = sampleMode || new URLSearchParams(window.location.search).get("demo") === "1";
+      const demo = new URLSearchParams(window.location.search).get("demo") === "1";
       router.push(`/profile${demo ? "?demo=1" : ""}`);
     } catch (e) { setError(e instanceof Error ? e.message : "Could not save your company profile."); }
   }
@@ -54,8 +54,8 @@ function CompanyForm({ startup, profile }: { startup: Startup | null; profile?: 
     <ol className="onboarding-steps" aria-label="Company registration progress"><li aria-current="step"><b>01</b> Company details</li><li><b>02</b> Document review</li><li><b>03</b> Company passport</li></ol>
     <form ref={formRef} onSubmit={submit} className="company-form">
       <div className="company-form-heading"><h2>Company details</h2><p>Use the details shown on your official company document.</p></div>
-      {demoCompany && <div className="company-demo-shortcut"><div><strong>Presenting the demo?</strong><p>Fill the sample details for {demoCompany.legalName} and use labelled demo approval.</p></div><button type="button" className="onboarding-secondary" onClick={useSample}>Use sample company</button></div>}
-      {sampleMode && <p className="onboarding-notice" role="status">Demo simulation enabled. Document approval is a sample result without an AI call.</p>}
+      {demoCompany && <div className="company-demo-shortcut"><div><strong>Presenting the demo?</strong><p>Fill the fictional profile for {demoCompany.legalName}. Choose the verification mode at upload.</p></div><button type="button" className="onboarding-secondary" onClick={useSample}>Use sample company</button></div>}
+      {sampleFilled && <p className="onboarding-notice" role="status">Sample details filled. Live Gemma is the default; choose Instant simulation at upload for a canned result.</p>}
       <div className="company-form-grid">
         <label>Legal company name<input name="legalName" required maxLength={160} defaultValue={profile?.legalName ?? startup?.name ?? ""} autoComplete="organization" placeholder="Company name as registered" /></label>
         <label>Registration number<input name="registrationNumber" required maxLength={80} defaultValue={profile?.registrationNumber ?? seededCompany?.registrationNumber ?? ""} placeholder="Business registration number" /></label>

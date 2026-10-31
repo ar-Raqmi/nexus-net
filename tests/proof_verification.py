@@ -36,6 +36,8 @@ def register(page, new_company=False):
 def open_upload(page):
     page.locator(".onboarding-review-main .onboarding-primary").click()
     dialog = page.get_by_role("dialog")
+    expected_mode = "Instant simulation (no AI)" if "demo=1" in page.url else "Live Gemma AI"
+    assert dialog.get_by_role("radio", name=expected_mode, exact=True).is_checked()
     dialog.locator("input[type=file]").set_input_files(FIXTURE)
     dialog.get_by_alt_text("Selected company document preview").wait_for()
     return dialog
@@ -141,11 +143,13 @@ with sync_playwright() as p:
     page.get_by_role("button", name="Use sample company", exact=True).click()
     assert page.get_by_label("Legal company name", exact=True).input_value() == "TaniPintar"
     page.get_by_role("button", name="Save and continue").click()
-    page.wait_for_url("**/profile?demo=1")
+    page.wait_for_url("**/profile")
     sample_link = page.get_by_role("link", name="Download sample company record ↗", exact=True)
     assert sample_link.get_attribute("href") == "/demo-evidence/tanipintar-company-record.png"
     page.locator(".onboarding-review-main .onboarding-primary").click()
     dialog = page.get_by_role("dialog")
+    assert dialog.get_by_role("radio", name="Live Gemma AI", exact=True).is_checked()
+    dialog.get_by_role("radio", name="Instant simulation (no AI)", exact=True).check()
     dialog.locator("input[type=file]").set_input_files(str(Path(__file__).resolve().parents[1] / "public/demo-evidence/tanipintar-company-record.png"))
     dialog.get_by_role("button", name="Verify company", exact=True).click()
     dialog.get_by_role("button", name="View company passport").click()
@@ -190,11 +194,11 @@ with sync_playwright() as p:
     stage = browser.new_page(viewport={"width": 390, "height": 900})
     stage.goto(BASE + "/register")
     stage.get_by_role("button", name="Use sample company", exact=True).click()
-    stage.get_by_role("status").get_by_text("Demo simulation enabled.", exact=False).wait_for()
+    stage.get_by_role("status").get_by_text("Sample details filled.", exact=False).wait_for()
     assert stage.get_by_label("Legal company name", exact=True).input_value() == "PayLah Lite"
     assert stage.get_by_label("Registration number", exact=True).input_value() == "MY-DEMO-2026-001"
     stage.get_by_role("button", name="Save and continue").click()
-    stage.wait_for_url("**/profile?demo=1")
+    stage.wait_for_url("**/profile")
     with stage.expect_download() as download_info:
         stage.get_by_role("link", name="Download sample company record ↗", exact=True).click()
     downloaded = OUT / "downloaded-company-record.png"
@@ -202,6 +206,8 @@ with sync_playwright() as p:
     assert downloaded.read_bytes() == (Path(__file__).resolve().parents[1] / "public/demo-evidence/01-matching-company-record.png").read_bytes()
     stage.locator(".onboarding-review-main .onboarding-primary").click()
     dialog = stage.get_by_role("dialog")
+    assert dialog.get_by_role("radio", name="Live Gemma AI", exact=True).is_checked()
+    dialog.get_by_role("radio", name="Instant simulation (no AI)", exact=True).check()
     dialog.locator("input[type=file]").set_input_files(str(downloaded))
     dialog.get_by_role("button", name="Verify company", exact=True).click()
     dialog.get_by_role("heading", name="Company document approved ✓").wait_for()

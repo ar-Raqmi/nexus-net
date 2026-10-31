@@ -7,7 +7,7 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 - Matching [demo profiles and evidence](public/demo-evidence/README.md) for all 10 startups, two negative samples, editable sources, and a **Use sample company** simulation shortcut.
 - Registration-to-passport browser checks, refresh persistence and mobile layouts verified. Live AI rejection tested; demo approval is explicitly labelled.
 
-Start at `/register`, choose **Use sample company**, save, download the sample image and upload it to receive a demo passport. Account data is browser-local; live authentication and registry checks are not implemented.
+Start at `/register`, choose **Use sample company**, save, download the sample image, choose **Instant simulation (no AI)** at upload, and submit to receive a demo passport. Account data is browser-local; live authentication and registry checks are not implemented.
 
 
 ## Getting Started
@@ -58,12 +58,14 @@ Set `GEMINI_API_KEY` and the image-capable model ID in `GEMMA_MODEL` in `.env.lo
 
 The document review accepts PNG, JPEG and WebP images up to 10 MB. The browser resizes images to at most 1280 pixels wide and 1800 pixels high before submitting them to Google AI. Upload a company incorporation certificate or business registry extract; the model compares the legal name, registration number and jurisdiction with the profile. A quest screenshot, meeting invite or POC agreement is not company identity evidence. Approval with confidence at least 0.7 issues a passport ID. Rejection, uncertainty, low confidence or API failure does not issue a passport.
 
-`POST /api/company/verify` accepts `{ profile, imageBase64, mimeType }` and returns `{ verification: { profile, verdict, mode, checkedAt, passportId? } }`. The old quest proof endpoint has been removed. The server validates inputs and model output, retries once, and returns readable 400/413/503/502 errors. Failed calls do not silently switch to a canned result.
+`POST /api/company/verify` accepts `{ profile, imageBase64, mimeType }` and returns `{ verification: { profile, verdict, mode, checkedAt, passportId? } }`. The old quest proof endpoint has been removed. The server validates inputs and model output, retries only an unusable model answer within one 25-second deadline, and returns specific upload, credential, rate-limit and timeout errors. Live verification uses the configured Gemma model with minimal thinking, a compact prompt and no SDK retry backoff. Failed calls do not silently switch to a canned result.
 
-`/profile?demo=1` uses a canned approval without a model call. Demo passports are clearly labelled. A real review is available by leaving demo mode and submitting another document.
+**Live Gemma AI** is the default, including after filling sample data. The upload dialog also offers **Instant simulation (no AI)**; `/profile?demo=1` preselects that canned mode. Demo passports are clearly labelled. A real review is available by leaving demo mode and submitting another document.
 
 This remains a prototype registration flow, with browser-local profiles and review records in `nexus-net-game` localStorage. No password, live authentication, shared database, official registry lookup, ownership check or tamper-proof credential is implemented. Images are sent to Google AI but are not stored in localStorage. All seeded company data is fictional. Legacy quest verdicts do not count as company identity verification.
 
 ### Checks
+
+`node --test tests/company_verification.test.mjs` tests the real route with a stubbed provider, including retry limits, timeout handling, quota errors and model configuration.
 
 Run `npm run lint` and `npm run build`. For browser regression checks, start `npm run start -- --port 3100`, then run `python tests/proof_verification.py` in an environment with Python Playwright installed. Set `BASE_URL` and `CHROME_PATH` as needed (defaults: `http://localhost:3100` and `/usr/bin/google-chrome`). The checks cover onboarding, rejection, uncertainty, low confidence, API errors, approval and persistence, no XP or quest changes, profile edit invalidation, company separation, new company registration, demo labels, image validation, mobile layouts and removal of the old endpoint. Approval cases use controlled model responses; demo requests use the actual local endpoint without a model call.

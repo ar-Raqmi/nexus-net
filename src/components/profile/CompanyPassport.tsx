@@ -96,7 +96,9 @@ export default function CompanyPassport({ profile, verification }: { profile: Co
               <div className="passport-stamp-meta"><span><Seal checked />{demo ? "Sample approval · not AI checked" : "Registration document reviewed"}</span></div>
               <details className="passport-evidence">
                 <summary>View verification details <span aria-hidden="true">+</span></summary>
-                <dl><div><dt>Document</dt><dd>{verification.verdict.documentType}</dd></div><div><dt>Company named</dt><dd>{verification.verdict.parties.join(" · ") || "Not specified"}</dd></div></dl>
+                <dl><div><dt>Document</dt><dd>{verification.verdict.documentType}</dd></div><div><dt>Company named</dt><dd>{verification.verdict.parties.join(" · ") || "Not specified"}</dd></div>
+                  {verification.mode === "live" && verification.model && <div><dt>Reviewed by</dt><dd>{verification.model}{verification.durationMs != null ? ` · ${(verification.durationMs / 1000).toFixed(1)}s` : ""}</dd></div>}
+                </dl>
                 <p>{verification.verdict.reason}</p>
               </details>
             </div>
