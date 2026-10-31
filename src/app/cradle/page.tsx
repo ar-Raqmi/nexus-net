@@ -1,11 +1,5 @@
-import PagePlaceholder from "@/components/PagePlaceholder";
+import CradleView from "@/components/cradle/CradleView";
 
 export default function CradlePage() {
-  return (
-    <PagePlaceholder
-      title="Cradle view"
-      subtitle="The live conversion funnel from connections to investments."
-      phase={7}
-    />
-  );
+  return <CradleView />;
 }

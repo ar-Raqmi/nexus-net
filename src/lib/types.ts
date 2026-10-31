@@ -98,6 +98,7 @@ export interface CompanyVerification {
 
 /** A category we bucket Luma events into for the startup-facing calendar. */
 export type EventCategory =
+  | "hackathon"
   | "startup"
   | "tech"
   | "meetup"
