@@ -33,7 +33,7 @@ export default function CountdownPill() {
 
   return (
     <div className="inline-flex items-center gap-2 rounded-full bg-white shadow-card px-4 py-2 text-sm font-semibold">
-      <span className="size-2 rounded-full bg-green animate-pulse" />
+      <span className="size-2 rounded-full bg-green motion-safe:animate-pulse" />
       Q4 season ends in{" "}
       <span className="font-score text-primary">
         {current === null ? "--d --h --m" : formatRemaining(SEASON_END - current)}

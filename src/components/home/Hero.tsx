@@ -2,16 +2,17 @@
 
 import Link from "next/link";
 import { seedQuests, seedStartups } from "@/seed";
-import { selectStartup, selectVerified } from "@/store/selectors";
+import { selectCountryLeaderboard, selectStartup, selectVerified } from "@/store/selectors";
 import { useGameStore, useHasHydrated } from "@/store/useGameStore";
 import CountdownPill from "./CountdownPill";
+import PodiumScene from "./PodiumScene";
 
 // Scattered decorative icons around the hero (hidden on small screens).
 const FLOATERS = [
   { icon: "🪙", className: "left-[6%] top-[18%] -rotate-12" },
   { icon: "🚀", className: "right-[8%] top-[14%] rotate-12" },
-  { icon: "🤝", className: "left-[12%] bottom-[18%] rotate-6" },
-  { icon: "💎", className: "right-[14%] bottom-[22%] -rotate-6" },
+  { icon: "🤝", className: "left-[4%] top-[40%] rotate-6" },
+  { icon: "💎", className: "right-[4%] top-[44%] -rotate-6" },
   { icon: "⭐", className: "left-[24%] top-[6%] rotate-3" },
   { icon: "🏆", className: "right-[26%] top-[4%] -rotate-3" },
 ];
@@ -30,6 +31,7 @@ export default function Hero() {
   const verified = selectVerified(quests);
   const totalXp = startups.reduce((sum, s) => sum + s.xp, 0);
   const countries = new Set(verified.map((q) => q.targetCountry)).size;
+  const topCountries = selectCountryLeaderboard(startups, quests).slice(0, 3);
 
   return (
     <section className="relative overflow-hidden flex flex-col items-center text-center gap-5 py-12 sm:py-16">
@@ -79,6 +81,8 @@ export default function Hero() {
           Pick your startup ↓
         </a>
       )}
+
+      <PodiumScene countries={topCountries} verified={verified.length} />
 
       <dl className="mt-4 flex flex-wrap justify-center gap-3">
         {[
