@@ -1,22 +1,27 @@
 "use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Logo from "./Logo";
-import PixelIcon, { type PixelIconName } from "./PixelIcon";
-
-const links: { href: string; label: string; short?: string; icon: PixelIconName }[] = [
-  { href: "/profile", label: "Company", icon: "star" },
-  { href: "/needs", label: "My needs", short: "Needs", icon: "compass" },
-  { href: "/quests", label: "Quests", icon: "sparkle" },
-  { href: "/events", label: "Events", icon: "meeting" },
-  { href: "/map", label: "Map", icon: "pin" },
-  { href: "/leaderboard", label: "Leaderboard", short: "Board", icon: "trophy" },
-  { href: "/cradle", label: "Cradle view", short: "Cradle", icon: "funding" },
-];
+import PixelIcon from "./PixelIcon";
+import RoleSwitcher from "./RoleSwitcher";
+import { NAV_BY_ROLE } from "@/lib/roles";
+import { useGameStore, useHasHydrated } from "@/store/useGameStore";
 
 export default function TopNav() {
   const pathname = usePathname();
+  const hydrated = useHasHydrated();
+  const storedRole = useGameStore((s) => s.role);
+  const setRole = useGameStore((s) => s.setRole);
+  const links = NAV_BY_ROLE[hydrated ? storedRole : "startup"];
+
+  // Deep links to a role-only page (e.g. a shared /talent URL) adopt that role so the nav matches.
+  useEffect(() => {
+    if (!hydrated) return;
+    const owner = pathname.startsWith("/talent") ? "talent" : pathname.startsWith("/investor") ? "investor" : null;
+    if (owner && owner !== storedRole) setRole(owner);
+  }, [hydrated, pathname, storedRole, setRole]);
   const isActive = (href: string) =>
     pathname === href || pathname.startsWith(`${href}/`);
 
@@ -35,7 +40,7 @@ export default function TopNav() {
               Nexus<span className="text-primary"> Net</span>
             </span>
           </Link>
-          <nav aria-label="Main" className="hidden sm:block">
+          <nav aria-label="Main" className="hidden sm:block ml-auto">
             <ul className="flex items-center gap-2">
               {links.map((link) => {
                 const active = isActive(link.href);
@@ -57,6 +62,7 @@ export default function TopNav() {
               })}
             </ul>
           </nav>
+          <RoleSwitcher />
         </div>
       </header>
 
@@ -65,7 +71,7 @@ export default function TopNav() {
         aria-label="Main"
         className="sm:hidden fixed inset-x-0 bottom-0 z-30 border-t border-black/10 bg-paper/95 backdrop-blur pb-[env(safe-area-inset-bottom)]"
       >
-        <ul className="grid grid-cols-7">
+        <ul className="grid" style={{ gridTemplateColumns: `repeat(${links.length}, minmax(0, 1fr))` }}>
           {links.map((link) => {
             const active = isActive(link.href);
             return (
