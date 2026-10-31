@@ -5,9 +5,13 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { CompanyProfile, CompanyVerification, Quest, Startup } from "@/lib/types";
 import { parseCompanyProfile } from "@/lib/proof";
+import type { Role } from "@/lib/roles";
 import { seedQuests, seedStartups } from "@/seed";
 
 interface GameState {
+  /** Which persona the demo is viewed as; only changes navigation and landing pages. */
+  role: Role;
+  setRole: (role: Role) => void;
   currentStartupId: string | null;
   startups: Startup[];
   quests: Quest[];
@@ -39,6 +43,7 @@ interface GameState {
 }
 
 const initialData = () => ({
+  role: "startup" as Role,
   companyProfiles: {} as Record<string, CompanyProfile>,
   companyVerifications: {} as Record<string, CompanyVerification>,
   currentStartupId: null,
@@ -53,6 +58,7 @@ export const useGameStore = create<GameState>()(
     (set) => ({
       ...initialData(),
 
+      setRole: (role) => set({ role }),
       login: (startupId) => set({ currentStartupId: startupId }),
       logout: () => set({ currentStartupId: null }),
 

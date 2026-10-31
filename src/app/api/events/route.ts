@@ -27,6 +27,7 @@ interface LumaEntry {
     timezone?: string;
     cover_url?: string | null;
     location_type?: string;
+    coordinate?: { latitude?: number; longitude?: number } | null;
     geo_address_info?: {
       city?: string | null;
       short_address?: string | null;
@@ -83,6 +84,8 @@ function normalise(entry: LumaEntry): LumaEvent | null {
     hosts,
     city: event.geo_address_info?.city ?? null,
     address,
+    lat: event.coordinate?.latitude ?? null,
+    lng: event.coordinate?.longitude ?? null,
     locationType: event.location_type ?? "offline",
     registration: entry.registration_availability ?? "open",
     isFree,

@@ -1,4 +1,4 @@
-import { GemmaError, generateJson } from "@/lib/gemma";
+import { GemmaError, generateJson, readJsonBody, RequestBodyError } from "@/lib/gemma";
 import { detectNeeds, isValidAnswers, type GapId, type NeedOption } from "@/lib/needs";
 import type { Startup } from "@/lib/types";
 
@@ -71,8 +71,12 @@ export async function POST(request: Request) {
   const demo = new URL(request.url).searchParams.get("demo") === "1";
   let body: AnalyzeBody;
   try {
-    body = await request.json();
-  } catch {
+    body = (await readJsonBody(request)) as AnalyzeBody;
+  } catch (error) {
+    if (error instanceof RequestBodyError) {
+      const tooLarge = error.message.includes("too large");
+      return Response.json({ error: error.message }, { status: tooLarge ? 413 : 400 });
+    }
     return Response.json({ error: "Request body must be JSON." }, { status: 400 });
   }
   const { startup, answers, blocker } = body ?? {};
@@ -86,9 +90,18 @@ export async function POST(request: Request) {
   if (demo) return Response.json({ options: needs, source: "template" });
 
   const note = typeof blocker === "string" ? blocker.slice(0, MAX_BLOCKER) : "";
+  const safeStartup = {
+    id: String(startup.id).slice(0, 120),
+    name: String(startup.name).slice(0, 120),
+    sector: typeof startup.sector === "string" ? startup.sector.slice(0, 120) : "",
+    stage: startup.stage,
+    description:
+      typeof startup.description === "string" ? startup.description.slice(0, 300) : "",
+    country: startup.country,
+  } as Startup;
 
   try {
-    const copies = await generateJson([buildPrompt(startup, needs, note)], (v) => validateCopy(v, allowed));
+    const copies = await generateJson([buildPrompt(safeStartup, needs, note)], (v) => validateCopy(v, allowed));
     return Response.json({ options: applyCopy(needs, copies), source: "gemma" });
   } catch (error) {
     // The rules already produced complete options, so a model failure degrades to template wording.

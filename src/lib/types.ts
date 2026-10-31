@@ -118,6 +118,9 @@ export interface LumaEvent {
   hosts: string[];
   city: string | null;
   address: string | null;
+  /** Venue coordinates from Luma; null for online or unlocated events. */
+  lat: number | null;
+  lng: number | null;
   locationType: string;
   registration: string;
   isFree: boolean;

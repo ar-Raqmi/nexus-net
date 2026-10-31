@@ -258,77 +258,117 @@ body {
   to { opacity: .95; transform: scale(1) rotate(-12deg); }
 }
 
-.passport-mrz {
-  margin: auto -26px 0;
-  padding: 13px 26px 16px;
-  overflow: hidden;
-  background: rgb(255 255 255 / .93);
-  color: #1f2c86;
-  font-family: var(--font-score), monospace;
-  font-size: 12px;
-  letter-spacing: .2em;
-  line-height: 1.65;
-  white-space: nowrap;
-}
-.passport-mrz p { overflow: hidden; text-overflow: clip; }
-@media (max-width: 480px) {
-  .passport-book { padding: 22px 20px 0; min-height: 400px; }
-  .passport-mrz { margin-inline: -20px; padding-inline: 20px; font-size: 10px; }
-  .passport-stamp-mark { bottom: 86px; right: 14px; font-size: 12px; }
-}
+.company-demo-shortcut { display: flex; align-items: center; justify-content: space-between; gap: 15px; padding: 17px; margin-top: 23px; border: 1px solid #e0e5f5; border-radius: 12px; background: #f8faff; }
+.company-demo-shortcut strong { color: #34466d; font-size: 12px; font-weight: 600; }
+.company-demo-shortcut p { color: #7e89a0; font-size: 11px; margin-top: 6px; line-height: 1.6; }
+.company-sample-download { margin-top: 24px; padding: 17px; border: 1px solid #e0e5f5; border-radius: 12px; background: #f8faff; }
+.company-sample-download > a { display: block; font-size: 13px; font-weight: 600; color: #284bd1; margin-top: 9px; }
+.company-sample-download p { margin-top: 8px; font-size: 11px; color: #7e89a0; line-height: 1.7; }
+.company-sample-download p a { text-decoration: underline; }
+@media (max-width: 640px) { .company-demo-shortcut { align-items: flex-start; flex-direction: column; } }
 
-/* Visa page: cream paper with faint ruled lines beside the cover. */
-.visa-page {
-  overflow: hidden;
-  border: 1px solid #ece6da;
-  border-radius: 28px;
-  background:
-    repeating-linear-gradient(0deg, transparent 0 31px, rgb(64 92 238 / .035) 31px 32px),
-    #fffdf8;
-  box-shadow: var(--shadow-card);
-}
-.visa-seal {
-  display: flex;
-  flex-shrink: 0;
-  align-items: center;
-  justify-content: center;
-  width: 48px;
-  height: 48px;
-  border: 2px dashed rgb(1 193 107 / .45);
-  border-radius: 50%;
-  transform: rotate(-10deg);
-}
+/* ASEAN map markers (MapLibre injects these DOM nodes, so plain CSS rather than Tailwind classes). */
+.map-marker { display: grid; place-items: center; padding: 0; border: 0; background: none; cursor: pointer; animation: map-pop 450ms cubic-bezier(.34,1.56,.64,1) both; }
+.map-marker > svg { filter: drop-shadow(2px 3px 0 rgb(34 34 34 / .55)); border-radius: 10px; border: 2px solid #222; background: #fff; transition: transform .2s; }
+.map-marker:hover > svg, .map-marker.is-selected > svg { transform: translateY(-3px) scale(1.08); }
+.map-tag { opacity: 0; transition: opacity .15s; pointer-events: none; position: absolute; top: 100%; margin-top: 4px; padding: 1px 8px; border-radius: 999px; background: #222; color: #fff; font-size: 11px; font-weight: 700; white-space: nowrap; }
+.map-marker:hover .map-tag, .map-marker.is-selected .map-tag, .map-marker.is-current .map-tag { opacity: 1; }
+.map-marker:hover { z-index: 5; }
+.map-pulse { position: absolute; inset: -8px; border-radius: 16px; border: 3px solid #405cee; animation: map-ring 1.8s ease-out infinite; }
+.map-pin-dot { width: 18px; height: 18px; border-radius: 50%; border: 3px solid #222; background: #ffdd56; box-shadow: 2px 2px 0 rgb(34 34 34 / .5); }
+.map-pin-dot.is-luma { background: #405cee; }
+.map-popup .maplibregl-popup-content { display: flex; flex-direction: column; gap: 2px; padding: 10px 14px; border: 2px solid #222; border-radius: 16px; box-shadow: 3px 3px 0 #222; font-family: var(--font-inter), sans-serif; max-width: 240px; }
+.map-popup strong { font-size: 13px; color: #222; }
+.map-popup span { font-size: 12px; color: #595959; }
+/* Animate the standalone `scale` property: MapLibre positions markers via `transform`, which a transform animation would overwrite. */
+@keyframes map-pop { from { scale: .3; opacity: 0; } to { scale: 1; opacity: 1; } }
+@keyframes map-ring { from { transform: scale(.85); opacity: .9; } to { transform: scale(1.5); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .map-marker, .map-pulse { animation: none; } }
 
-/* Upload dialog: scanning beam over the document preview while Gemma checks it. */
-.doc-scan-line {
-  position: absolute;
-  inset-inline: 0;
-  top: 0;
-  height: 3px;
-  background: linear-gradient(90deg, transparent, #55ffda, transparent);
-  box-shadow: 0 0 18px 5px rgb(85 255 218 / .55);
-  animation: doc-scan 1.4s ease-in-out infinite alternate;
+/* Nexus Net theme layer for company onboarding + passport: same arcade language as Home
+   (Rammetto headings, Quantico numbers, ink borders with hard offset shadows, square-ish
+   buttons). Kept as overrides so the teammate-owned markup and base rules stay untouched. */
+.company-passport { --passport-blue: var(--color-primary); --passport-ink: var(--color-ink); }
+.passport-eyebrow { color: var(--color-muted); font-size: 12px; font-weight: 800; letter-spacing: .14em; }
+.passport-heading h2, .onboarding-heading h1, .profile-page-heading h1, .onboarding-welcome h1, .onboarding-review-main h2, .company-form-heading h2 {
+  font-family: var(--font-rammetto), var(--font-inter), sans-serif; font-weight: 400; letter-spacing: -.01em; color: var(--color-ink);
 }
-@keyframes doc-scan { to { top: calc(100% - 3px); } }
+.passport-intro, .onboarding-heading > p:last-child, .profile-page-heading p:last-child, .onboarding-welcome > p:not(.passport-eyebrow),
+.company-form-heading p, .onboarding-review-main > p:not(.passport-eyebrow) { color: var(--color-muted); font-size: 15px; }
 
-.result-stamp {
-  position: absolute;
-  top: 16px;
-  right: 14px;
-  padding: 4px 10px;
-  border: 2px solid currentColor;
-  border-radius: 8px;
-  font-family: var(--font-score), monospace;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: .14em;
-  text-transform: uppercase;
-  transform: rotate(8deg);
-  animation: stamp-in-result .5s cubic-bezier(.2, 1.4, .4, 1) .15s both;
+.passport-status { border: 2px solid var(--color-ink); border-radius: 10px; background: #fff; color: var(--color-ink); font-weight: 800; box-shadow: 3px 3px 0 var(--color-ink); }
+.passport-status > span { width: 10px; height: 10px; border-radius: 2px; background: var(--color-yellow); border: 2px solid var(--color-ink); }
+.passport-status.is-checked { background: #fff; color: var(--color-ink); border-color: var(--color-ink); }
+.passport-status.is-checked > span { background: var(--color-green); }
+
+.passport-cover-stack::before { background: var(--color-yellow); border: 2px solid var(--color-ink); border-radius: 20px; transform: rotate(-2deg) translate(-2px, 4px); }
+.passport-cover-stack::after { background: var(--color-purple); border: 2px solid var(--color-ink); border-radius: 20px; transform: rotate(2.2deg) translate(5px, 3px); }
+.passport-cover { border: 2px solid var(--color-ink); border-radius: 20px; background: var(--color-primary); box-shadow: 4px 4px 0 var(--color-ink); }
+.passport-cover::before { opacity: 1; background-image: repeating-linear-gradient(135deg, rgb(255 255 255 / .07) 0 10px, transparent 10px 20px); }
+.passport-cover::after { border: 0; border-radius: 0; width: 150px; height: 150px; right: -64px; top: 150px; bottom: auto; background: var(--color-yellow); opacity: .95; clip-path: polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0% 50%); }
+.passport-wordmark { font-family: var(--font-rammetto), sans-serif; font-weight: 400; font-size: 16px; letter-spacing: 0; }
+.passport-cover-label, .passport-cover-kicker, .passport-fields dt, .passport-xp-unit, .passport-cover-bottom div > span { color: #fff; opacity: .85; font-weight: 700; }
+.passport-monogram { width: 56px; height: 56px; border: 2px solid var(--color-ink); border-radius: 12px; background: var(--color-yellow); color: var(--color-ink); font-family: var(--font-micro5), monospace; font-size: 28px; box-shadow: 3px 3px 0 var(--color-ink); }
+.passport-company h3 { font-family: var(--font-rammetto), sans-serif; font-weight: 400; letter-spacing: -.01em; }
+.passport-company > p:last-child, .passport-company > p:last-child span { color: #fff; }
+.passport-fields dd { font-family: var(--font-quantico), monospace; font-weight: 700; font-size: 15px; }
+.passport-country-code { font-family: var(--font-micro5), monospace; font-size: 40px; color: var(--color-yellow); opacity: 1; }
+.passport-cover-bottom { border-top: 2px dashed rgb(255 255 255 / .5); }
+
+.passport-register { border: 2px solid var(--color-ink); border-radius: 20px; background: #fff; box-shadow: 4px 4px 0 var(--color-ink); }
+.passport-register-heading h3 { font-family: var(--font-rammetto), sans-serif; font-weight: 400; font-size: 18px; color: var(--color-ink); }
+.passport-register-count { border: 2px solid var(--color-ink); border-radius: 10px; background: var(--color-yellow); color: var(--color-ink); font-family: var(--font-quantico), monospace; font-weight: 700; }
+.passport-stats { border-block: 2px dashed rgb(34 34 34 / .15); }
+.passport-stats dt, .passport-evidence dt { color: var(--color-muted); font-size: 12px; font-weight: 700; }
+.passport-stats dd { font-family: var(--font-quantico), monospace; font-weight: 700; color: var(--color-primary); font-size: 26px; }
+.passport-stats .passport-date { color: var(--color-ink); font-size: 13px; }
+.passport-empty-seal { border: 2px dashed var(--color-ink); border-radius: 16px; color: var(--color-ink); }
+.passport-empty h4 { font-family: var(--font-rammetto), sans-serif; font-weight: 400; color: var(--color-ink); font-size: 16px; }
+.passport-empty p { color: var(--color-muted); font-size: 13px; }
+.passport-empty a, .company-sample-download > a { color: var(--color-primary-dark); font-weight: 800; }
+
+.passport-stamp { border: 2px solid var(--color-ink); border-radius: 14px; background: #fff; box-shadow: 3px 3px 0 var(--color-ink); transition: transform .15s; }
+.passport-stamp:hover { transform: translateY(-2px); }
+.passport-destination { border: 2px solid var(--color-ink); border-radius: 10px; background: var(--color-yellow); color: var(--color-ink); }
+.passport-stamp-top p, .passport-stamp h4 { color: var(--color-ink); font-weight: 800; }
+.passport-stamp-top div > span, .passport-stamp-top time, .passport-evidence, .passport-evidence dd, .passport-stamp-meta { color: var(--color-muted); }
+.passport-stamp-meta > span:first-child { color: #0a7a47; font-weight: 800; }
+.passport-evidence { border-top: 2px dashed rgb(34 34 34 / .15); }
+.passport-register-footer { background: var(--color-paper); border-top: 2px solid var(--color-ink); color: var(--color-muted); }
+.passport-note { color: var(--color-muted); font-size: 12px; }
+
+.onboarding-steps { border-bottom: 2px dashed rgb(34 34 34 / .15); }
+.onboarding-steps li { color: var(--color-muted); font-weight: 700; font-size: 13px; }
+.onboarding-steps b { width: 34px; height: 34px; border: 2px solid var(--color-ink); border-radius: 8px; background: #fff; color: var(--color-ink); font-family: var(--font-quantico), monospace; font-size: 13px; font-weight: 700; }
+.onboarding-steps [aria-current="step"], .onboarding-steps .step-done { color: var(--color-ink); }
+.onboarding-steps [aria-current="step"] b { background: var(--color-yellow); border-color: var(--color-ink); color: var(--color-ink); box-shadow: 2px 2px 0 var(--color-ink); }
+.onboarding-steps .step-done b { background: var(--color-green); border-color: var(--color-ink); color: #fff; }
+
+.company-form, .onboarding-review { border: 2px solid var(--color-ink); border-radius: 20px; background: #fff; box-shadow: 4px 4px 0 var(--color-ink); }
+.company-form-grid label { color: var(--color-ink); font-weight: 800; font-size: 13px; }
+.company-form-grid :is(input, select, textarea) { border: 2px solid var(--color-ink); border-radius: 10px; background: #fff; color: var(--color-ink); font-weight: 600; }
+.company-form-grid :is(input, select, textarea):focus { outline: 3px solid var(--color-yellow); outline-offset: 0; box-shadow: 3px 3px 0 var(--color-ink); }
+.company-form-grid input::placeholder, .company-form-grid textarea::placeholder { color: var(--color-subtle); }
+.company-form-actions { border-top: 2px dashed rgb(34 34 34 / .15); }
+
+.company-form-actions button, .onboarding-primary, .onboarding-secondary {
+  border: 2px solid var(--color-ink); border-radius: 10px; font-weight: 800; letter-spacing: 0; box-shadow: 3px 3px 0 var(--color-ink);
+  transition: transform .12s, box-shadow .12s, background-color .12s;
 }
-.result-stamp.is-approved { color: #0f9d58; }
-.result-stamp.is-rejected { color: #d9480f; }
-@keyframes stamp-in-result {
-  from { opacity: 0; transform: scale(1.8) rotate(0deg); }
-  to { opacity: 1; transform: scale(1) rotate(8deg); }
-}
+.company-form-actions button, .onboarding-primary { background: var(--color-primary); color: #fff; }
+.company-form-actions button:hover, .onboarding-primary:hover { background: var(--color-primary-dark); transform: translate(-1px, -1px); box-shadow: 4px 4px 0 var(--color-ink); }
+.onboarding-secondary { background: #fff; color: var(--color-ink); }
+.onboarding-secondary:hover { background: var(--color-yellow); color: var(--color-ink); border-color: var(--color-ink); transform: translate(-1px, -1px); box-shadow: 4px 4px 0 var(--color-ink); }
+.company-form-actions button:active, .onboarding-primary:active, .onboarding-secondary:active { transform: translate(3px, 3px); box-shadow: 0 0 0 var(--color-ink); }
+
+.onboarding-review-aside { background: var(--color-paper); border-left: 2px solid var(--color-ink); }
+.onboarding-review-aside h3 { color: var(--color-ink); font-family: var(--font-rammetto), sans-serif; font-weight: 400; font-size: 20px; }
+.onboarding-review-aside dt, .onboarding-review-aside > p:last-child, .company-profile-summary dt, .onboarding-local-note { color: var(--color-muted); }
+.onboarding-review-aside dd, .company-profile-summary dd { color: var(--color-ink); font-weight: 600; }
+.onboarding-document-icon { border: 2px solid var(--color-ink); border-radius: 12px; background: var(--color-yellow); color: var(--color-ink); box-shadow: 3px 3px 0 var(--color-ink); }
+.onboarding-notice { border: 2px solid var(--color-ink); border-radius: 12px; background: var(--color-yellow); color: var(--color-ink); font-weight: 600; }
+.company-profile-summary a { color: var(--color-primary-dark); font-weight: 800; }
+.company-demo-shortcut, .company-sample-download { border: 2px dashed var(--color-ink); border-radius: 14px; background: #fff; }
+.company-demo-shortcut strong { color: var(--color-ink); font-size: 13px; }
+.company-demo-shortcut p, .company-sample-download p { color: var(--color-muted); font-size: 12px; }
+@media (max-width: 767px) { .passport-cover::after { width: 100px; height: 100px; right: -44px; top: 130px; } .onboarding-review-aside { border-left: 0; border-top: 2px solid var(--color-ink); } }
