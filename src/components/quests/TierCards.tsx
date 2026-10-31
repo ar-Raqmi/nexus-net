@@ -13,38 +13,50 @@ export default function TierCards({ xp }: { xp: number }) {
   const current = getLevel(xp);
 
   return (
-    <ul className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-      {LEVELS.map((level) => {
-        const tier = TIER_STYLE[level.name];
-        const unlocked = xp >= level.minXp;
-        const isCurrent = level.index === current.index;
-        return (
-          <li
-            key={level.name}
-            className={`relative rounded-3xl bg-white shadow-card overflow-hidden transition ${
-              isCurrent ? "ring-4 ring-primary" : ""
-            } ${unlocked ? "" : "opacity-60 grayscale-[40%]"}`}
-          >
-            <span
-              className={`absolute top-3 right-3 rounded-full px-2.5 py-0.5 text-[10px] font-bold ${
-                unlocked ? "bg-green text-white" : "bg-ink/70 text-white"
+    <details className="group rounded-3xl bg-white shadow-card px-4 py-3 sm:px-6">
+      <summary className="flex cursor-pointer list-none items-center justify-between py-1 font-bold [&::-webkit-details-marker]:hidden">
+        All levels
+        <span aria-hidden className="text-primary transition-transform group-open:rotate-180">
+          ▾
+        </span>
+      </summary>
+      <ul className="mt-4 mb-2 flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2 lg:grid lg:grid-cols-5 lg:overflow-visible">
+        {LEVELS.map((level) => {
+          const tier = TIER_STYLE[level.name];
+          const unlocked = xp >= level.minXp;
+          const isCurrent = level.index === current.index;
+          return (
+            <li
+              key={level.name}
+              className={`relative w-44 shrink-0 snap-start overflow-hidden rounded-3xl bg-white shadow-card lg:w-auto ${
+                isCurrent ? "ring-4 ring-primary" : ""
               }`}
             >
-              {unlocked ? "Unlocked" : "🔒 Locked"}
-            </span>
-            <div className={`${tier.bg} h-24 flex items-center justify-center text-5xl`}>
-              <span aria-hidden>{tier.icon}</span>
-            </div>
-            <div className="p-4 flex flex-col items-center text-center gap-2">
-              <h3 className="font-bold">{level.name}</h3>
-              <p className="text-xs text-muted min-h-8">{TIER_BLURB[level.name]}</p>
-              <span className="rounded-full bg-purple/10 px-3 py-1 font-score text-xs font-bold text-purple-dark">
-                {level.minXp === 0 ? "Start" : `${level.minXp.toLocaleString("en-US")} XP`}
+              <span
+                className={`absolute top-3 right-3 rounded-full px-2.5 py-0.5 text-xs font-bold ${
+                  unlocked ? "bg-green text-white" : "bg-ink/70 text-white"
+                }`}
+              >
+                {unlocked ? "Unlocked" : "🔒 Locked"}
               </span>
-            </div>
-          </li>
-        );
-      })}
-    </ul>
+              <div
+                className={`${tier.bg} h-20 flex items-center justify-center text-4xl ${
+                  unlocked ? "" : "opacity-50"
+                }`}
+              >
+                <span aria-hidden>{tier.icon}</span>
+              </div>
+              <div className="p-4 flex flex-col items-center text-center gap-2">
+                <h3 className="font-bold">{level.name}</h3>
+                <p className="text-xs text-muted min-h-8">{TIER_BLURB[level.name]}</p>
+                <span className="rounded-full bg-purple/10 px-3 py-1 font-score text-xs font-bold text-purple-dark">
+                  {level.minXp === 0 ? "Start" : `${level.minXp.toLocaleString("en-US")} XP`}
+                </span>
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+    </details>
   );
 }

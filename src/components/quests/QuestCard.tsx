@@ -4,6 +4,16 @@ import { QUEST_TYPE_STYLE, STATUS_STYLE } from "@/lib/tiers";
 import type { Quest } from "@/lib/types";
 import { seedEvents } from "@/seed";
 
+// Fixed locale + UTC so server and client render the same string.
+function formatDate(value: string) {
+  return new Date(value).toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    timeZone: "UTC",
+  });
+}
+
 export default function QuestCard({ quest }: { quest: Quest }) {
   const type = QUEST_TYPE_STYLE[quest.type];
   const status = STATUS_STYLE[quest.status];
@@ -11,14 +21,14 @@ export default function QuestCard({ quest }: { quest: Quest }) {
 
   return (
     <article className="h-full flex flex-col rounded-3xl bg-white shadow-card overflow-hidden">
-      <div className={`${type.bg} relative h-24 px-5 flex items-center justify-between`}>
-        <span className="text-4xl" aria-hidden>
+      <div className={`${type.bg} relative h-16 px-5 flex items-center justify-between`}>
+        <span className="text-3xl" aria-hidden>
           {type.icon}
         </span>
         {/* Coin badge */}
-        <span className="size-18 rounded-full bg-yellow border-4 border-white shadow-card flex flex-col items-center justify-center leading-none">
-          <span className="font-score text-lg font-bold text-ink">+{quest.xp}</span>
-          <span className="text-[10px] font-bold text-ink/70">XP</span>
+        <span className="size-14 rounded-full bg-yellow border-4 border-white shadow-card flex flex-col items-center justify-center leading-none">
+          <span className="font-score text-base font-bold text-ink">+{quest.xp}</span>
+          <span className="text-xs font-bold text-ink/70">XP</span>
         </span>
       </div>
 
@@ -52,7 +62,7 @@ export default function QuestCard({ quest }: { quest: Quest }) {
           )}
           {quest.completedAt && (
             <p>
-              <span className="font-semibold text-ink">Completed:</span> {quest.completedAt}
+              <span className="font-semibold text-ink">Completed:</span> {formatDate(quest.completedAt)}
             </p>
           )}
         </div>

@@ -3,10 +3,11 @@
 @theme {
   --color-paper: #f7f4f2;
   --color-ink: #222222;
-  --color-muted: #666666;
-  --color-subtle: #999999;
+  --color-muted: #595959;
+  --color-subtle: #767676;
   --color-primary: #405cee;
   --color-purple: #6e68ff;
+  --color-primary-dark: #2f45c4;
   --color-purple-dark: #4e4ba6;
   --color-yellow: #ffdd56;
   --color-green: #01c16b;
@@ -86,4 +87,36 @@
 
 body {
   color: var(--color-ink);
+}
+
+@utility eyebrow {
+  font-size: 0.75rem;
+  line-height: 1rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--color-muted);
+}
+
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

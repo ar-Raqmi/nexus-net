@@ -1,11 +1,5 @@
-import PagePlaceholder from "@/components/PagePlaceholder";
+import LeaderboardView from "@/components/leaderboard/LeaderboardView";
 
 export default function LeaderboardPage() {
-  return (
-    <PagePlaceholder
-      title="Leaderboard"
-      subtitle="Top startups, countries and events by verified outcomes."
-      phase={6}
-    />
-  );
+  return <LeaderboardView />;
 }

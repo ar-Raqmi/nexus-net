@@ -10,6 +10,8 @@ interface Props {
   /** True when a startup is logged in and can subscribe. */
   canSubscribe: boolean;
   onToggleSubscribe: (event: LumaEvent) => void;
+  /** Cover-less, single-glance variant used in the "Next up" strip. */
+  compact?: boolean;
 }
 
 export default function EventCard({
@@ -18,30 +20,75 @@ export default function EventCard({
   relevant,
   canSubscribe,
   onToggleSubscribe,
+  compact = false,
 }: Props) {
   const category = CATEGORY_BY_KEY[event.category];
   const past = isPast(event.startAt);
   const xp = relevant ? EVENT_RELEVANT_XP : EVENT_SUBSCRIBE_XP;
+
+  const actions = (
+    <div className="flex items-center gap-2">
+      {canSubscribe && (
+        <button
+          type="button"
+          onClick={() => onToggleSubscribe(event)}
+          aria-pressed={subscribed}
+          className={`rounded-full px-4 py-2 text-sm font-bold transition ${
+            subscribed ? "bg-green text-white hover:brightness-110" : "bg-ink text-white hover:bg-primary"
+          }`}
+        >
+          {subscribed ? "Subscribed ✓" : "Subscribe"}
+        </button>
+      )}
+      <a
+        href={event.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={`View ${event.name} on Luma`}
+        className="rounded-full bg-primary/10 px-3 py-2 text-sm font-bold text-primary hover:bg-primary hover:text-white"
+      >
+        ↗
+      </a>
+    </div>
+  );
+
+  const price = (
+    <span className="text-xs font-semibold text-muted">
+      {event.isFree ? "Free" : (event.priceLabel ?? "Paid")}
+      {event.guestCount > 0 ? ` · ${event.guestCount} going` : ""}
+    </span>
+  );
+
+  if (compact) {
+    return (
+      <article className="h-full flex flex-col gap-3 rounded-2xl bg-white shadow-card p-4">
+        <div className="flex flex-wrap items-center gap-2 text-xs font-bold">
+          <span className={`rounded-full px-2.5 py-1 ${category.className}`}>{category.label}</span>
+          <span className="text-muted">
+            {formatEventDay(event.startAt)} · {formatEventTime(event.startAt)}
+          </span>
+        </div>
+        <h3 className="text-base font-bold leading-snug line-clamp-2">{event.name}</h3>
+        <div className="mt-auto flex flex-wrap items-center justify-between gap-2">
+          {price}
+          {actions}
+        </div>
+      </article>
+    );
+  }
 
   return (
     <article className="h-full flex flex-col rounded-3xl bg-white shadow-card overflow-hidden transition hover:-translate-y-1 hover:shadow-xl">
       <div className="relative h-28 bg-ink/5">
         {event.coverUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={event.coverUrl}
-            alt=""
-            className="h-full w-full object-cover"
-            loading="lazy"
-          />
+          <img src={event.coverUrl} alt="" className="h-full w-full object-cover" loading="lazy" />
         ) : (
           <div className={`h-full w-full ${category.className} flex items-center justify-center text-4xl`}>
             {category.icon}
           </div>
         )}
-        <span
-          className={`absolute top-3 left-3 rounded-full px-2.5 py-1 text-xs font-bold ${category.className}`}
-        >
+        <span className={`absolute top-3 left-3 rounded-full px-2.5 py-1 text-xs font-bold ${category.className}`}>
           {category.icon} {category.label}
         </span>
 
@@ -80,17 +127,12 @@ export default function EventCard({
           <p className="text-sm text-muted line-clamp-1">By {event.hosts.join(", ")}</p>
         )}
 
-        {event.address && (
-          <p className="text-xs text-subtle line-clamp-2">{event.address}</p>
-        )}
+        {event.address && <p className="text-xs text-muted line-clamp-2">{event.address}</p>}
 
         {event.reasons.length > 0 && (
           <div className="flex flex-wrap gap-1.5">
             {event.reasons.map((reason) => (
-              <span
-                key={reason}
-                className="rounded-full bg-primary/10 px-2.5 py-1 text-[11px] font-bold text-primary"
-              >
+              <span key={reason} className="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-bold text-primary">
                 ✦ {reason}
               </span>
             ))}
@@ -98,35 +140,8 @@ export default function EventCard({
         )}
 
         <div className="mt-auto pt-3 border-t border-ink/5 flex items-center justify-between gap-2">
-          <span className="text-xs font-semibold text-muted">
-            {event.isFree ? "Free" : (event.priceLabel ?? "Paid")}
-            {event.guestCount > 0 ? ` · ${event.guestCount} going` : ""}
-          </span>
-
-          <div className="flex items-center gap-2">
-            {canSubscribe && (
-              <button
-                type="button"
-                onClick={() => onToggleSubscribe(event)}
-                className={`rounded-full px-4 py-2 text-sm font-bold transition ${
-                  subscribed
-                    ? "bg-green text-white hover:brightness-110"
-                    : "bg-ink text-white hover:bg-primary"
-                }`}
-              >
-                {subscribed ? "Subscribed ✓" : "Subscribe"}
-              </button>
-            )}
-            <a
-              href={event.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={`View ${event.name} on Luma`}
-              className="rounded-full bg-primary/10 px-3 py-2 text-sm font-bold text-primary hover:bg-primary hover:text-white"
-            >
-              ↗
-            </a>
-          </div>
+          {price}
+          {actions}
         </div>
       </div>
     </article>

@@ -123,13 +123,13 @@ export default function PodiumScene({
                 >
                   <div className="flex flex-col items-center gap-1">
                     <div className="flex items-center gap-1.5">
-                      <span className="rounded-full bg-ink px-2 py-0.5 font-score text-[11px] font-bold text-yellow">
+                      <span className="rounded-full bg-ink px-2 py-0.5 font-score text-xs font-bold text-yellow">
                         TOP{block.rank}
                       </span>
                       {country && <Flag country={country.id as Country} size={16} />}
                     </div>
                     {country && (
-                      <span className="text-[11px] font-bold leading-none">
+                      <span className="text-xs font-bold leading-none">
                         {COUNTRY_NAMES[country.id as Country]}
                       </span>
                     )}
@@ -155,7 +155,7 @@ export default function PodiumScene({
                       <span className={block.rank === 1 ? "text-2xl" : "text-lg"}>
                         {country.score.toLocaleString("en-US")}
                       </span>{" "}
-                      <span className="text-[10px] opacity-70">XP</span>
+                      <span className="text-xs opacity-70">XP</span>
                     </p>
                   )}
                 </Voxel>

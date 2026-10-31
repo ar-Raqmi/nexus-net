@@ -2,25 +2,33 @@
 
 import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
-import Flag from "@/components/Flag";
-import { COUNTRY_NAMES } from "@/lib/game";
 import {
-  CATEGORY_BY_KEY,
-  EVENT_CATEGORIES,
   EVENT_RELEVANT_XP,
   EVENT_SUBSCRIBE_XP,
+  addDays,
   isEventRelevant,
   klParts,
+  mondayIndex,
   selectRelevantEvents,
+  type DateParts,
 } from "@/lib/events";
-import type { EventCategory, LumaEvent } from "@/lib/types";
+import type { LumaEvent } from "@/lib/types";
 import { seedStartups } from "@/seed";
 import { selectCreditedEvents, selectStartup, selectSubscriptions } from "@/store/selectors";
 import { useGameStore, useHasHydrated } from "@/store/useGameStore";
-import EventCalendar, { type CalendarView } from "./EventCalendar";
+import BrowsingPanel from "./BrowsingPanel";
+import EventCalendar from "./EventCalendar";
 import EventCard from "./EventCard";
+import EventControls, { type Filter, type Mode } from "./EventControls";
+import EventModal from "./EventModal";
+import EventsHero from "./EventsHero";
+import NextUpStrip from "./NextUpStrip";
 
-type Filter = "all" | EventCategory;
+const FALLBACK_TODAY: DateParts = { year: 2026, month: 10, day: 31 };
+const MONTH_FMT = new Intl.DateTimeFormat("en-MY", { month: "long", year: "numeric", timeZone: "UTC" });
+const DAY_FMT = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", timeZone: "UTC" });
+
+const toDate = (p: DateParts) => new Date(Date.UTC(p.year, p.month - 1, p.day));
 
 interface FetchState {
   events: LumaEvent[];
@@ -58,18 +66,18 @@ export default function EventsView() {
     error: null,
   });
 
-  const [layout, setLayout] = useState<"list" | "calendar">("calendar");
-  const [calendarView, setCalendarView] = useState<CalendarView>("month");
+  const [mode, setMode] = useState<Mode>("month");
   const [filter, setFilter] = useState<Filter>("all");
   const [selected, setSelected] = useState<LumaEvent | null>(null);
+  const closeModal = useCallback(() => setSelected(null), []);
   const [showPast, setShowPast] = useState(false);
 
   // Captured from the client clock without an impure call during render. Null on
   // the server / first render, so prerender never evaluates the current time.
   const now = useSyncExternalStore(subscribeNow, getNow, () => null);
 
-  // User's month navigation, relative to the current month.
-  const [monthOffset, setMonthOffset] = useState(0);
+  // Date the user navigated to; null means "follow the default" (today, or the next event).
+  const [pickedAnchor, setPickedAnchor] = useState<DateParts | null>(null);
 
   // Fetching is done with promise callbacks so no setState runs during the
   // effect's synchronous body (React's set-state-in-effect guidance).
@@ -145,13 +153,6 @@ export default function EventsView() {
     [subscribedIds, startup, hydrated, toggleSubscribe],
   );
 
-  // Current month (in the client clock) plus the user's navigation offset.
-  const activeCursor = useMemo(() => {
-    const base = now === null ? { year: 2026, month: 1 } : klParts(new Date(now * 1000));
-    const d = new Date(Date.UTC(base.year, base.month - 1 + monthOffset, 1));
-    return { year: d.getUTCFullYear(), month: d.getUTCMonth() + 1 };
-  }, [now, monthOffset]);
-
   const relevant = useMemo(() => selectRelevantEvents(events, startup), [events, startup]);
 
   // XP earned from event subscriptions (recomputed from loaded events).
@@ -163,92 +164,70 @@ export default function EventsView() {
     }, 0);
   }, [creditedIds, events, startup]);
 
-  const upcoming = useMemo(() => {
+  const matchesFilter = useCallback(
+    (e: LumaEvent) => filter === "all" || e.category === filter,
+    [filter],
+  );
+
+  const upcomingAll = useMemo(() => {
     if (now === null) return [];
     return events
       .filter((e) => new Date(e.startAt).getTime() / 1000 >= now)
-      .filter((e) => filter === "all" || e.category === filter)
       .sort((a, b) => a.startAt.localeCompare(b.startAt));
-  }, [events, filter, now]);
+  }, [events, now]);
+
+  const upcoming = useMemo(() => upcomingAll.filter(matchesFilter), [upcomingAll, matchesFilter]);
 
   const past = useMemo(() => {
     if (now === null) return [];
     return events
       .filter((e) => new Date(e.startAt).getTime() / 1000 < now)
-      .filter((e) => filter === "all" || e.category === filter)
+      .filter(matchesFilter)
       .sort((a, b) => b.startAt.localeCompare(a.startAt));
-  }, [events, filter, now]);
+  }, [events, matchesFilter, now]);
 
-  const monthEvents = useMemo(() => {
-    return events.filter((e) => filter === "all" || e.category === filter);
-  }, [events, filter]);
+  const calendarEvents = useMemo(() => events.filter(matchesFilter), [events, matchesFilter]);
 
-  const monthLabel = new Intl.DateTimeFormat("en-MY", {
-    month: "long",
-    year: "numeric",
-    timeZone: "UTC",
-  }).format(new Date(Date.UTC(activeCursor.year, activeCursor.month - 1, 1)));
+  const today = now === null ? FALLBACK_TODAY : klParts(new Date(now * 1000));
+  const nextEvent = upcoming[0];
 
-  function shiftMonth(delta: number) {
-    setMonthOffset((o) => o + delta);
+  // Open on today, unless nothing is left this month: then on the next event.
+  const nextParts = nextEvent ? klParts(nextEvent.startAt) : null;
+  const defaultAnchor =
+    nextParts && (nextParts.year !== today.year || nextParts.month !== today.month) ? nextParts : today;
+  const anchor = pickedAnchor ?? defaultAnchor;
+  const calView = mode === "week" ? "week" : "month";
+
+  function navigate(delta: -1 | 1) {
+    if (calView === "week") {
+      setPickedAnchor(addDays(anchor, 7 * delta));
+      return;
+    }
+    const first = { year: anchor.year, month: anchor.month + delta, day: 1 };
+    const normalised = klParts(new Date(Date.UTC(first.year, first.month - 1, 1)));
+    const isCurrent = normalised.year === today.year && normalised.month === today.month;
+    setPickedAnchor(isCurrent ? today : normalised);
   }
+
+  const weekStart = addDays(anchor, -mondayIndex(anchor));
+  const title =
+    calView === "week"
+      ? `${DAY_FMT.format(toDate(weekStart))} – ${DAY_FMT.format(toDate(addDays(weekStart, 6)))}`
+      : MONTH_FMT.format(toDate(anchor));
+  const jump =
+    nextEvent && nextParts
+      ? {
+          label: calView === "week" ? DAY_FMT.format(toDate(nextParts)) : MONTH_FMT.format(toDate(nextParts)),
+          onJump: () => setPickedAnchor(nextParts),
+        }
+      : null;
 
   return (
     <div className="flex flex-col gap-8">
-      <header className="text-center">
-        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-muted">
-          Ecosystem events · Kuala Lumpur
-        </p>
-        <h1 className="mt-2 text-4xl sm:text-5xl font-bold">Event calendar</h1>
-        <p className="mt-3 max-w-2xl mx-auto text-muted">
-          Browse networking, workshops and startup events happening around you. We pull the
-          latest public events from Luma and surface the ones that match your startup.
-        </p>
-      </header>
+      <EventsHero />
 
-      {/* Startup context + relevance explainer */}
       {hydrated && startup ? (
-        <section className="rounded-3xl bg-white shadow-card p-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-wide text-subtle">
-              Browsing as
-            </p>
-            <p className="text-xl font-bold">
-              <Flag country={startup.country} size={18} className="mr-1.5 -mt-0.5" />
-              {startup.name}{" "}
-              <span className="text-sm font-semibold text-muted">
-                · {startup.sector} · {COUNTRY_NAMES[startup.country]}
-              </span>
-            </p>
-            <p className="mt-2 text-sm text-muted">
-              XP Booster: subscribe to an event calendar for{" "}
-              <span className="font-bold text-ink">+{EVENT_SUBSCRIBE_XP} XP</span>, or{" "}
-              <span className="font-bold text-primary">+{EVENT_RELEVANT_XP} XP</span> when it
-              matches your sector.
-            </p>
-          </div>
-
-          <div className="flex items-center gap-4">
-            <div className="rounded-2xl bg-ink/5 px-5 py-3 text-center">
-              <p className="font-score text-2xl font-bold text-primary">
-                {subscribedIds.length}
-              </p>
-              <p className="text-xs font-semibold text-subtle">subscribed</p>
-            </div>
-            <div className="rounded-2xl bg-signature px-5 py-3 text-center">
-              <p className="font-score text-2xl font-bold text-ink">
-                +{boosterXp}
-              </p>
-              <p className="text-xs font-bold text-ink/70">booster XP</p>
-            </div>
-            <Link
-              href="/quests"
-              className="rounded-full bg-primary px-5 py-2.5 text-sm font-bold text-white hover:brightness-110"
-            >
-              Quests →
-            </Link>
-          </div>
-        </section>
+        <BrowsingPanel startup={startup} subscribedCount={subscribedIds.length} boosterXp={boosterXp} />
       ) : hydrated ? (
         <section className="rounded-3xl border-2 border-dashed border-ink/10 bg-white/60 p-6 text-center">
           <p className="text-muted">
@@ -278,42 +257,13 @@ export default function EventsView() {
         </section>
       )}
 
-      {/* Controls */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex flex-wrap gap-2">
-          <FilterChip active={filter === "all"} onClick={() => setFilter("all")}>
-            All Events
-          </FilterChip>
-          {EVENT_CATEGORIES.map((c) => (
-            <FilterChip key={c.key} active={filter === c.key} onClick={() => setFilter(c.key)}>
-              {c.icon} {c.label}
-            </FilterChip>
-          ))}
-        </div>
+      <EventControls filter={filter} mode={mode} onFilter={setFilter} onMode={setMode} />
 
-        <div className="flex items-center gap-2 self-start">
-          <div className="flex rounded-full bg-white shadow-card p-1">
-            <ToggleButton active={layout === "calendar"} onClick={() => setLayout("calendar")}>
-              📅 Calendar
-            </ToggleButton>
-            <ToggleButton active={layout === "list"} onClick={() => setLayout("list")}>
-              ☰ List
-            </ToggleButton>
-          </div>
-          {layout === "calendar" && (
-            <div className="flex rounded-full bg-white shadow-card p-1">
-              <ToggleButton active={calendarView === "week"} onClick={() => setCalendarView("week")}>
-                Week
-              </ToggleButton>
-              <ToggleButton active={calendarView === "month"} onClick={() => setCalendarView("month")}>
-                Month
-              </ToggleButton>
-            </div>
-          )}
-        </div>
-      </div>
+      {!loading && !error && mode !== "list" && (
+        <NextUpStrip events={upcomingAll.slice(0, 3)} cardProps={cardProps} />
+      )}
 
-      {loading && <p className="py-12 text-center text-subtle">Loading events from Luma…</p>}
+      {loading && <p className="py-12 text-center text-muted">Loading events from Luma…</p>}
 
       {error && !loading && (
         <div className="rounded-3xl border-2 border-dashed border-ink/10 bg-white/60 p-8 text-center">
@@ -331,33 +281,17 @@ export default function EventsView() {
 
       {!loading && !error && (
         <>
-          {layout === "calendar" ? (
-            <section className="flex flex-col gap-3">
-              <div className="flex items-center justify-between">
-                <button
-                  type="button"
-                  onClick={() => shiftMonth(-1)}
-                  className="rounded-full bg-white shadow-card px-4 py-2 text-sm font-bold hover:bg-ink hover:text-white"
-                >
-                  ← Prev
-                </button>
-                <h2 className="text-lg font-bold">{monthLabel}</h2>
-                <button
-                  type="button"
-                  onClick={() => shiftMonth(1)}
-                  className="rounded-full bg-white shadow-card px-4 py-2 text-sm font-bold hover:bg-ink hover:text-white"
-                >
-                  Next →
-                </button>
-              </div>
-              <EventCalendar
-                events={monthEvents}
-                view={calendarView}
-                cursor={activeCursor}
-                now={now}
-                onSelectEvent={setSelected}
-              />
-            </section>
+          {mode !== "list" ? (
+            <EventCalendar
+              events={calendarEvents}
+              view={calView}
+              anchor={anchor}
+              title={title}
+              now={now}
+              jump={jump}
+              onNavigate={navigate}
+              onSelectEvent={setSelected}
+            />
           ) : (
             <section>
               <SectionTitle
@@ -365,7 +299,7 @@ export default function EventsView() {
                 subtitle={`${upcoming.length} event${upcoming.length === 1 ? "" : "s"} ahead in Kuala Lumpur.`}
               />
               {upcoming.length === 0 ? (
-                <p className="text-center text-subtle">No upcoming events match your filter.</p>
+                <p className="text-center text-muted">No upcoming events match your filter.</p>
               ) : (
                 <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                   {upcoming.map((event) => (
@@ -384,6 +318,7 @@ export default function EventsView() {
               <button
                 type="button"
                 onClick={() => setShowPast((v) => !v)}
+                aria-expanded={showPast}
                 className="mx-auto flex items-center gap-2 rounded-full bg-white shadow-card px-5 py-2.5 text-sm font-bold hover:bg-ink hover:text-white"
               >
                 {showPast ? "Hide" : "Show"} past events ({past.length}) {showPast ? "▲" : "▼"}
@@ -402,7 +337,7 @@ export default function EventsView() {
         </>
       )}
 
-      {selected && <EventModal event={selected} onClose={() => setSelected(null)} />}
+      {selected && <EventModal event={selected} onClose={closeModal} />}
 
       {toast && (
         <div
@@ -421,130 +356,6 @@ function SectionTitle({ title, subtitle }: { title: string; subtitle: string }) 
     <div className="text-center mb-6">
       <h2 className="text-3xl sm:text-4xl font-bold">{title}</h2>
       <p className="mt-2 text-muted">{subtitle}</p>
-    </div>
-  );
-}
-
-function FilterChip({
-  active,
-  onClick,
-  children,
-}: {
-  active: boolean;
-  onClick: () => void;
-  children: React.ReactNode;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`rounded-full px-4 py-2 text-sm font-bold transition ${
-        active ? "bg-primary text-white" : "bg-white shadow-card text-muted hover:text-ink"
-      }`}
-    >
-      {children}
-    </button>
-  );
-}
-
-function ToggleButton({
-  active,
-  onClick,
-  children,
-}: {
-  active: boolean;
-  onClick: () => void;
-  children: React.ReactNode;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`rounded-full px-4 py-2 text-sm font-bold transition ${
-        active ? "bg-ink text-white" : "text-muted hover:text-ink"
-      }`}
-    >
-      {children}
-    </button>
-  );
-}
-
-function EventModal({ event, onClose }: { event: LumaEvent; onClose: () => void }) {
-  const category = CATEGORY_BY_KEY[event.category];
-  return (
-    <div
-      className="fixed inset-0 z-40 flex items-center justify-center bg-ink/50 p-4"
-      role="dialog"
-      aria-modal="true"
-      onClick={onClose}
-    >
-      <div
-        className="w-full max-w-lg rounded-3xl bg-white shadow-xl overflow-hidden"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="relative h-36 bg-ink/5">
-          {event.coverUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={event.coverUrl} alt="" className="h-full w-full object-cover" />
-          ) : (
-            <div className={`h-full w-full ${category.className} flex items-center justify-center text-5xl`}>
-              {category.icon}
-            </div>
-          )}
-          <button
-            type="button"
-            onClick={onClose}
-            className="absolute top-3 right-3 size-8 rounded-full bg-white/90 text-lg font-bold leading-none"
-            aria-label="Close"
-          >
-            ×
-          </button>
-        </div>
-        <div className="p-6 flex flex-col gap-3">
-          <span className={`self-start rounded-full px-3 py-1 text-xs font-bold ${category.className}`}>
-            {category.icon} {category.label}
-          </span>
-          <h2 className="text-xl font-bold">{event.name}</h2>
-          <dl className="text-sm text-muted space-y-1">
-            <div>
-              <span className="font-semibold text-ink">When: </span>
-              {new Date(event.startAt).toLocaleString("en-MY", {
-                timeZone: "Asia/Kuala_Lumpur",
-                dateStyle: "medium",
-                timeStyle: "short",
-              })}
-            </div>
-            {event.hosts.length > 0 && (
-              <div>
-                <span className="font-semibold text-ink">Hosts: </span>
-                {event.hosts.join(", ")}
-              </div>
-            )}
-            {event.address && (
-              <div>
-                <span className="font-semibold text-ink">Where: </span>
-                {event.address}
-              </div>
-            )}
-            <div>
-              <span className="font-semibold text-ink">Price: </span>
-              {event.isFree ? "Free" : (event.priceLabel ?? "Paid")}
-            </div>
-            <div>
-              <span className="font-semibold text-ink">Going: </span>
-              {event.guestCount}
-            </div>
-          </dl>
-          <a
-            href={event.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-2 rounded-full bg-primary px-5 py-3 text-center font-bold text-white hover:brightness-110"
-          >
-            View on Luma →
-          </a>
-        </div>
-      </div>
     </div>
   );
 }

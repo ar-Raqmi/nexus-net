@@ -15,15 +15,17 @@ export interface CategoryMeta {
   label: string;
   icon: string;
   className: string;
+  /** Solid colour used for the compact dot markers on small screens. */
+  dot: string;
 }
 
 export const EVENT_CATEGORIES: CategoryMeta[] = [
-  { key: "startup", label: "Startup", icon: "🚀", className: "bg-primary text-white" },
-  { key: "tech", label: "Tech", icon: "💻", className: "bg-purple-dark text-white" },
-  { key: "meetup", label: "Meetup", icon: "🤝", className: "bg-green text-white" },
-  { key: "workshop", label: "Workshop", icon: "🛠️", className: "bg-yellow text-ink" },
-  { key: "social", label: "Social", icon: "🎉", className: "bg-ink text-white" },
-  { key: "other", label: "Other", icon: "📌", className: "bg-ink/10 text-ink" },
+  { key: "startup", label: "Startup", icon: "🚀", className: "bg-primary text-white", dot: "bg-primary" },
+  { key: "tech", label: "Tech", icon: "💻", className: "bg-purple-dark text-white", dot: "bg-purple-dark" },
+  { key: "meetup", label: "Meetup", icon: "🤝", className: "bg-green text-white", dot: "bg-green" },
+  { key: "workshop", label: "Workshop", icon: "🛠️", className: "bg-yellow text-ink", dot: "bg-yellow" },
+  { key: "social", label: "Social", icon: "🎉", className: "bg-ink text-white", dot: "bg-ink" },
+  { key: "other", label: "Other", icon: "📌", className: "bg-ink/10 text-ink", dot: "bg-muted" },
 ];
 
 export const CATEGORY_BY_KEY: Record<EventCategory, CategoryMeta> = EVENT_CATEGORIES.reduce(
@@ -227,4 +229,44 @@ export function isSameKlDay(iso: string, key: string): boolean {
 
 export function isPast(iso: string, now = Date.now()): boolean {
   return new Date(iso).getTime() < now;
+}
+
+// --- Calendar date arithmetic (pure calendar dates, no timezone involved) ---
+
+export interface DateParts {
+  year: number;
+  month: number;
+  day: number;
+}
+
+function fromUtc(d: Date): DateParts {
+  return { year: d.getUTCFullYear(), month: d.getUTCMonth() + 1, day: d.getUTCDate() };
+}
+
+export function partsKey({ year, month, day }: DateParts): string {
+  const d = fromUtc(new Date(Date.UTC(year, month - 1, day)));
+  return `${d.year}-${String(d.month).padStart(2, "0")}-${String(d.day).padStart(2, "0")}`;
+}
+
+export function addDays(p: DateParts, n: number): DateParts {
+  return fromUtc(new Date(Date.UTC(p.year, p.month - 1, p.day + n)));
+}
+
+/** Monday-first weekday index (0 = Monday .. 6 = Sunday). */
+export function mondayIndex(p: DateParts): number {
+  return (new Date(Date.UTC(p.year, p.month - 1, p.day)).getUTCDay() + 6) % 7;
+}
+
+export function daysInMonth(year: number, month: number): number {
+  return new Date(Date.UTC(year, month, 0)).getUTCDate();
+}
+
+/** Bucket events by their KL-time day key. */
+export function groupEventsByDay(events: LumaEvent[]): Map<string, LumaEvent[]> {
+  const byDay = new Map<string, LumaEvent[]>();
+  for (const e of events) {
+    const key = klDateKey(e.startAt);
+    byDay.set(key, [...(byDay.get(key) ?? []), e]);
+  }
+  return byDay;
 }

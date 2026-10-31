@@ -28,13 +28,13 @@ export default function StartupPicker() {
   return (
     <section id="startups" className="scroll-mt-20 py-10">
       <div className="text-center mb-8">
-        <h2 className="text-3xl sm:text-4xl font-bold">Pick your startup</h2>
+        <h2 className="text-2xl font-bold">Pick your startup</h2>
         <p className="mt-2 text-muted">
           Demo login: choose a startup to play as. All startups are fictional.
         </p>
       </div>
 
-      <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      <ul className="grid gap-5 grid-cols-[repeat(auto-fill,minmax(260px,1fr))]">
         {startups.map((startup) => (
           <li key={startup.id}>
             <StartupCard
@@ -69,7 +69,7 @@ function StartupCard({
       type="button"
       onClick={onPlay}
       className={`group w-full h-full text-left flex flex-col rounded-3xl bg-white shadow-card overflow-hidden transition hover:-translate-y-1 hover:shadow-xl focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/40 ${
-        selected ? "ring-4 ring-primary" : ""
+        selected ? "ring-2 ring-primary" : ""
       }`}
     >
       <div className={`${tier.bg} relative h-24 px-5 flex items-center gap-3`}>
@@ -89,7 +89,7 @@ function StartupCard({
 
       <div className="flex flex-1 flex-col gap-2 p-5">
         <h3 className="text-xl font-bold">{startup.name}</h3>
-        <p className="text-xs font-semibold uppercase tracking-wide text-subtle">
+        <p className="text-xs font-semibold uppercase tracking-wide text-muted">
           {startup.sector} · {startup.stage}
         </p>
         <p className="text-sm text-muted line-clamp-2">{startup.description}</p>
@@ -99,13 +99,13 @@ function StartupCard({
             <span className="font-score text-3xl font-bold text-primary">
               {startup.xp.toLocaleString("en-US")}
             </span>{" "}
-            <span className="text-xs font-semibold text-subtle">XP</span>
+            <span className="text-xs font-semibold text-muted">XP</span>
           </p>
           <span
             className={`rounded-full px-4 py-2 text-sm font-bold transition ${
               selected
-                ? "bg-green text-white"
-                : "bg-ink text-white group-hover:bg-primary"
+                ? "border-2 border-green bg-green text-white"
+                : "border-2 border-primary text-primary group-hover:bg-primary group-hover:text-white"
             }`}
           >
             {selected ? "Playing ✓" : "Play →"}

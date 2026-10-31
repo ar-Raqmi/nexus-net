@@ -1,4 +1,4 @@
-import { COUNTRY_FLAGS, COUNTRY_NAMES, XP_BY_TYPE } from "./game";
+import { COUNTRY_NAMES, XP_BY_TYPE } from "./game";
 import type { Country, Quest, QuestType, Startup, Talent } from "./types";
 
 export type QuestionId = "website" | "customers" | "product" | "pitch" | "contact" | "nextCountry";
@@ -8,7 +8,7 @@ export type GapId = "website" | "marketing" | "product" | "pitch" | "market";
 export interface NeedsQuestion {
   id: QuestionId;
   prompt: string;
-  choices: { value: string; label: string }[];
+  choices: { value: string; label: string; country?: Country }[];
 }
 
 export const QUESTIONS: NeedsQuestion[] = [
@@ -17,7 +17,8 @@ export const QUESTIONS: NeedsQuestion[] = [
     prompt: "Which ASEAN country do you want to win next?",
     choices: (Object.keys(COUNTRY_NAMES) as Country[]).map((c) => ({
       value: c,
-      label: `${COUNTRY_FLAGS[c]} ${COUNTRY_NAMES[c]}`,
+      label: COUNTRY_NAMES[c],
+      country: c,
     })),
   },
   {

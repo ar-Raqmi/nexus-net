@@ -33,7 +33,7 @@ export default function Hero() {
     <section className="flex flex-col items-center text-center gap-4 pt-2 pb-8">
       <CountdownPill />
 
-      <p className="text-xs sm:text-sm font-semibold uppercase tracking-[0.2em] text-muted">
+      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-ink/70">
         Startup ASEAN · Outcome Conversion
       </p>
 
@@ -41,12 +41,17 @@ export default function Hero() {
         Turn connections into outcomes
       </h1>
 
-      <p className="max-w-[560px] text-muted text-balance">
+      <p className="max-w-[560px] text-base text-ink/70 text-balance">
         Earn XP by turning connections into investments, partnerships and cross-border POCs.
         Gemma 4 writes the quests and checks the proof.
       </p>
 
-      <PodiumScene countries={topCountries} verified={verified.length} />
+      <div className="flex flex-col items-center gap-1">
+        <PodiumScene countries={topCountries} verified={verified.length} />
+        <p className="text-xs font-semibold uppercase tracking-wide text-ink/70">
+          Live leaderboard preview
+        </p>
+      </div>
 
       {current ? (
         <Link
