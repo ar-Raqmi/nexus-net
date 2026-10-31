@@ -42,9 +42,14 @@ export default function LeaderboardView() {
       {/* Top 3 podium */}
       <section className="grid grid-cols-3 gap-3 sm:gap-5 items-end">
         {[top[1], top[0], top[2]].map((row, i) => {
-          if (!row) return <div key={i} />;
           const place = i === 1 ? 1 : i === 0 ? 2 : 3;
-          return <PodiumCard key={row.id} row={row} place={place} mine={row.id === myId} />;
+          return (
+            <div key={place} className="flex items-end">
+              {row ? (
+                <PodiumCard row={row} place={place as 1 | 2 | 3} mine={row.id === myId} />
+              ) : null}
+            </div>
+          );
         })}
       </section>
 
@@ -73,9 +78,9 @@ export default function LeaderboardView() {
 }
 
 const PODIUM_STYLE = {
-  1: { panel: "bg-yellow", medal: "🥇", height: "h-32 sm:h-40" },
-  2: { panel: "tier-silver", medal: "🥈", height: "h-24 sm:h-30" },
-  3: { panel: "tier-peach", medal: "🥉", height: "h-20 sm:h-24" },
+  1: { panel: "bg-yellow", medal: "🥇", height: "h-40 sm:h-48" },
+  2: { panel: "tier-silver", medal: "🥈", height: "h-32 sm:h-40" },
+  3: { panel: "tier-peach", medal: "🥉", height: "h-28 sm:h-32" },
 } as const;
 
 function PodiumCard({
@@ -91,15 +96,17 @@ function PodiumCard({
   return (
     <Link
       href="/quests"
-      className={`${style.panel} ${style.height} rounded-3xl p-3 sm:p-4 flex flex-col justify-end text-center shadow-card transition hover:-translate-y-1 ${
+      className={`${style.panel} ${style.height} w-full rounded-3xl p-3 sm:p-4 flex flex-col items-center justify-end text-center shadow-card transition hover:-translate-y-1 ${
         mine ? "ring-4 ring-primary" : ""
       }`}
     >
-      <span className="text-3xl" aria-hidden>
+      <span className="text-3xl sm:text-4xl" aria-hidden>
         {style.medal}
       </span>
-      <h3 className="mt-1 text-sm sm:text-lg font-bold leading-tight">{row.name}</h3>
-      <p className="font-score text-xl sm:text-3xl font-bold text-primary">
+      <h3 className="mt-1 w-full text-sm sm:text-lg font-bold leading-tight line-clamp-2">
+        {row.name}
+      </h3>
+      <p className="font-score text-xl sm:text-3xl font-bold text-primary leading-tight">
         {row.score.toLocaleString("en-US")}
       </p>
       <p className="text-[11px] font-semibold text-ink/70">XP · {row.outcomes} quests</p>

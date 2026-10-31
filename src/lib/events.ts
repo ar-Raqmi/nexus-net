@@ -18,6 +18,7 @@ export interface CategoryMeta {
 }
 
 export const EVENT_CATEGORIES: CategoryMeta[] = [
+  { key: "hackathon", label: "Hackathon", icon: "⚡", className: "tier-red text-ink" },
   { key: "startup", label: "Startup", icon: "🚀", className: "bg-primary text-white" },
   { key: "tech", label: "Tech", icon: "💻", className: "bg-purple-dark text-white" },
   { key: "meetup", label: "Meetup", icon: "🤝", className: "bg-green text-white" },
@@ -32,6 +33,7 @@ export const CATEGORY_BY_KEY: Record<EventCategory, CategoryMeta> = EVENT_CATEGO
 );
 
 const CATEGORY_KEYWORDS: Record<Exclude<EventCategory, "other">, RegExp> = {
+  hackathon: /\bhack\w*/i,
   startup:
     /\b(startup|founder|venture|vc\b|investor|pitch|demo day|accelerat|incubat|funding|raise|entrepreneur|scale[- ]?up|growt)\w*/i,
   workshop:
@@ -45,6 +47,9 @@ const CATEGORY_KEYWORDS: Record<Exclude<EventCategory, "other">, RegExp> = {
 /** Best-effort category for an event based on its name, host and description. */
 export function inferCategory(...parts: (string | null | undefined)[]): EventCategory {
   const haystack = parts.filter(Boolean).join(" ");
+  const name = parts[0] ?? "";
+  // "Hack" in the name always means a hackathon, even alongside other signals.
+  if (CATEGORY_KEYWORDS.hackathon.test(name)) return "hackathon";
   // Order matters: startup and workshop are the most useful signals for founders.
   const order: Exclude<EventCategory, "other">[] = [
     "startup",
@@ -123,6 +128,7 @@ export function scoreRelevance(event: LumaEvent, startup: Startup): RelevanceRes
 
   // Category affinity: founder-facing categories are more useful by default.
   const CATEGORY_BOOST: Partial<Record<EventCategory, number>> = {
+    hackathon: 3,
     startup: 3,
     tech: 2,
     workshop: 2,
@@ -138,6 +144,7 @@ export function scoreRelevance(event: LumaEvent, startup: Startup): RelevanceRes
 }
 
 const CATEGORY_LABEL_SHORT: Record<EventCategory, string> = {
+  hackathon: "hackathon",
   startup: "startup",
   tech: "tech",
   meetup: "networking",
