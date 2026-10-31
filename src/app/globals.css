@@ -234,3 +234,12 @@ body {
   .onboarding-review-main, .onboarding-review-aside { padding: 25px; }
   .onboarding-review-aside { border-left: 0; border-top: 1px solid #e8eaf1; }
 }
+
+.company-demo-shortcut { display: flex; align-items: center; justify-content: space-between; gap: 15px; padding: 17px; margin-top: 23px; border: 1px solid #e0e5f5; border-radius: 12px; background: #f8faff; }
+.company-demo-shortcut strong { color: #34466d; font-size: 12px; font-weight: 600; }
+.company-demo-shortcut p { color: #7e89a0; font-size: 11px; margin-top: 6px; line-height: 1.6; }
+.company-sample-download { margin-top: 24px; padding: 17px; border: 1px solid #e0e5f5; border-radius: 12px; background: #f8faff; }
+.company-sample-download > a { display: block; font-size: 13px; font-weight: 600; color: #284bd1; margin-top: 9px; }
+.company-sample-download p { margin-top: 8px; font-size: 11px; color: #7e89a0; line-height: 1.7; }
+.company-sample-download p a { text-decoration: underline; }
+@media (max-width: 640px) { .company-demo-shortcut { align-items: flex-start; flex-direction: column; } }

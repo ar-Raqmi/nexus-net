@@ -152,6 +152,37 @@ with sync_playwright() as p:
     assert page.request.post(BASE + "/api/company/verify", data={**payloads[-1], "imageBase64": "aGVsbG8="}).status == 400
     assert page.request.post(BASE + "/api/company/verify", data={**payloads[-1], "profile": {**payloads[-1]["profile"], "registrationNumber": ""}}).status == 400
     assert page.request.post(BASE + "/api/proof/verify", data=payloads[-1]).status == 404
+    # Complete the presentation flow using the actual shipped synthetic data and image.
+    stage = browser.new_page(viewport={"width": 390, "height": 900})
+    stage.goto(BASE + "/register")
+    stage.get_by_role("button", name="Use sample company", exact=True).click()
+    stage.get_by_role("status").get_by_text("Demo simulation enabled.", exact=False).wait_for()
+    assert stage.get_by_label("Legal company name", exact=True).input_value() == "PayLah Lite"
+    assert stage.get_by_label("Registration number", exact=True).input_value() == "MY-DEMO-2026-001"
+    stage.get_by_role("button", name="Save and continue").click()
+    stage.wait_for_url("**/profile?demo=1")
+    with stage.expect_download() as download_info:
+        stage.get_by_role("link", name="Download sample company record ↗", exact=True).click()
+    downloaded = OUT / "downloaded-company-record.png"
+    download_info.value.save_as(str(downloaded))
+    assert downloaded.read_bytes() == (Path(__file__).resolve().parents[1] / "public/demo-evidence/01-matching-company-record.png").read_bytes()
+    stage.locator(".onboarding-review-main .onboarding-primary").click()
+    dialog = stage.get_by_role("dialog")
+    dialog.locator("input[type=file]").set_input_files(str(downloaded))
+    dialog.get_by_role("button", name="Verify company", exact=True).click()
+    dialog.get_by_role("heading", name="Company document approved ✓").wait_for()
+    dialog.get_by_role("button", name="View company passport").click()
+    stage.locator("#company-passport").get_by_text("Demo passport", exact=True).wait_for()
+    stage_state = state(stage)
+    stage_id = stage_state["currentStartupId"]
+    saved_passport_id = stage_state["companyVerifications"][stage_id]["passportId"]
+    assert next(s for s in stage_state["startups"] if s["id"] == stage_id)["xp"] == 0
+    stage.reload()
+    stage.get_by_text(saved_passport_id, exact=True).wait_for()
+    assert stage.evaluate("document.documentElement.scrollWidth <= innerWidth")
+    for name in ["02-mismatched-company-record.png", "03-incomplete-company-record.png", "profile-values.json", "README.md"]:
+        assert stage.request.get(BASE + "/demo-evidence/" + name).status == 200
+
     # Older v1 browser data has quest verdicts, but no company identity review.
     root = Path(__file__).resolve().parents[1]
     old_quests = json.loads((root / "src/seed/quests.json").read_text())
