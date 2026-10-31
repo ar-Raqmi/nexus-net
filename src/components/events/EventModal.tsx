@@ -55,9 +55,16 @@ export default function EventModal({ event, onClose }: { event: LumaEvent; onClo
         onClick={(e) => e.stopPropagation()}
       >
         <div className="relative h-36 bg-ink/5">
-          {event.coverUrl ? (
+          {event.coverUrlLarge ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={event.coverUrl} alt="" className="h-full w-full object-cover" />
+            <img
+              src={event.coverUrlLarge}
+              alt=""
+              width={720}
+              height={720}
+              decoding="async"
+              className="h-full w-full object-cover"
+            />
           ) : (
             <div className={`h-full w-full ${category.className} flex items-center justify-center`}>
               <PixelIcon name={category.icon} size={72} />
