@@ -11,6 +11,23 @@ export const EVENT_TIMEZONE = "Asia/Kuala_Lumpur";
 export const EVENT_SUBSCRIBE_XP = 50;
 export const EVENT_RELEVANT_XP = 100;
 
+/**
+ * Rewrite a Luma cover URL to a resized variant through their image CDN.
+ * Luma's raw uploads are often 2 MB+; the cdn-cgi transform returns a small
+ * crop (e.g. ~80 KB at 360px), which is the single biggest load-time win for
+ * the events page. Non-Luma URLs are returned unchanged.
+ */
+export function lumaImageUrl(url: string | null | undefined, width: number, quality = 70): string | null {
+  if (!url) return null;
+  if (!url.startsWith("https://images.lumacdn.com/uploads/")) return url;
+  const opts = `format=auto,fit=cover,width=${width},height=${width},quality=${quality}`;
+  return `https://images.lumacdn.com/cdn-cgi/image/${opts}/${url.slice("https://images.lumacdn.com/".length)}`;
+}
+
+/** Cover size for grid cards (rendered ~180px) and the detail modal (rendered ~560px). */
+export const COVER_CARD_WIDTH = 360;
+export const COVER_MODAL_WIDTH = 720;
+
 export interface CategoryMeta {
   key: EventCategory;
   label: string;

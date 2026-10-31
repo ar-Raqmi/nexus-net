@@ -89,7 +89,15 @@ export default function EventCard({
       <div className="relative h-28 bg-ink/5">
         {event.coverUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={event.coverUrl} alt="" className="h-full w-full object-cover" loading="lazy" />
+          <img
+            src={event.coverUrl}
+            alt=""
+            width={360}
+            height={360}
+            loading="lazy"
+            decoding="async"
+            className="h-full w-full object-cover"
+          />
         ) : (
           <div className={`h-full w-full ${category.className} flex items-center justify-center`}>
             <PixelIcon name={category.icon} size={56} className="transition-transform duration-200 motion-safe:group-hover:-rotate-6 motion-safe:group-hover:scale-110" />

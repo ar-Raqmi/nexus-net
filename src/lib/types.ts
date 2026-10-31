@@ -114,7 +114,10 @@ export interface LumaEvent {
   startAt: string;
   endAt: string | null;
   timezone: string;
+  /** Small, CDN-resized cover for grid cards. */
   coverUrl: string | null;
+  /** Larger CDN-resized cover for the detail modal. */
+  coverUrlLarge: string | null;
   hosts: string[];
   city: string | null;
   address: string | null;

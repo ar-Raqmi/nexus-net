@@ -1,4 +1,4 @@
-import { inferCategory, LUMA_KL_PLACE_API_ID } from "@/lib/events";
+import { COVER_CARD_WIDTH, COVER_MODAL_WIDTH, inferCategory, lumaImageUrl, LUMA_KL_PLACE_API_ID } from "@/lib/events";
 import type { LumaEvent } from "@/lib/types";
 
 // Proxy for the public Luma Kuala Lumpur discovery feed. Luma's API has no
@@ -7,6 +7,8 @@ import type { LumaEvent } from "@/lib/types";
 
 const LUMA_ENDPOINT = "https://api.lu.ma/discover/get-paginated-events";
 const FETCH_TIMEOUT_MS = 10_000;
+// How long clients/CDNs may reuse the events payload before revalidating.
+const CACHE_SECONDS = 300;
 
 interface LumaTicketInfo {
   is_free?: boolean;
@@ -80,7 +82,8 @@ function normalise(entry: LumaEntry): LumaEvent | null {
     startAt: event.start_at,
     endAt: event.end_at ?? null,
     timezone: event.timezone ?? "Asia/Kuala_Lumpur",
-    coverUrl: event.cover_url ?? null,
+    coverUrl: lumaImageUrl(event.cover_url, COVER_CARD_WIDTH),
+    coverUrlLarge: lumaImageUrl(event.cover_url, COVER_MODAL_WIDTH),
     hosts,
     city: event.geo_address_info?.city ?? null,
     address,
@@ -109,7 +112,8 @@ export async function GET(): Promise<Response> {
   try {
     const res = await fetch(`${LUMA_ENDPOINT}?${params.toString()}`, {
       signal: controller.signal,
-      cache: "no-store",
+      // Reuse the upstream response for a short window server-side as well.
+      next: { revalidate: CACHE_SECONDS },
       headers: {
         Accept: "application/json",
         Origin: "https://lu.ma",
@@ -131,7 +135,16 @@ export async function GET(): Promise<Response> {
       .filter((e): e is LumaEvent => e !== null)
       .sort((a, b) => a.startAt.localeCompare(b.startAt));
 
-    return Response.json({ events, source: "luma", place: "Kuala Lumpur" });
+    return Response.json(
+      { events, source: "luma", place: "Kuala Lumpur" },
+      {
+        headers: {
+          // Let the browser reuse the payload briefly, so repeat visits are
+          // instant and we don't re-hit Luma on every render.
+          "Cache-Control": `public, max-age=${CACHE_SECONDS}, s-maxage=${CACHE_SECONDS}, stale-while-revalidate=${CACHE_SECONDS * 2}`,
+        },
+      },
+    );
   } catch (err) {
     const message =
       err instanceof Error && err.name === "AbortError"
