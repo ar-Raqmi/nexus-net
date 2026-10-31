@@ -1,4 +1,5 @@
-import { COUNTRY_FLAGS, COUNTRY_NAMES } from "@/lib/game";
+import Flag from "@/components/Flag";
+import { COUNTRY_NAMES } from "@/lib/game";
 import { QUEST_TYPE_STYLE, STATUS_STYLE } from "@/lib/tiers";
 import type { Quest } from "@/lib/types";
 import { seedEvents } from "@/seed";
@@ -24,8 +25,8 @@ export default function QuestCard({ quest }: { quest: Quest }) {
       <div className="flex flex-1 flex-col gap-3 p-5">
         <div className="flex flex-wrap items-center gap-2 text-xs font-bold">
           <span className="rounded-full bg-purple-dark px-2.5 py-1 text-white">{type.label}</span>
-          <span className="rounded-full bg-ink/5 px-2.5 py-1 text-ink">
-            {COUNTRY_FLAGS[quest.targetCountry]} {COUNTRY_NAMES[quest.targetCountry]}
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-ink/5 px-2.5 py-1 text-ink">
+            <Flag country={quest.targetCountry} size={12} /> {COUNTRY_NAMES[quest.targetCountry]}
           </span>
           <span className={`ml-auto rounded-full px-2.5 py-1 ${status.className}`}>
             {status.label}

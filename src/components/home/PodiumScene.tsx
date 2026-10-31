@@ -1,4 +1,5 @@
-import { COUNTRY_FLAGS } from "@/lib/game";
+import Flag from "@/components/Flag";
+import { COUNTRY_NAMES } from "@/lib/game";
 import type { Country } from "@/lib/types";
 import type { LeaderboardRow } from "@/store/selectors";
 import PixelArt, { MAP_PIN, ROCKET, TROPHY } from "./PixelArt";
@@ -120,13 +121,16 @@ export default function PodiumScene({
                   style={{ zIndex: i + 1 }}
                   frontClassName={`flex flex-col items-center justify-between py-3 px-2 ${block.text}`}
                 >
-                  <div className="flex items-center gap-1.5">
-                    <span className="rounded-full bg-ink px-2 py-0.5 font-score text-[11px] font-bold text-yellow">
-                      TOP{block.rank}
-                    </span>
+                  <div className="flex flex-col items-center gap-1">
+                    <div className="flex items-center gap-1.5">
+                      <span className="rounded-full bg-ink px-2 py-0.5 font-score text-[11px] font-bold text-yellow">
+                        TOP{block.rank}
+                      </span>
+                      {country && <Flag country={country.id as Country} size={16} />}
+                    </div>
                     {country && (
-                      <span className="text-2xl leading-none">
-                        {COUNTRY_FLAGS[country.id as Country]}
+                      <span className="text-[11px] font-bold leading-none">
+                        {COUNTRY_NAMES[country.id as Country]}
                       </span>
                     )}
                   </div>
