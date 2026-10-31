@@ -24,7 +24,7 @@
     "sector": "Healthtech",
     "stage": "series-a",
     "description": "Cross-border telehealth referrals connecting clinics with specialist hospitals.",
-    "xp": 490
+    "xp": 890
   },
   {
     "id": "greenhaul",
@@ -33,7 +33,7 @@
     "sector": "Logistics",
     "stage": "seed",
     "description": "Electric last-mile delivery fleets with route optimisation for city couriers.",
-    "xp": 270
+    "xp": 520
   },
   {
     "id": "learnloop",
@@ -42,7 +42,7 @@
     "sector": "Edtech",
     "stage": "pre-seed",
     "description": "Bite-sized upskilling courses for BPO workers, delivered over chat apps.",
-    "xp": 90
+    "xp": 165
   },
   {
     "id": "shopsiam",
@@ -51,7 +51,7 @@
     "sector": "E-commerce",
     "stage": "seed",
     "description": "Social-commerce storefronts that let Thai SMEs sell through live-stream shopping.",
-    "xp": 420
+    "xp": 490
   },
   {
     "id": "voltnest",
@@ -60,7 +60,7 @@
     "sector": "Cleantech",
     "stage": "pre-seed",
     "description": "Battery-as-a-service for rooftop solar in shophouses and small factories.",
-    "xp": 0
+    "xp": 70
   },
   {
     "id": "halaltrace",
@@ -69,7 +69,7 @@
     "sector": "Supply chain",
     "stage": "pre-seed",
     "description": "Blockchain-free halal certification tracking from abattoir to shelf.",
-    "xp": 0
+    "xp": 120
   },
   {
     "id": "kopistack",
@@ -87,6 +87,6 @@
     "sector": "Healthtech",
     "stage": "pre-seed",
     "description": "Home-care nurse matching for elderly patients in secondary cities.",
-    "xp": 0
+    "xp": 145
   }
 ]
