@@ -27,10 +27,13 @@ const STAMP: Record<PassportState, string> = {
   demo: "Sample",
 };
 
-/** Machine-readable-zone style line: uppercase, separators become "<", padded to a fixed width. */
-function mrz(text: string, length = 44) {
-  return text.toUpperCase().replace(/[^A-Z0-9]+/g, "<").padEnd(length, "<").slice(0, length);
-}
+/** Plain-language status for the strip at the bottom of the booklet. */
+const FOOTER: Record<PassportState, { title: string; detail: string; dot: string }> = {
+  draft: { title: "Draft preview", detail: "Updates as you fill in your details", dot: "bg-subtle" },
+  pending: { title: "Awaiting document review", detail: "Issued once your document is approved", dot: "bg-[#ff8d22]" },
+  issued: { title: "Verified company", detail: "Registration document reviewed by AI", dot: "bg-green" },
+  demo: { title: "Sample passport", detail: "Demo approval, not checked by AI", dot: "bg-yellow" },
+};
 
 export function formatPassportDate(value?: string) {
   if (!value) return "—";
@@ -55,8 +58,7 @@ export default function PassportCover({
 }) {
   const name = data.legalName.trim() || "Your company";
   const issued = state === "issued" || state === "demo";
-  const line1 = mrz(`P<${ISO3[data.country]}<${name}`);
-  const line2 = mrz(`${issued && passportId ? passportId : "NN<PENDING"}<${data.registrationNumber || "REG"}<${data.stage}<${ISO3[data.country]}`);
+  const footer = FOOTER[state];
 
   return (
     <article className={`passport-book is-${state} ${className}`} aria-label={`${name} company passport`}>
@@ -99,9 +101,13 @@ export default function PassportCover({
         {STAMP[state]}
       </span>
 
-      <div className="passport-mrz" aria-hidden="true">
-        <p>{line1}</p>
-        <p>{line2}</p>
+      <div className="passport-mrz">
+        <span className={`size-2.5 shrink-0 rounded-full ${footer.dot}`} aria-hidden="true" />
+        <span className="min-w-0 flex-1">
+          <span className="block truncate text-sm font-bold">{footer.title}</span>
+          <span className="block truncate text-xs text-[#1f2c86]/70">{footer.detail}</span>
+        </span>
+        <span className="shrink-0 font-score text-sm font-bold">{ISO3[data.country]}</span>
       </div>
     </article>
   );

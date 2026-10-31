@@ -258,6 +258,80 @@ body {
   to { opacity: .95; transform: scale(1) rotate(-12deg); }
 }
 
+/* Status strip along the bottom edge of the booklet. */
+.passport-mrz {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: auto -26px 0;
+  padding: 14px 26px 16px;
+  overflow: hidden;
+  background: rgb(255 255 255 / .93);
+  color: #1f2c86;
+  line-height: 1.35;
+}
+@media (max-width: 480px) {
+  .passport-book { padding: 22px 20px 0; min-height: 400px; }
+  .passport-mrz { margin-inline: -20px; padding-inline: 20px; }
+  .passport-stamp-mark { bottom: 86px; right: 14px; font-size: 12px; }
+}
+
+/* Visa page: cream paper with faint ruled lines beside the cover. */
+.visa-page {
+  overflow: hidden;
+  border: 1px solid #ece6da;
+  border-radius: 28px;
+  background:
+    repeating-linear-gradient(0deg, transparent 0 31px, rgb(64 92 238 / .035) 31px 32px),
+    #fffdf8;
+  box-shadow: var(--shadow-card);
+}
+.visa-seal {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border: 2px dashed rgb(1 193 107 / .45);
+  border-radius: 50%;
+  transform: rotate(-10deg);
+}
+
+/* Upload dialog: scanning beam over the document preview while Gemma checks it. */
+.doc-scan-line {
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #55ffda, transparent);
+  box-shadow: 0 0 18px 5px rgb(85 255 218 / .55);
+  animation: doc-scan 1.4s ease-in-out infinite alternate;
+}
+@keyframes doc-scan { to { top: calc(100% - 3px); } }
+
+.result-stamp {
+  position: absolute;
+  top: 16px;
+  right: 14px;
+  padding: 4px 10px;
+  border: 2px solid currentColor;
+  border-radius: 8px;
+  font-family: var(--font-score), monospace;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  transform: rotate(8deg);
+  animation: stamp-in-result .5s cubic-bezier(.2, 1.4, .4, 1) .15s both;
+}
+.result-stamp.is-approved { color: #0f9d58; }
+.result-stamp.is-rejected { color: #d9480f; }
+@keyframes stamp-in-result {
+  from { opacity: 0; transform: scale(1.8) rotate(0deg); }
+  to { opacity: 1; transform: scale(1) rotate(8deg); }
+}
+
 .company-demo-shortcut { display: flex; align-items: center; justify-content: space-between; gap: 15px; padding: 17px; margin-top: 23px; border: 1px solid #e0e5f5; border-radius: 12px; background: #f8faff; }
 .company-demo-shortcut strong { color: #34466d; font-size: 12px; font-weight: 600; }
 .company-demo-shortcut p { color: #7e89a0; font-size: 11px; margin-top: 6px; line-height: 1.6; }
