@@ -1,5 +1,5 @@
 import { XP_BY_TYPE, COUNTRY_NAMES } from "@/lib/game";
-import { GemmaError, generateJson } from "@/lib/gemma";
+import { GemmaError, generateJson, readJsonBody, RequestBodyError } from "@/lib/gemma";
 import type { Country, Event, Programme, Quest, QuestType, Startup } from "@/lib/types";
 import { fallback } from "@/seed";
 
@@ -11,6 +11,37 @@ interface GenerateBody {
 type QuestDraft = Omit<Quest, "id" | "startupId" | "status">;
 
 const QUEST_COUNT = 5;
+const MAX_CATALOG_ITEMS = 100;
+const MAX_TEXT = 300;
+
+/** Trim and cap a free-text field so a client cannot send unbounded strings. */
+function clampText(value: unknown, fallback = ""): string {
+  return typeof value === "string" ? value.trim().slice(0, MAX_TEXT) : fallback;
+}
+
+/** Keep only the fields the prompt needs, with bounded sizes. */
+function sanitiseStartup(startup: Startup): Startup {
+  return {
+    id: clampText(startup.id),
+    name: clampText(startup.name),
+    country: startup.country,
+    sector: clampText(startup.sector),
+    stage: startup.stage,
+    description: clampText(startup.description),
+    xp: 0,
+  };
+}
+
+function sanitiseCatalog(catalog: GenerateBody["catalog"]): GenerateBody["catalog"] {
+  return {
+    programmes: (Array.isArray(catalog?.programmes) ? catalog.programmes : [])
+      .slice(0, MAX_CATALOG_ITEMS)
+      .filter((p) => p && typeof p.id === "string" && typeof p.name === "string"),
+    events: (Array.isArray(catalog?.events) ? catalog.events : [])
+      .slice(0, MAX_CATALOG_ITEMS)
+      .filter((e) => e && typeof e.id === "string" && typeof e.name === "string"),
+  };
+}
 
 function buildPrompt(startup: Startup, catalog: GenerateBody["catalog"]) {
   return `You are the quest engine for Startup ASEAN, a platform that helps startups turn ecosystem connections into measurable outcomes across the 10 ASEAN countries.
@@ -74,21 +105,28 @@ export async function POST(request: Request) {
 
   let body: GenerateBody;
   try {
-    body = await request.json();
-  } catch {
+    body = (await readJsonBody(request)) as GenerateBody;
+  } catch (error) {
+    if (error instanceof RequestBodyError) {
+      const tooLarge = error.message.includes("too large");
+      return Response.json({ error: error.message }, { status: tooLarge ? 413 : 400 });
+    }
     return Response.json({ error: "Request body must be JSON." }, { status: 400 });
   }
-  const { startup, catalog } = body ?? {};
-  if (!startup?.id || !startup?.name || !catalog) {
+  const rawStartup = body?.startup;
+  if (!rawStartup?.id || !rawStartup?.name || !body?.catalog) {
     return Response.json({ error: "Missing startup or catalog." }, { status: 400 });
   }
+
+const startup = sanitiseStartup(rawStartup);
+  const catalog = sanitiseCatalog(body.catalog);
 
   // ?demo=1: skip Gemma entirely and return the canned quest list instantly.
   if (demo) {
     return Response.json({ quests: withIds(startup, fallback.quests), source: "demo" });
   }
 
-  const eventIds = new Set((catalog.events ?? []).map((e) => e.id));
+  const eventIds = new Set(catalog.events.map((e) => e.id));
 
   try {
     const drafts = await generateJson([buildPrompt(startup, catalog)], (value) =>

@@ -140,7 +140,7 @@ function ProofModal({ quest, onClose }: { quest: Quest; onClose: () => void }) {
                 // eslint-disable-next-line @next/next/no-img-element -- local data URL preview
                 <img src={image.preview} alt="Proof preview" className="max-h-56 rounded-lg object-contain" />
               ) : (
-                <PixelIcon name="target" size={40} />
+                <PixelIcon name="target" size={36} />
               )}
               <span className="font-semibold text-ink">
                 {image ? "Choose a different image" : "Choose a screenshot or photo"}
@@ -186,7 +186,7 @@ function ProofModal({ quest, onClose }: { quest: Quest; onClose: () => void }) {
 const DECISION_STYLE: Record<string, { label: string; className: string; icon: PixelIconName }> = {
   approved: { label: "Approved", className: "bg-green text-white", icon: "check" },
   rejected: { label: "Rejected", className: "bg-[#FFB2B3] text-ink", icon: "close" },
-  unclear: { label: "Unclear", className: "bg-yellow text-ink", icon: "bulb" },
+  unclear: { label: "Unclear", className: "bg-yellow text-ink", icon: "warning" },
 };
 
 function VerdictPanel({ result, xp }: { result: Result; xp: number }) {
@@ -202,7 +202,7 @@ function VerdictPanel({ result, xp }: { result: Result; xp: number }) {
       )}
       <div className="flex items-center gap-3">
         <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-bold ${style.className}`}>
-          <PixelIcon name={style.icon} size={18} /> {style.label}
+          <PixelIcon name={style.icon} size={16} /> {style.label}
         </span>
         <span className="font-score text-sm text-muted">
           confidence {Math.round(verdict.confidence * 100)}%

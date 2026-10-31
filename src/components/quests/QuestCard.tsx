@@ -3,8 +3,8 @@ import { COUNTRY_NAMES } from "@/lib/game";
 import { QUEST_TYPE_STYLE, STATUS_STYLE } from "@/lib/tiers";
 import type { Quest } from "@/lib/types";
 import { seedEvents } from "@/seed";
-import QuestProof from "./QuestProof";
 import PixelIcon from "@/components/PixelIcon";
+import QuestProof from "./QuestProof";
 
 // Fixed locale + UTC so server and client render the same string.
 function formatDate(value: string) {

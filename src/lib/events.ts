@@ -21,7 +21,7 @@ export interface CategoryMeta {
 }
 
 export const EVENT_CATEGORIES: CategoryMeta[] = [
-  { key: "hackathon", label: "Hackathon", icon: "trophy", className: "tier-red text-ink", dot: "bg-[#FFB2B3]" },
+  { key: "hackathon", label: "Hackathon", icon: "fire", className: "tier-red text-ink", dot: "bg-[#ef4444]" },
   { key: "startup", label: "Startup", icon: "rocket", className: "bg-primary text-white", dot: "bg-primary" },
   { key: "tech", label: "Tech", icon: "laptop", className: "bg-purple-dark text-white", dot: "bg-purple-dark" },
   { key: "meetup", label: "Meetup", icon: "partnership", className: "bg-green text-white", dot: "bg-green" },
