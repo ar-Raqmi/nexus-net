@@ -7,6 +7,53 @@ const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
 
 export class GemmaError extends Error {}
 
+/** Default cap for JSON API request bodies (1 MB). */
+export const MAX_JSON_BODY_BYTES = 1_000_000;
+
+export class RequestBodyError extends Error {}
+
+/**
+ * Read and parse a JSON request body with a hard size limit, so an oversized or
+ * unbounded body cannot exhaust memory. Throws RequestBodyError with a safe
+ * message; callers map that to a 400/413 response.
+ */
+export async function readJsonBody(
+  request: Request,
+  maxBytes = MAX_JSON_BODY_BYTES,
+): Promise<unknown> {
+  const contentLength = Number(request.headers.get("content-length") ?? "");
+  if (Number.isFinite(contentLength) && contentLength > maxBytes) {
+    throw new RequestBodyError("Request body is too large.");
+  }
+
+  const reader = request.body?.getReader();
+  if (!reader) throw new RequestBodyError("Request body must be JSON.");
+
+  const chunks: Uint8Array[] = [];
+  let size = 0;
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      size += value.byteLength;
+      if (size > maxBytes) {
+        await reader.cancel();
+        throw new RequestBodyError("Request body is too large.");
+      }
+      chunks.push(value);
+    }
+  } catch (error) {
+    if (error instanceof RequestBodyError) throw error;
+    throw new RequestBodyError("Request body must be JSON.");
+  }
+
+  try {
+    return JSON.parse(Buffer.concat(chunks).toString("utf8"));
+  } catch {
+    throw new RequestBodyError("Request body must be JSON.");
+  }
+}
+
 export interface GemmaOptions {
   /** Temperature 0 for steadier answers on vision checks. */
   fast?: boolean;
