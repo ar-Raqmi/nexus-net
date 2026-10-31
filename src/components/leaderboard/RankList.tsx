@@ -34,7 +34,7 @@ export default function RankList({
             >
               {rank}
             </span>
-            <RowAvatar tab={tab} id={row.id} size={20} />
+            <RowAvatar tab={tab} id={row.id} name={row.name} size={20} />
             <div className="min-w-0 flex-1">
               <p className="flex items-center gap-2 font-bold text-ink">
                 <span className="truncate">{row.name}</span>

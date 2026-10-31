@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
-import Flag from "@/components/Flag";
+import CompanyLogo from "@/components/CompanyLogo";
 import {
   EVENT_RELEVANT_XP,
   EVENT_SUBSCRIBE_XP,
@@ -244,7 +244,7 @@ export default function EventsView() {
                 onClick={() => login(s.id)}
                 className="inline-flex items-center gap-1.5 rounded-full bg-white shadow-card px-4 py-2 text-sm font-bold text-ink hover:bg-primary hover:text-white"
               >
-                <Flag country={s.country} size={16} />
+                <CompanyLogo id={s.id} name={s.name} size={20} />
                 {s.name}
               </button>
             ))}

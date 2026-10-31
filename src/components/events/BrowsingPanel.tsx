@@ -1,5 +1,5 @@
 import Link from "next/link";
-import Flag from "@/components/Flag";
+import CompanyLogo from "@/components/CompanyLogo";
 import { COUNTRY_NAMES } from "@/lib/game";
 import { EVENT_RELEVANT_XP, EVENT_SUBSCRIBE_XP } from "@/lib/events";
 import type { Startup } from "@/lib/types";
@@ -16,7 +16,7 @@ export default function BrowsingPanel({ startup, subscribedCount, boosterXp }: P
       <div>
         <p className="text-xs font-semibold uppercase tracking-wide text-muted">Browsing as</p>
         <p className="text-xl font-bold">
-          <Flag country={startup.country} size={18} className="mr-1.5 -mt-0.5" />
+          <CompanyLogo id={startup.id} name={startup.name} size={26} className="mr-2 inline-block align-middle" />
           {startup.name}{" "}
           <span className="text-sm font-semibold text-muted">
             · {startup.sector} · {COUNTRY_NAMES[startup.country]}

@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import Flag from "@/components/Flag";
+import CompanyLogo from "@/components/CompanyLogo";
 import PixelIcon, { type PixelIconName } from "@/components/PixelIcon";
 import { COUNTRY_NAMES } from "@/lib/game";
 import type { Startup } from "@/lib/types";
@@ -128,8 +128,8 @@ function StartupCard({
         </span>
       </div>
 
-      <div className="relative -mt-7 ml-4 flex size-14 items-center justify-center rounded-full border-2 border-ink bg-white motion-safe:animate-pop transition-transform group-hover:scale-110">
-        <Flag country={startup.country} size={32} />
+      <div className="relative -mt-8 ml-4 flex size-16 items-center justify-center rounded-2xl border-2 border-ink bg-white motion-safe:animate-pop transition-transform group-hover:scale-110 group-hover:-rotate-3">
+        <CompanyLogo id={startup.id} name={startup.name} size={48} />
       </div>
 
       <div className="flex flex-1 flex-col gap-2 px-5 pb-5 pt-2">

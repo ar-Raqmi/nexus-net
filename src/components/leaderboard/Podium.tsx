@@ -35,7 +35,7 @@ export default function Podium({ rows, tab }: { rows: LeaderboardRow[]; tab: Lea
                 TOP{rank}
               </span>
               <div className="flex min-w-0 flex-col items-center gap-1.5">
-                <RowAvatar tab={tab} id={row.id} size={18} />
+                <RowAvatar tab={tab} id={row.id} name={row.name} size={18} />
                 <span className="line-clamp-3 break-words font-display text-xs leading-tight sm:text-base">
                   {row.name}
                 </span>
