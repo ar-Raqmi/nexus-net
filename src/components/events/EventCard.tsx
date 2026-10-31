@@ -34,9 +34,7 @@ export default function EventCard({
           type="button"
           onClick={() => onToggleSubscribe(event)}
           aria-pressed={subscribed}
-          className={`rounded-full px-4 py-2 text-sm font-bold transition ${
-            subscribed ? "bg-green text-white hover:brightness-110" : "bg-ink text-white hover:bg-primary"
-          }`}
+          className={`btn btn-sm ${subscribed ? "btn-success" : "btn-primary"}`}
         >
           {subscribed ? (
             <span className="inline-flex items-center gap-1.5">
@@ -52,7 +50,7 @@ export default function EventCard({
         target="_blank"
         rel="noopener noreferrer"
         aria-label={`View ${event.name} on Luma`}
-        className="rounded-full bg-primary/10 px-3 py-2 text-sm font-bold text-primary hover:bg-primary hover:text-white"
+        className="btn btn-sm"
       >
         ↗
       </a>

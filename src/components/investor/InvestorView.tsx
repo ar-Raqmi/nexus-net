@@ -37,7 +37,7 @@ function InterestButton() {
   const [sent, setSent] = useState(false);
   if (sent) {
     return (
-      <span className="inline-flex items-center justify-center gap-1.5 rounded-full bg-green px-4 py-2 text-sm font-bold text-white motion-safe:animate-pop">
+      <span className="btn btn-success btn-sm gap-1.5 motion-safe:animate-pop pointer-events-none">
         <PixelIcon name="check" size={16} />
         Interest sent
       </span>
@@ -47,7 +47,7 @@ function InterestButton() {
     <button
       type="button"
       onClick={() => setSent(true)}
-      className="rounded-full bg-primary px-4 py-2 text-sm font-bold text-white transition-transform hover:-translate-y-0.5 active:scale-95"
+      className="btn btn-primary btn-sm"
     >
       Express interest
     </button>
@@ -102,17 +102,14 @@ export default function InvestorView() {
       </div>
 
       <Card title="Deal flow" subtitle="Ranked by verified traction. Re-sort to change the lens.">
-        <div role="group" aria-label="Sort deal flow" className="-mt-2 mb-5 inline-flex rounded-full bg-bg p-1">
+        <div role="group" aria-label="Sort deal flow" className="-mt-2 mb-5 seg">
           {SORTS.map((o) => (
             <button
               key={o.key}
               type="button"
               aria-pressed={sort === o.key}
               onClick={() => setSort(o.key)}
-              className={`rounded-full px-4 py-1.5 text-sm font-bold transition-colors ${
-                sort === o.key ? "bg-primary text-white" : "text-muted hover:text-ink"
-              }`}
-            >
+                          >
               {o.label}
             </button>
           ))}

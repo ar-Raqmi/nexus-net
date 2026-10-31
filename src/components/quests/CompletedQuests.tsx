@@ -21,7 +21,7 @@ export default function CompletedQuests({ quests }: { quests: Quest[] }) {
           type="button"
           onClick={() => setShowAll(!showAll)}
           aria-expanded={showAll}
-          className="rounded-full border-2 border-primary px-6 py-2 text-sm font-bold text-primary transition hover:bg-primary hover:text-white"
+          className="btn btn-sm"
         >
           {showAll ? "Show fewer" : `Show all ${quests.length}`}
         </button>

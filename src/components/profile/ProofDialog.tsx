@@ -66,7 +66,7 @@ export default function ProofDialog({ profile, onClose }: { profile: CompanyProf
     <dialog ref={dialog} onCancel={onClose} onClick={e => { if (e.target === e.currentTarget) onClose(); }} className="m-auto w-[calc(100%-2rem)] max-w-xl max-h-[90dvh] overflow-y-auto rounded-3xl bg-paper p-6 sm:p-8 shadow-xl backdrop:bg-ink/60" aria-labelledby="proof-title">
       <div className="flex justify-between items-start gap-4">
         <div><p className="text-xs uppercase tracking-widest font-bold text-primary">Company registration</p><h2 id="proof-title" className="text-2xl font-bold mt-2">{result ? "Company review result" : "Verify your company"}</h2></div>
-        <button type="button" onClick={onClose} aria-label="Close company verification" className="rounded-full bg-white px-3 py-2"><PixelIcon name="close" size={16} /></button>
+        <button type="button" onClick={onClose} aria-label="Close company verification" className="btn btn-sm"><PixelIcon name="close" size={16} /></button>
       </div>
       <p className="mt-4 font-semibold">{profile.legalName}</p>
       {!result ? <>
@@ -87,7 +87,7 @@ export default function ProofDialog({ profile, onClose }: { profile: CompanyProf
         <p className="mt-4 text-xs text-muted">{mode === "live" ? "Your image is sent to Gemma for this check. Only the verdict is saved in this browser." : "Simulation only. Your image is not sent to Gemma."}</p>
         {preparing && <p role="status" className="mt-3 text-sm">Preparing image…</p>}
         {error && <p role="alert" className="mt-4 text-sm text-red-700">{error}</p>}
-        <button type="button" onClick={() => void verify()} disabled={!image || preparing || busy} className="mt-5 w-full rounded-full bg-primary px-6 py-3 font-bold text-white disabled:opacity-40">{busy ? mode === "live" ? "Gemma is checking your document…" : "Creating simulation result…" : "Verify company"}</button>
+        <button type="button" onClick={() => void verify()} disabled={!image || preparing || busy} className="btn btn-primary mt-5 w-full disabled:opacity-40">{busy ? mode === "live" ? "Gemma is checking your document…" : "Creating simulation result…" : "Verify company"}</button>
         {busy && <p role="status" className="text-center text-xs text-muted mt-3">{mode === "live" ? `Live Gemma request · ${elapsed}s elapsed` : "Instant simulation · no AI call"}</p>}
       </> : <div className="mt-5 space-y-4" aria-live="polite">
         {result.mode === "demo" && <p className="rounded-xl bg-yellow p-3 text-sm font-bold">Demo result · image was not checked by AI</p>}
@@ -98,7 +98,7 @@ export default function ProofDialog({ profile, onClose }: { profile: CompanyProf
           <p className="mt-3 text-xs text-muted">Confidence: {Math.round(result.verdict.confidence * 100)}% · {result.verdict.documentType}</p>
         </div>
         <p className="text-sm">{approved ? "Your onboarding is complete. Your company passport is ready." : "Upload a clearer or matching registration document to continue onboarding."}</p>
-        <button onClick={onClose} className="w-full rounded-full bg-primary py-3 text-white font-bold">{approved ? "View company passport" : "Back to company profile"}</button>
+        <button onClick={onClose} className="btn btn-primary w-full">{approved ? "View company passport" : "Back to company profile"}</button>
       </div>}
     </dialog>
   );

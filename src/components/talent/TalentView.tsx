@@ -7,15 +7,11 @@ import PixelIcon, { ICON_FOR_QUEST_TYPE } from "@/components/PixelIcon";
 import { seedQuests, seedStartups, seedTalent } from "@/seed";
 import { seedGigs } from "@/seed/gigs";
 import { useGameStore, useHasHydrated } from "@/store/useGameStore";
+import Avatar from "./Avatar";
 
-const TIERS = ["tier-blue", "tier-lavender", "tier-peach", "tier-yellow", "tier-silver", "tier-red"];
 const card = "rounded-3xl bg-white p-6 shadow-card sm:p-8";
 const lift = "transition-transform duration-200 hover:-translate-y-1";
 const fade = "motion-safe:animate-fade-up";
-
-function initials(name: string) {
-  return name.split(/\s+/).map((w) => w[0]).join("").slice(0, 2).toUpperCase();
-}
 
 function Kpi({ label, value, delay }: { label: string; value: string; delay: number }) {
   return (
@@ -30,7 +26,7 @@ function OfferButton() {
   const [sent, setSent] = useState(false);
   if (sent) {
     return (
-      <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-green/15 px-4 py-2 text-sm font-bold text-ink motion-safe:animate-pop">
+      <span className="btn btn-success btn-sm shrink-0 gap-1.5 motion-safe:animate-pop pointer-events-none">
         <PixelIcon name="check" size={16} />
         Offer sent
       </span>
@@ -40,7 +36,7 @@ function OfferButton() {
     <button
       type="button"
       onClick={() => setSent(true)}
-      className="shrink-0 rounded-full bg-primary px-4 py-2 text-sm font-bold text-white transition-transform hover:scale-105 active:scale-95"
+      className="btn btn-primary btn-sm shrink-0"
     >
       Offer help
     </button>
@@ -84,9 +80,7 @@ export default function TalentView() {
             type="button"
             aria-pressed={filter === r}
             onClick={() => setFilter(r)}
-            className={`rounded-full px-4 py-2 text-sm font-bold shadow-card transition-transform hover:-translate-y-0.5 ${
-              filter === r ? "bg-primary text-white" : "bg-white text-ink"
-            }`}
+            className="chip"
           >
             {r ?? "All roles"}
           </button>
@@ -145,9 +139,7 @@ export default function TalentView() {
               style={{ animationDelay: `${380 + i * 40}ms` }}
             >
               <div className="flex items-center gap-3">
-                <span className={`${TIERS[i % TIERS.length]} grid size-12 shrink-0 place-items-center rounded-2xl font-score text-lg font-bold text-ink`}>
-                  {initials(t.name)}
-                </span>
+                <Avatar name={t.name} index={i} />
                 <div className="min-w-0">
                   <p className="truncate font-bold text-ink">{t.name}</p>
                   <p className="flex items-center gap-2 text-sm text-muted">

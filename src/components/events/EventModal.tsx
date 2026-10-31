@@ -66,7 +66,7 @@ export default function EventModal({ event, onClose }: { event: LumaEvent; onClo
           <button
             type="button"
             onClick={onClose}
-            className="absolute top-3 right-3 size-10 rounded-full bg-white/90 text-lg font-bold leading-none"
+            className="btn btn-sm absolute top-3 right-3 text-lg leading-none"
             aria-label="Close event details"
           >
             ×
@@ -96,7 +96,7 @@ export default function EventModal({ event, onClose }: { event: LumaEvent; onClo
             href={event.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-2 rounded-full bg-primary px-5 py-3 text-center font-bold text-white hover:brightness-110"
+            className="btn btn-primary mt-2"
           >
             View on Luma →
           </a>

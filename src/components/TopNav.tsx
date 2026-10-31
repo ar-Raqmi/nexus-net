@@ -49,9 +49,9 @@ export default function TopNav() {
                     <Link
                       href={link.href}
                       aria-current={active ? "page" : undefined}
-                      className={`block whitespace-nowrap rounded-full px-4 py-2 text-sm font-semibold transition-all hover:-translate-y-0.5 ${
+                      className={`block whitespace-nowrap rounded-lg px-4 py-2 text-sm font-semibold transition-all ${
                         active
-                          ? "animate-pop bg-primary text-white"
+                          ? "animate-pop bg-ink text-white"
                           : "text-muted hover:bg-white hover:text-ink"
                       }`}
                     >

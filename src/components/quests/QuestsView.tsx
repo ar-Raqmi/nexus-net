@@ -45,7 +45,7 @@ export default function QuestsView() {
           <p className="text-muted">Choose a startup to play as, then your quests show up here.</p>
           <Link
             href="/#startups"
-            className="rounded-full bg-primary px-6 py-3 font-bold text-white hover:brightness-110"
+            className="btn btn-primary"
           >
             Choose a startup
           </Link>
@@ -89,7 +89,7 @@ export default function QuestsView() {
             <button
               type="button"
               onClick={generator.generate}
-              className="rounded-full bg-ink px-5 py-2 text-sm font-bold text-white hover:bg-primary"
+              className="btn btn-sm"
             >
               Try again
             </button>

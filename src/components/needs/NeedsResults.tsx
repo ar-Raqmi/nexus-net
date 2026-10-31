@@ -57,14 +57,14 @@ export default function NeedsResults({ startup, options, quests, source, demo, o
       <div className="flex flex-wrap justify-center gap-3">
         <Link
           href="/quests"
-          className="rounded-full bg-primary px-6 py-3 font-bold text-white hover:brightness-110"
+          className="btn btn-primary"
         >
           View my quests
         </Link>
         <button
           type="button"
           onClick={onRestart}
-          className="rounded-full bg-ink px-6 py-3 font-bold text-white hover:bg-primary"
+          className="btn"
         >
           Start over
         </button>

@@ -438,3 +438,24 @@ body {
 .company-demo-shortcut strong { color: var(--color-ink); font-size: 13px; }
 .company-demo-shortcut p, .company-sample-download p { color: var(--color-muted); font-size: 12px; }
 @media (max-width: 767px) { .passport-cover::after { width: 100px; height: 100px; right: -44px; top: 130px; } .onboarding-review-aside { border-left: 0; border-top: 2px solid var(--color-ink); } }
+
+/* Arcade buttons: square-cut keycap with an ink edge that presses down. Replaces the generic rounded-full pills. */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; min-height: 44px; padding: 0 1.25rem; border: 2px solid var(--color-ink); border-radius: 10px; background: #fff; color: var(--color-ink); font-size: 14px; font-weight: 800; line-height: 1; white-space: nowrap; cursor: pointer; box-shadow: 0 4px 0 var(--color-ink); transition: transform .12s, box-shadow .12s, background-color .12s; }
+.btn:hover { transform: translateY(-1px); box-shadow: 0 5px 0 var(--color-ink); }
+.btn:active { transform: translateY(4px); box-shadow: 0 0 0 var(--color-ink); }
+.btn:disabled { opacity: .55; cursor: not-allowed; transform: none; box-shadow: 0 4px 0 var(--color-ink); }
+.btn-primary { background: var(--color-primary); color: #fff; }
+.btn-yellow { background: var(--color-yellow); }
+.btn-success { background: var(--color-green); color: #fff; }
+.btn-sm { min-height: 36px; padding: 0 .9rem; font-size: 13px; box-shadow: 0 3px 0 var(--color-ink); }
+.btn-lg { min-height: 56px; padding: 0 2rem; font-size: 17px; border-radius: 12px; box-shadow: 0 5px 0 var(--color-ink); }
+.btn-lg:hover { box-shadow: 0 6px 0 var(--color-ink); }
+
+/* Segmented control + toggle chips share the same ink edge. */
+.seg { display: inline-flex; gap: 2px; padding: 3px; border: 2px solid var(--color-ink); border-radius: 10px; background: #fff; }
+.seg > button, .seg > a { min-height: 34px; padding: 0 .9rem; border-radius: 6px; font-size: 13px; font-weight: 800; color: var(--color-muted); transition: background-color .12s, color .12s; }
+.seg > button:hover { color: var(--color-ink); }
+.seg > [aria-pressed="true"], .seg > [aria-selected="true"], .seg > [aria-current="true"] { background: var(--color-ink); color: #fff; }
+.chip { display: inline-flex; align-items: center; gap: .4rem; min-height: 34px; padding: 0 .8rem; border: 2px solid var(--color-ink); border-radius: 8px; background: #fff; color: var(--color-ink); font-size: 13px; font-weight: 800; cursor: pointer; transition: background-color .12s, transform .12s; }
+.chip:hover { background: var(--color-paper); }
+.chip[aria-pressed="true"] { background: var(--color-yellow); box-shadow: 2px 2px 0 var(--color-ink); }

@@ -46,7 +46,7 @@ export default function RoleSwitcher() {
         aria-expanded={open}
         aria-label={`Viewing as ${current.label}. Switch role`}
         onClick={() => setOpen((v) => !v)}
-        className="flex min-h-10 items-center gap-2 rounded-full border-2 border-ink bg-white px-3 text-sm font-bold text-ink shadow-[2px_2px_0_#222] transition active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
+        className="btn btn-sm gap-2"
       >
         <PixelIcon name={current.icon} size={20} />
         <span className="hidden sm:inline text-muted font-semibold">Viewing as</span>
