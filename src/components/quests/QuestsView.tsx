@@ -2,14 +2,17 @@
 
 import Link from "next/link";
 import { useMemo } from "react";
-import type { Quest } from "@/lib/types";
 import { selectQuestsFor, selectStartup } from "@/store/selectors";
 import { useGameStore, useHasHydrated } from "@/store/useGameStore";
 import LevelTrack from "./LevelTrack";
-import QuestCard from "./QuestCard";
+import CompletedQuests from "./CompletedQuests";
+import EmptyQuests from "./EmptyQuests";
+import GenerateButton from "./GenerateButton";
+import QuestGrid from "./QuestGrid";
 import StartupHeader from "./StartupHeader";
 import TierCards from "./TierCards";
 import { useQuestGenerator } from "./useQuestGenerator";
+import PixelIcon from "@/components/PixelIcon";
 
 export default function QuestsView() {
   const hydrated = useHasHydrated();
@@ -37,10 +40,8 @@ export default function QuestsView() {
     return (
       <section className="mx-auto max-w-md py-16 text-center">
         <div className="rounded-3xl bg-white shadow-card p-10 flex flex-col items-center gap-4">
-          <span className="text-5xl" aria-hidden>
-            🎮
-          </span>
-          <h1 className="text-2xl font-bold">Pick a startup first</h1>
+          <PixelIcon name="gamepad" size={64} className="motion-safe:animate-bounce" />
+          <h1 className="font-display text-2xl">Pick a startup first</h1>
           <p className="text-muted">Choose a startup to play as, then your quests show up here.</p>
           <Link
             href="/#startups"
@@ -65,18 +66,9 @@ export default function QuestsView() {
           subtitle="Your next steps toward cross-border growth."
         />
         <div className="flex flex-col items-center gap-3 mb-6">
-          <button
-            type="button"
-            onClick={generator.generate}
-            disabled={generator.status === "loading"}
-            className="rounded-full bg-primary px-8 py-3.5 font-bold text-white shadow-card transition hover:brightness-110 disabled:opacity-60 disabled:cursor-wait"
-          >
-            {generator.status === "loading"
-              ? "Gemma is crafting your quests…"
-              : active.some((q) => q.status === "open")
-                ? "✨ Regenerate open quests"
-                : "✨ Generate my quests"}
-          </button>
+          {(active.length > 0 || generator.status === "loading") && (
+            <GenerateButton generator={generator} regenerate={active.some((q) => q.status === "open")} />
+          )}
           {generator.usedFallback && generator.status === "idle" && (
             <span className="rounded-full bg-yellow px-3 py-1 text-xs font-bold">
               Demo mode: Gemma was unreachable, showing a saved quest list
@@ -89,9 +81,7 @@ export default function QuestsView() {
             role="alert"
             className="mb-6 rounded-3xl bg-[#FFEBEB] border border-[#FFB2B3] p-5 flex flex-col sm:flex-row sm:items-center gap-3"
           >
-            <span className="text-2xl" aria-hidden>
-              ⚠️
-            </span>
+            <PixelIcon name="warning" size={32} />
             <div className="flex-1">
               <p className="font-bold">Couldn&apos;t generate quests</p>
               <p className="text-sm text-muted">{generator.error}</p>
@@ -109,10 +99,7 @@ export default function QuestsView() {
         {generator.status === "loading" ? (
           <QuestSkeletons />
         ) : active.length === 0 ? (
-          <div className="rounded-3xl border-2 border-dashed border-ink/10 bg-white/60 p-10 text-center text-muted">
-            No active quests yet. Hit the button and Gemma 4 will plan 5 cross-border quests for{" "}
-            {startup.name}.
-          </div>
+          <EmptyQuests startupName={startup.name} generator={generator} />
         ) : (
           <QuestGrid quests={active} />
         )}
@@ -126,7 +113,7 @@ export default function QuestsView() {
         {completed.length === 0 ? (
           <p className="text-center text-subtle">Nothing verified yet. Your first outcome is one quest away.</p>
         ) : (
-          <QuestGrid quests={completed} />
+          <CompletedQuests quests={completed} />
         )}
       </section>
     </div>
@@ -139,18 +126,6 @@ function SectionTitle({ title, subtitle }: { title: string; subtitle: string }) 
       <h2 className="text-3xl sm:text-4xl font-bold">{title}</h2>
       <p className="mt-2 text-muted">{subtitle}</p>
     </div>
-  );
-}
-
-function QuestGrid({ quests }: { quests: Quest[] }) {
-  return (
-    <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-      {quests.map((quest) => (
-        <li key={quest.id}>
-          <QuestCard quest={quest} />
-        </li>
-      ))}
-    </ul>
   );
 }
 

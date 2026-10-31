@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import PixelIcon from "@/components/PixelIcon";
 import type { CompanyProfile, CompanyVerification } from "@/lib/types";
 import { isApproved } from "@/lib/game";
 import { getDemoEvidence } from "@/lib/demoCompany";
@@ -65,7 +66,7 @@ export default function ProofDialog({ profile, onClose }: { profile: CompanyProf
     <dialog ref={dialog} onCancel={onClose} onClick={e => { if (e.target === e.currentTarget) onClose(); }} className="m-auto w-[calc(100%-2rem)] max-w-xl max-h-[90dvh] overflow-y-auto rounded-3xl bg-paper p-6 sm:p-8 shadow-xl backdrop:bg-ink/60" aria-labelledby="proof-title">
       <div className="flex justify-between items-start gap-4">
         <div><p className="text-xs uppercase tracking-widest font-bold text-primary">Company registration</p><h2 id="proof-title" className="text-2xl font-bold mt-2">{result ? "Company review result" : "Verify your company"}</h2></div>
-        <button type="button" onClick={onClose} aria-label="Close company verification" className="rounded-full bg-white px-3 py-2">✕</button>
+        <button type="button" onClick={onClose} aria-label="Close company verification" className="rounded-full bg-white px-3 py-2"><PixelIcon name="close" size={16} /></button>
       </div>
       <p className="mt-4 font-semibold">{profile.legalName}</p>
       {!result ? <>
@@ -92,7 +93,7 @@ export default function ProofDialog({ profile, onClose }: { profile: CompanyProf
         {result.mode === "demo" && <p className="rounded-xl bg-yellow p-3 text-sm font-bold">Demo result · image was not checked by AI</p>}
         {result.mode === "live" && <p className="text-xs font-semibold text-primary">Gemma AI response{result.model ? ` · ${result.model}` : ""}{result.durationMs != null ? ` · ${(result.durationMs / 1000).toFixed(1)}s` : ""}</p>}
         <div className={`rounded-2xl p-5 ${approved ? "bg-green/10" : "bg-yellow/25"}`}>
-          <h3 className="text-xl font-bold">{approved ? "Company document approved ✓" : result.verdict.decision === "rejected" ? "Document rejected" : "More evidence needed"}</h3>
+          <h3 className="text-xl font-bold">{approved ? <><PixelIcon name="check" size={22} className="mr-1 inline-block align-text-bottom" />Company document approved</> : result.verdict.decision === "rejected" ? "Document rejected" : "More evidence needed"}</h3>
           <p className="mt-2 text-sm">{result.verdict.reason}</p>
           <p className="mt-3 text-xs text-muted">Confidence: {Math.round(result.verdict.confidence * 100)}% · {result.verdict.documentType}</p>
         </div>

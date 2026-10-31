@@ -3,7 +3,18 @@ import { COUNTRY_NAMES } from "@/lib/game";
 import { QUEST_TYPE_STYLE, STATUS_STYLE } from "@/lib/tiers";
 import type { Quest } from "@/lib/types";
 import { seedEvents } from "@/seed";
+import PixelIcon from "@/components/PixelIcon";
 import QuestProof from "./QuestProof";
+
+// Fixed locale + UTC so server and client render the same string.
+function formatDate(value: string) {
+  return new Date(value).toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    timeZone: "UTC",
+  });
+}
 
 export default function QuestCard({ quest }: { quest: Quest }) {
   const type = QUEST_TYPE_STYLE[quest.type];
@@ -11,15 +22,17 @@ export default function QuestCard({ quest }: { quest: Quest }) {
   const event = seedEvents.find((e) => e.id === quest.eventId);
 
   return (
-    <article className="h-full flex flex-col rounded-3xl bg-white shadow-card overflow-hidden">
-      <div className={`${type.bg} relative h-24 px-5 flex items-center justify-between`}>
-        <span className="text-4xl" aria-hidden>
-          {type.icon}
-        </span>
+    <article className="group h-full flex flex-col rounded-3xl bg-white shadow-card overflow-hidden transition duration-200 motion-safe:hover:-translate-y-1 hover:shadow-xl">
+      <div className={`${type.bg} relative h-16 px-5 flex items-center justify-between`}>
+        <PixelIcon
+          name={type.icon}
+          size={40}
+          className="transition-transform duration-200 motion-safe:group-hover:-rotate-6 motion-safe:group-hover:scale-110"
+        />
         {/* Coin badge */}
-        <span className="size-18 rounded-full bg-yellow border-4 border-white shadow-card flex flex-col items-center justify-center leading-none">
-          <span className="font-score text-lg font-bold text-ink">+{quest.xp}</span>
-          <span className="text-[10px] font-bold text-ink/70">XP</span>
+        <span className="size-14 transition-[opacity,scale] duration-500 motion-safe:starting:scale-0 motion-safe:starting:opacity-0 rounded-full bg-yellow border-4 border-white shadow-card flex flex-col items-center justify-center leading-none">
+          <span className="font-score text-base font-bold text-ink">+{quest.xp}</span>
+          <span className="text-xs font-bold text-ink/70">XP</span>
         </span>
       </div>
 
@@ -30,11 +43,12 @@ export default function QuestCard({ quest }: { quest: Quest }) {
             <Flag country={quest.targetCountry} size={12} /> {COUNTRY_NAMES[quest.targetCountry]}
           </span>
           {quest.talentRole && (
-            <span className="rounded-full bg-signature px-2.5 py-1 text-ink">
-              🧑‍💻 Talent: {quest.talentRole}
+            <span className="inline-flex items-center gap-1 rounded-full bg-signature px-2.5 py-1 text-ink">
+              <PixelIcon name="talent" size={16} /> Talent: {quest.talentRole}
             </span>
           )}
-          <span className={`ml-auto rounded-full px-2.5 py-1 ${status.className}`}>
+          <span className={`ml-auto inline-flex items-center gap-1 rounded-full px-2.5 py-1 ${status.className}`}>
+            {quest.status === "verified" && <PixelIcon name="check" size={14} />}
             {status.label}
           </span>
         </div>
@@ -50,7 +64,7 @@ export default function QuestCard({ quest }: { quest: Quest }) {
           )}
           {quest.completedAt && (
             <p>
-              <span className="font-semibold text-ink">Completed:</span> {quest.completedAt}
+              <span className="font-semibold text-ink">Completed:</span> {formatDate(quest.completedAt)}
             </p>
           )}
         </div>
