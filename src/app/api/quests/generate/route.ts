@@ -16,6 +16,7 @@ function buildPrompt(startup: Startup, catalog: GenerateBody["catalog"]) {
   return `You are the quest engine for Startup ASEAN, a platform that helps startups turn ecosystem connections into measurable outcomes across the 10 ASEAN countries.
 Given a startup profile and a list of available programmes and events, create exactly 5 quests that move this startup toward real cross-border outcomes.
 Rules:
+- Do not use emoji anywhere in the output.
 - At least 3 quests must target a country other than the startup's home country.
 - Mix types so the 5 quests climb the ladder: connect, meeting, programme, poc, partnership, funding. Include at least one poc or partnership.
 - Each quest must be specific and doable in 2-4 weeks.

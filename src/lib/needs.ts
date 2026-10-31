@@ -8,7 +8,6 @@ export type GapId = "website" | "marketing" | "product" | "pitch" | "market";
 export interface NeedsQuestion {
   id: QuestionId;
   prompt: string;
-  /** `country` makes the UI render a <Flag /> next to the label. */
   choices: { value: string; label: string; country?: Country }[];
 }
 

@@ -3,10 +3,11 @@
 @theme {
   --color-paper: #f7f4f2;
   --color-ink: #222222;
-  --color-muted: #666666;
-  --color-subtle: #999999;
+  --color-muted: #595959;
+  --color-subtle: #767676;
   --color-primary: #405cee;
   --color-purple: #6e68ff;
+  --color-primary-dark: #2f45c4;
   --color-purple-dark: #4e4ba6;
   --color-yellow: #ffdd56;
   --color-green: #01c16b;
@@ -27,6 +28,44 @@
     50% {
       transform: translateY(-10px);
     }
+  }
+
+  --animate-fade-up: fade-up 500ms ease-out both;
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  --animate-pop: pop 450ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  @keyframes pop {
+    0% { transform: scale(0.6); opacity: 0; }
+    70% { transform: scale(1.1); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  --animate-shimmer: shimmer 2.2s linear infinite;
+  @keyframes shimmer {
+    from { background-position: -200% 0; }
+    to { background-position: 200% 0; }
+  }
+  --animate-wiggle: wiggle 450ms ease-in-out;
+  @keyframes wiggle {
+    0%, 100% { transform: rotate(0); }
+    25% { transform: rotate(-8deg); }
+    75% { transform: rotate(8deg); }
+  }
+  --animate-pulse-ring: pulse-ring 1.6s ease-out infinite;
+  @keyframes pulse-ring {
+    0% { box-shadow: 0 0 0 0 rgb(1 193 107 / 0.55); }
+    100% { box-shadow: 0 0 0 10px rgb(1 193 107 / 0); }
+  }
+  --animate-rise: rise 600ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  @keyframes rise {
+    from { transform: scaleY(0); }
+    to { transform: scaleY(1); }
+  }
+  --animate-bob: bob 1.6s ease-in-out infinite;
+  @keyframes bob {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
   }
 }
 
@@ -107,6 +146,37 @@ body {
   color: var(--color-ink);
 }
 
+@utility eyebrow {
+  font-size: 0.75rem;
+  line-height: 1rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--color-muted);
+}
+
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
 /* Company passport: a tactile identity cover alongside a quiet evidence register. */
 .company-passport { scroll-margin-top: 6rem; --passport-blue: #284bd1; --passport-ink: #202a43; }
 .passport-heading { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1.5rem; }

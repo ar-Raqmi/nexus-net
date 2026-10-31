@@ -87,3 +87,35 @@ export const MAP_PIN = {
     "....r.....",
   ],
 };
+
+export const CHEST = {
+  palette: { Y: "#FFD44E", y: "#FFF1A8", D: "#E0A800", B: "#9A6534", b: "#6E4522", K: "#222222", W: "#FFFFFF" },
+  rows: [
+    "....bbbbbbbbbb....",
+    "..bbBBBBBBBBBBbb..",
+    ".bBBBBBBBBBBBBBBb.",
+    ".bBBByBBBBBBBBBBb.",
+    ".bBBBBBBBBBBBBBBb.",
+    ".DDDDDDDYYDDDDDDD.",
+    ".bbbbbbbKKbbbbbbb.",
+    ".bBBBBBBKYKBBBBBb.",
+    ".bBBByBBKKKBBBBBb.",
+    ".bBBBBBBBBBBBBBBb.",
+    ".bBBBBBBBBBBBBBBb.",
+    ".DbBBBBBBBBBBBBbD.",
+    "..DDDDDDDDDDDDDD..",
+  ],
+};
+
+export const SPARKLE = {
+  palette: { W: "#FFFFFF", Y: "#FFD44E" },
+  rows: [
+    "...Y...",
+    "...Y...",
+    "..YWY..",
+    "YYWWWYY",
+    "..YWY..",
+    "...Y...",
+    "...Y...",
+  ],
+};
