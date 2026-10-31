@@ -46,6 +46,7 @@ export interface Quest {
   status: QuestStatus;
   verdict?: Verdict;
   completedAt?: string;
+  verificationMode?: "live" | "demo";
 }
 
 export interface Event {
@@ -71,6 +72,28 @@ export interface Talent {
   skills: string[];
   rating: number;
   gigsDone: number;
+}
+
+/** Company onboarding is separate from quests and never awards XP. */
+export interface CompanyProfile {
+  startupId: string;
+  legalName: string;
+  registrationNumber: string;
+  website: string;
+  country: Country;
+  sector: string;
+  stage: Stage;
+  description: string;
+}
+
+export interface CompanyVerification {
+  profile: CompanyProfile;
+  verdict: Verdict;
+  mode: "live" | "demo";
+  checkedAt: string;
+  passportId?: string;
+  model?: string;
+  durationMs?: number;
 }
 
 /** A category we bucket Luma events into for the startup-facing calendar. */

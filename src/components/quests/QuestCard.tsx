@@ -42,9 +42,6 @@ export default function QuestCard({ quest }: { quest: Quest }) {
         <p className="text-sm text-muted">{quest.why}</p>
 
         <div className="mt-auto pt-3 border-t border-ink/5 text-xs text-muted space-y-1">
-          <p>
-            <span className="font-semibold text-ink">Proof:</span> {quest.proofRequired}
-          </p>
           {event && (
             <p>
               <span className="font-semibold text-ink">Event:</span> {event.name}

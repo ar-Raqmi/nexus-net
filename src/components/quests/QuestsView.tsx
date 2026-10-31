@@ -59,10 +59,10 @@ export default function QuestsView() {
       <LevelTrack xp={startup.xp} />
       <TierCards xp={startup.xp} />
 
-      <section>
+      <section id="active-quests">
         <SectionTitle
           title="Active quests"
-          subtitle="Complete a quest, upload proof, and Gemma verifies it for XP."
+          subtitle="Your next steps toward cross-border growth."
         />
         <div className="flex flex-col items-center gap-3 mb-6">
           <button

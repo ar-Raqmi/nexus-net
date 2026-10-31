@@ -1,0 +1,102 @@
+[
+  {
+    "startupId": "paylah-lite",
+    "legalName": "PayLah Lite",
+    "registrationNumber": "MY-DEMO-2026-001",
+    "website": "https://paylah-lite.example/",
+    "country": "MY",
+    "sector": "Fintech",
+    "stage": "seed",
+    "description": "Lightweight QR payments and instant settlement for hawker stalls and micro-merchants."
+  },
+  {
+    "startupId": "tanipintar",
+    "legalName": "TaniPintar",
+    "registrationNumber": "ID-DEMO-2026-002",
+    "website": "https://tanipintar.example/",
+    "country": "ID",
+    "sector": "Agritech",
+    "stage": "series-a",
+    "description": "Soil sensors and crop-yield forecasting for smallholder rice and palm farmers."
+  },
+  {
+    "startupId": "medilink",
+    "legalName": "MediLink",
+    "registrationNumber": "SG-DEMO-2026-003",
+    "website": "https://medilink.example/",
+    "country": "SG",
+    "sector": "Healthtech",
+    "stage": "series-a",
+    "description": "Cross-border telehealth referrals connecting clinics with specialist hospitals."
+  },
+  {
+    "startupId": "greenhaul",
+    "legalName": "GreenHaul",
+    "registrationNumber": "VN-DEMO-2026-004",
+    "website": "https://greenhaul.example/",
+    "country": "VN",
+    "sector": "Logistics",
+    "stage": "seed",
+    "description": "Electric last-mile delivery fleets with route optimisation for city couriers."
+  },
+  {
+    "startupId": "learnloop",
+    "legalName": "LearnLoop",
+    "registrationNumber": "PH-DEMO-2026-005",
+    "website": "https://learnloop.example/",
+    "country": "PH",
+    "sector": "Edtech",
+    "stage": "pre-seed",
+    "description": "Bite-sized upskilling courses for BPO workers, delivered over chat apps."
+  },
+  {
+    "startupId": "shopsiam",
+    "legalName": "ShopSiam",
+    "registrationNumber": "TH-DEMO-2026-006",
+    "website": "https://shopsiam.example/",
+    "country": "TH",
+    "sector": "E-commerce",
+    "stage": "seed",
+    "description": "Social-commerce storefronts that let Thai SMEs sell through live-stream shopping."
+  },
+  {
+    "startupId": "voltnest",
+    "legalName": "VoltNest",
+    "registrationNumber": "SG-DEMO-2026-007",
+    "website": "https://voltnest.example/",
+    "country": "SG",
+    "sector": "Cleantech",
+    "stage": "pre-seed",
+    "description": "Battery-as-a-service for rooftop solar in shophouses and small factories."
+  },
+  {
+    "startupId": "halaltrace",
+    "legalName": "HalalTrace",
+    "registrationNumber": "MY-DEMO-2026-008",
+    "website": "https://halaltrace.example/",
+    "country": "MY",
+    "sector": "Supply chain",
+    "stage": "pre-seed",
+    "description": "Blockchain-free halal certification tracking from abattoir to shelf."
+  },
+  {
+    "startupId": "kopistack",
+    "legalName": "KopiStack",
+    "registrationNumber": "ID-DEMO-2026-009",
+    "website": "https://kopistack.example/",
+    "country": "ID",
+    "sector": "SaaS",
+    "stage": "seed",
+    "description": "Inventory and POS software for multi-outlet coffee chains."
+  },
+  {
+    "startupId": "carebridge",
+    "legalName": "CareBridge",
+    "registrationNumber": "PH-DEMO-2026-010",
+    "website": "https://carebridge.example/",
+    "country": "PH",
+    "sector": "Healthtech",
+    "stage": "pre-seed",
+    "description": "Home-care nurse matching for elderly patients in secondary cities."
+  }
+]

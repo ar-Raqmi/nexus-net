@@ -22,7 +22,7 @@ export default function StartupPicker() {
 
   function play(startup: Startup) {
     login(startup.id);
-    router.push("/quests");
+    router.push("/profile");
   }
 
   return (
@@ -30,7 +30,7 @@ export default function StartupPicker() {
       <div className="text-center mb-8">
         <h2 className="text-3xl sm:text-4xl font-bold">Pick your startup</h2>
         <p className="mt-2 text-muted">
-          Demo login: choose a startup to play as. All startups are fictional.
+          Demo login: choose a startup to set up its company profile. Seeded startups are fictional.
         </p>
       </div>
 

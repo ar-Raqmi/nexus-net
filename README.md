@@ -15,7 +15,8 @@ Built at Hacktoberfest Hack Day KL, 31 Oct 2026.
 - **Startup profile + demo login:** pick a seeded startup on `/` (no real auth).
 - **AI quest generator:** Gemma 4 writes 5 personalised, mostly cross-border quests from the profile and the programme/event catalog.
 - **AI needs assessment (`/needs`):** a few fixed questions; code detects and ranks the startup's gaps; Gemma words each option; add any option as a quest done by a talent.
-- **Proof verification** *(in progress)*: upload a screenshot or document; Gemma 4 vision approves, rejects or flags it.
+- **Quest proof verification:** upload a screenshot or document for a quest; Gemma 4 vision approves, rejects or flags it. Approval awards XP and counts as a verified outcome.
+- **Company verification (`/register`, `/profile`):** onboarding identity check of a registration document; issues a company passport, never XP.
 - **XP & levels:** Connected → Engaged → POC → Partnership → Funded, derived from XP.
 - **Leaderboards:** startups, countries and events.
 - **Cradle dashboard (`/cradle`):** funnel from connections to investments, outcomes by country, results by event.
@@ -47,7 +48,7 @@ Open http://localhost:3000. Add `?demo=1` to `/quests` to fall back to a saved q
 ## Architecture
 
 - **Client:** pages under `src/app`, components under `src/components`, game state in a persisted Zustand store (`src/store`). No database.
-- **Server:** Gemma is only ever called from server route handlers (`/api/quests/generate`, `/api/needs/analyze`, proof verification next). The API key never reaches the browser.
+- **Server:** Gemma is only ever called from server route handlers (`/api/quests/generate`, `/api/needs/analyze`, `/api/proof/verify`, `/api/company/verify`). The API key never reaches the browser.
 - **Gemma calls** (`src/lib/gemma.ts`): JSON-only prompts, code fences stripped before parsing, one retry, then a readable error. Model output is validated; XP values always come from our own table, never from the model.
 
 ## Honesty notes
@@ -56,6 +57,15 @@ Open http://localhost:3000. Add `?demo=1` to `/quests` to fall back to a saved q
 - The `/events` calendar shows real public listings from Luma; nothing else uses real Startup ASEAN data.
 - The needs-assessment questions are fixed, not AI-generated, and the gaps are found by code. Gemma only writes the wording.
 - Gemma's confidence scores are not calibrated (they come back near 1.0), so approvals don't rely on the confidence threshold alone.
+
+## Two separate proof checks
+
+1. **Company identity (onboarding, no XP).** `/register` → `/profile`: upload an incorporation certificate or registry extract (PNG/JPEG/WebP). Gemma compares the legal name, registration number and jurisdiction with the profile; approval issues a company passport. It never grants XP or changes quests. Sample profiles and evidence for all 10 startups are in `public/demo-evidence/`.
+2. **Quest proof (outcomes, XP).** `/quests`: each open quest has **Submit proof**. Gemma checks the image against the quest (prompt 2 in `CLAUDE.md`, with today's date). Approved proof marks the quest verified, awards its XP and counts in the Cradle funnel. Test images are in `demo-assets/`.
+
+Both offer a clearly labelled **simulation (no AI)** mode for demos; live Gemma is the default. Event-calendar XP never counts as a verified outcome.
+
+Checks: `node --test tests/company_verification.test.mjs` (company route with a stubbed provider), `npm run lint`, `npm run build`.
 
 ## Team & license
 
