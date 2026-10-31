@@ -38,7 +38,7 @@ export default function NeedsWizard() {
           <p className="text-muted">Choose a startup to play as, then we find what it is missing.</p>
           <Link
             href="/#startups"
-            className="rounded-full bg-primary px-6 py-3 font-bold text-white hover:brightness-110"
+            className="btn btn-primary"
           >
             Choose a startup
           </Link>
@@ -111,7 +111,7 @@ export default function NeedsWizard() {
           <button
             type="button"
             onClick={() => analysis.analyze(answers as NeedsAnswers, blocker)}
-            className="rounded-full bg-primary px-6 py-3 font-bold text-white hover:brightness-110"
+            className="btn btn-primary"
           >
             <PixelIcon name="sparkle" size={20} className="mr-2 inline-block align-text-bottom" />Find my gaps
           </button>
@@ -122,7 +122,7 @@ export default function NeedsWizard() {
         <button
           type="button"
           onClick={() => setStep(step - 1)}
-          className="self-center rounded-full bg-white px-5 py-2 text-sm font-semibold text-muted shadow-card transition hover:text-ink hover:-translate-y-0.5"
+          className="btn btn-sm self-center"
         >
           ← Back
         </button>

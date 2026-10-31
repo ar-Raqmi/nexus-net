@@ -56,14 +56,14 @@ export default function Hero() {
       {current ? (
         <Link
           href="/profile"
-          className="rounded-full bg-primary px-8 py-3.5 text-white font-bold shadow-card hover:brightness-110 transition"
+          className="btn btn-primary btn-lg"
         >
           Continue as {current.name} →
         </Link>
       ) : (
         <Link
           href="/register"
-          className="rounded-full bg-primary px-8 py-3.5 text-white font-bold shadow-card hover:brightness-110 transition"
+          className="btn btn-primary btn-lg"
         >
           Register your company →
         </Link>

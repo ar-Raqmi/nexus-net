@@ -121,7 +121,7 @@ export default function EventCalendar({
             <button
               type="button"
               onClick={jump.onJump}
-              className="rounded-full bg-primary px-4 py-2 text-sm font-bold text-white hover:brightness-110"
+              className="btn btn-primary btn-sm"
             >
               Jump to {jump.label}
             </button>
@@ -243,7 +243,7 @@ function NavButton({
       type="button"
       aria-label={label}
       onClick={onClick}
-      className="rounded-full bg-paper px-4 py-2 text-sm font-bold hover:bg-ink hover:text-white"
+      className="btn btn-sm"
     >
       {children}
     </button>

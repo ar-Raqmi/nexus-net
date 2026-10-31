@@ -1,116 +1,145 @@
+import PixelIcon from "@/components/PixelIcon";
 import type { CompanyProfile, CompanyVerification } from "@/lib/types";
 import { COUNTRY_NAMES } from "@/lib/game";
+import PassportCover, { formatPassportDate } from "./PassportCover";
 
-function Globe({ className }: { className?: string }) {
-  return (
-    <svg className={className} width="28" height="28" viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.2" aria-hidden="true">
-      <circle cx="16" cy="16" r="12" />
-      <ellipse cx="16" cy="16" rx="5.5" ry="12" />
-      <path d="M4 16h24M6.5 9.5h19M6.5 22.5h19" />
-    </svg>
-  );
-}
-
-function Seal({ checked = false }: { checked?: boolean }) {
-  return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="m12 2 3 2 3.5.5.5 3.5 2 4-2 3-.5 3.5-3.5.5-3 3-3-3-3.5-.5L5 15l-2-3 2-4 .5-3.5L9 4Z" />
-      {checked ? <path d="m8 12 2.5 2.5L16 9" /> : <circle cx="12" cy="12" r="3" />}
-    </svg>
-  );
-}
-
-function formatDate(value?: string) {
-  if (!value) return "—";
-  const date = new Date(`${value}T00:00:00Z`);
-  return Number.isNaN(date.getTime()) ? "—" : new Intl.DateTimeFormat("en-GB", {
-    day: "2-digit", month: "short", year: "numeric", timeZone: "UTC",
-  }).format(date);
+function hostname(url: string) {
+  try {
+    return new URL(url).hostname;
+  } catch {
+    return url;
+  }
 }
 
 export default function CompanyPassport({ profile, verification }: { profile: CompanyProfile; verification: CompanyVerification }) {
   const demo = verification.mode === "demo";
-  const initials = profile.legalName.split(/\s+/).map(word => word[0]).slice(0, 2).join("");
   const issuedOn = verification.checkedAt.slice(0, 10);
+  const confidence = Math.round(verification.verdict.confidence * 100);
 
   return (
-    <section id="company-passport" aria-labelledby="passport-title" className="company-passport">
-      <header className="passport-heading">
+    <section id="company-passport" aria-labelledby="passport-title" className="scroll-mt-24">
+      <header className="mb-6 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="passport-eyebrow">Your company identity</p>
-          <h2 id="passport-title">Company passport</h2>
-          <p className="passport-intro">Your company profile, backed by reviewed registration evidence.</p>
+          <p className="eyebrow">Your company identity</p>
+          <h2 id="passport-title" className="mt-2 font-display text-3xl">Company passport</h2>
+          <p className="mt-2 text-muted">Your company profile, backed by reviewed registration evidence.</p>
         </div>
-        <span className={`passport-status ${demo ? "is-pending" : "is-checked"}`}>
-          <span aria-hidden="true" />{demo ? "Demo passport" : "AI document reviewed"}
+        <span
+          className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-bold shadow-card ${
+            demo ? "bg-yellow text-ink" : "bg-green text-white"
+          }`}
+        >
+          <span className={`size-2 rounded-full ${demo ? "bg-ink/60" : "animate-pulse-ring bg-white"}`} aria-hidden="true" />
+          {demo ? "Demo passport" : "AI document reviewed"}
         </span>
       </header>
 
-      <div className="passport-layout">
-        <div className="passport-cover-stack">
-          <article className="passport-cover" aria-label={`${profile.legalName} company identity`}>
-            <div className="passport-cover-top">
-              <span className="passport-wordmark"><Globe /> Nexus Net</span>
-              <span className="passport-cover-label">ASEAN<br />NETWORK</span>
-            </div>
-
-            <div className="passport-company">
-              <div className="passport-monogram" aria-hidden="true">{initials}</div>
-              <p className="passport-cover-kicker">Company identity / {profile.country}</p>
-              <h3>{profile.legalName}</h3>
-              <p>{COUNTRY_NAMES[profile.country]}<span aria-hidden="true"> / </span>{profile.sector}</p>
-            </div>
-
-            <dl className="passport-fields">
-              <div><dt>Passport ID</dt><dd>{verification.passportId}</dd></div>
-              <div><dt>Company stage</dt><dd className="passport-stage">{profile.stage}</dd></div>
-              <div><dt>Registration number</dt><dd>{profile.registrationNumber}</dd></div>
-              <div><dt>Issued on</dt><dd>{formatDate(issuedOn)}</dd></div>
-            </dl>
-
-            <div className="passport-cover-bottom">
-              <span className="passport-cover-seal"><Seal checked={!demo} /></span>
-              <div><p>{demo ? "Demonstration identity." : "Ready for the network."}</p><span>Company onboarding completed.</span></div>
-              <span className="passport-country-code" aria-hidden="true">{profile.country}</span>
-            </div>
-          </article>
+      <div className="grid items-start gap-6 lg:grid-cols-[1fr_1.1fr]">
+        <div className="relative">
+          <div aria-hidden="true" className="absolute inset-0 translate-x-3 translate-y-3 -rotate-2 rounded-[28px] bg-signature opacity-50" />
+          <PassportCover
+            data={profile}
+            state={demo ? "demo" : "issued"}
+            passportId={verification.passportId}
+            issuedOn={issuedOn}
+            className="animate-fade-up"
+          />
         </div>
 
-        <div className="passport-register">
-          <div className="passport-register-heading">
-            <div><p className="passport-eyebrow">Identity & credentials</p><h3>Company verification</h3></div>
-            <span className="passport-register-count"><Seal checked={!demo} /></span>
+        <div className="visa-page animate-fade-up [animation-delay:150ms]">
+          <div className="flex items-start justify-between gap-4 p-6 pb-5 sm:p-7 sm:pb-5">
+            <div>
+              <p className="eyebrow">Visa page 01 · Identity</p>
+              <h3 className="mt-2 text-xl font-bold">Company verification</h3>
+            </div>
+            <span className="visa-seal" aria-hidden="true">
+              <PixelIcon name={demo ? "warning" : "check"} size={22} />
+            </span>
           </div>
-          <dl className="passport-stats">
-            <div><dt>Review result</dt><dd className="passport-date">{demo ? "Demo approval" : "Approved"}</dd></div>
-            <div><dt>AI confidence</dt><dd>{Math.round(verification.verdict.confidence * 100)}%</dd></div>
-            <div><dt>Reviewed on</dt><dd className="passport-date">{formatDate(issuedOn)}</dd></div>
+
+          <dl className="mx-6 grid grid-cols-3 gap-3 border-y border-dashed border-ink/15 py-5 sm:mx-7">
+            <div>
+              <dt className="text-xs text-muted">Review result</dt>
+              <dd className="mt-1.5 text-sm font-bold">{demo ? "Demo approval" : "Approved"}</dd>
+            </div>
+            <div>
+              <dt className="text-xs text-muted">AI confidence</dt>
+              <dd className="mt-1 font-score text-2xl font-bold text-primary">{confidence}%</dd>
+              <span className="mt-1 block h-1.5 overflow-hidden rounded-full bg-ink/5" aria-hidden="true">
+                <span className="block h-full rounded-full bg-signature" style={{ width: `${confidence}%` }} />
+              </span>
+            </div>
+            <div>
+              <dt className="text-xs text-muted">Reviewed on</dt>
+              <dd className="mt-1.5 text-sm font-bold">{formatPassportDate(issuedOn)}</dd>
+            </div>
           </dl>
-          <div className="passport-stamps">
-            <div className="passport-stamp">
-              <div className="passport-stamp-top">
-                <span className="passport-destination">{profile.country}</span>
-                <div><p>{COUNTRY_NAMES[profile.country]}</p><span>Company registration evidence</span></div>
+
+          <div className="grid gap-5 p-6 sm:p-7">
+            <div className="rounded-2xl border border-green/30 bg-green/5 p-4">
+              <div className="flex items-center gap-3">
+                <span className="flex h-11 w-10 -rotate-6 items-center justify-center rounded-md border-2 border-green/50 font-score text-sm font-bold text-[#167a4c]">
+                  {profile.country}
+                </span>
+                <div className="min-w-0">
+                  <p className="text-sm font-bold">{COUNTRY_NAMES[profile.country]}</p>
+                  <p className="text-xs text-muted">Company registration evidence</p>
+                </div>
               </div>
-              <h4>{profile.legalName}</h4>
-              <div className="passport-stamp-meta"><span><Seal checked />{demo ? "Sample approval · not AI checked" : "Registration document reviewed"}</span></div>
-              <details className="passport-evidence">
-                <summary>View verification details <span aria-hidden="true">+</span></summary>
-                <dl><div><dt>Document</dt><dd>{verification.verdict.documentType}</dd></div><div><dt>Company named</dt><dd>{verification.verdict.parties.join(" · ") || "Not specified"}</dd></div>
-                  {verification.mode === "live" && verification.model && <div><dt>Reviewed by</dt><dd>{verification.model}{verification.durationMs != null ? ` · ${(verification.durationMs / 1000).toFixed(1)}s` : ""}</dd></div>}
+              <h4 className="mt-4 font-bold">{profile.legalName}</h4>
+              <p className="mt-2 inline-flex items-center gap-1.5 text-xs font-semibold text-[#167a4c]">
+                <PixelIcon name="check" size={14} />
+                {demo ? "Sample approval · not AI checked" : "Registration document reviewed"}
+              </p>
+              <details className="passport-evidence group mt-4 border-t border-dashed border-green/30 text-sm">
+                <summary className="flex cursor-pointer list-none items-center justify-between pt-3 font-semibold [&::-webkit-details-marker]:hidden">
+                  View verification details
+                  <span aria-hidden="true" className="text-lg transition group-open:rotate-45">+</span>
+                </summary>
+                <dl className="mt-3 grid gap-2.5 text-xs">
+                  <div><dt className="text-muted">Document</dt><dd className="mt-0.5">{verification.verdict.documentType}</dd></div>
+                  <div><dt className="text-muted">Company named</dt><dd className="mt-0.5">{verification.verdict.parties.join(" · ") || "Not specified"}</dd></div>
+                  {verification.mode === "live" && verification.model && (
+                    <div>
+                      <dt className="text-muted">Reviewed by</dt>
+                      <dd className="mt-0.5">
+                        {verification.model}
+                        {verification.durationMs != null ? ` · ${(verification.durationMs / 1000).toFixed(1)}s` : ""}
+                      </dd>
+                    </div>
+                  )}
                 </dl>
-                <p>{verification.verdict.reason}</p>
+                <p className="mt-3 text-xs leading-relaxed text-muted">{verification.verdict.reason}</p>
               </details>
             </div>
-            <dl className="company-profile-summary">
-              <div><dt>Company website</dt><dd><a href={profile.website} target="_blank" rel="noreferrer">{new URL(profile.website).hostname} ↗</a></dd></div>
-              <div><dt>About the company</dt><dd>{profile.description}</dd></div>
+
+            <dl className="grid gap-4 text-sm">
+              <div>
+                <dt className="text-xs text-muted">Company website</dt>
+                <dd className="mt-1">
+                  <a className="font-bold text-primary hover:underline" href={profile.website} target="_blank" rel="noreferrer">
+                    {hostname(profile.website)} ↗
+                  </a>
+                </dd>
+              </div>
+              <div>
+                <dt className="text-xs text-muted">About the company</dt>
+                <dd className="mt-1 leading-relaxed">{profile.description}</dd>
+              </div>
             </dl>
           </div>
-          <div className="passport-register-footer"><span aria-hidden="true">↳</span>{demo ? "Demo passport · no AI check performed" : "Issued after company onboarding and document review."}</div>
+
+          <p className="flex items-center gap-2 border-t border-ink/5 bg-paper/60 px-6 py-3 text-xs text-muted sm:px-7">
+            <span aria-hidden="true">↳</span>
+            {demo ? "Demo passport · no AI check performed" : "Issued after company onboarding and document review."}
+          </p>
         </div>
       </div>
-      <footer className="passport-note"><span>About this passport</span><p>AI review of supplied company evidence, saved in this browser. No official registry lookup or ownership verification.</p></footer>
+
+      <p className="mt-5 text-xs text-muted">
+        <span className="font-bold text-ink">About this passport · </span>
+        AI review of supplied company evidence, saved in this browser. No official registry lookup or ownership verification.
+      </p>
     </section>
   );
 }

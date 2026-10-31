@@ -14,21 +14,22 @@ export default function RankList({
   tab: LeaderboardTab;
   highlightId: string | null;
 }) {
+  if (rows.length === 0) return null;
   return (
-    <ol className="flex flex-col gap-3">
+    <ol className="divide-y divide-ink/10 overflow-hidden rounded-2xl border-2 border-ink bg-white">
       {rows.map((row, i) => {
         const rank = i + FIRST_LIST_RANK;
         const isYou = tab === "startups" && row.id === highlightId;
         return (
           <li
             key={row.id}
-            style={{ animationDelay: `${Math.min(i * 60 + 300, 600)}ms` }}
-            className={`animate-fade-up flex items-center gap-3 rounded-2xl bg-white p-3 pr-4 transition duration-300 hover:-translate-y-0.5 hover:shadow-card motion-reduce:transition-none motion-reduce:hover:translate-y-0 sm:gap-4 ${
-              isYou ? "ring-4 ring-yellow" : ""
+            style={{ animationDelay: `${Math.min(i * 40 + 200, 400)}ms` }}
+            className={`motion-safe:animate-fade-up flex items-center gap-3 p-3 pr-4 transition-colors hover:bg-paper sm:gap-4 ${
+              isYou ? "bg-yellow/20" : ""
             }`}
           >
             <span
-              className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl font-pixel text-3xl text-white ${
+              className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-md font-pixel text-2xl text-white ${
                 i % 2 === 0 ? "bg-purple" : "bg-green"
               }`}
             >
@@ -39,14 +40,14 @@ export default function RankList({
               <p className="flex items-center gap-2 font-bold text-ink">
                 <span className="truncate">{row.name}</span>
                 {isYou && (
-                  <span className="shrink-0 rounded-full bg-yellow px-2 py-0.5 text-xs font-bold">You</span>
+                  <span className="shrink-0 rounded-md border border-ink bg-yellow px-2 py-0.5 text-xs font-bold">You</span>
                 )}
               </p>
               <p className="truncate text-sm text-muted">{row.subtitle}</p>
             </div>
             <div className="flex shrink-0 flex-col items-end gap-1">
-              <Score value={row.score} className="text-xl text-primary sm:text-3xl" />
-              <span className="rounded-full bg-paper px-2 py-0.5 text-xs font-medium text-muted">
+              <Score value={row.score} className="text-xl text-primary sm:text-2xl" />
+              <span className="rounded-md border border-ink/10 bg-paper px-2 py-0.5 text-xs font-medium text-muted">
                 {row.outcomes} outcomes
               </span>
             </div>

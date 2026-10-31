@@ -18,15 +18,15 @@ export default function GenerateButton({ generator, regenerate = false, large = 
       {large && !loading && (
         <span
           aria-hidden
-          className="absolute inset-0 rounded-full bg-primary/40 motion-safe:animate-ping [animation-duration:2.4s]"
+          className="absolute inset-0 rounded-[10px] bg-primary/40 motion-safe:animate-ping [animation-duration:2.4s]"
         />
       )}
       <button
         type="button"
         onClick={generator.generate}
         disabled={loading}
-        className={`relative inline-flex items-center justify-center gap-2 rounded-full bg-primary font-bold text-white shadow-card transition hover:brightness-110 disabled:opacity-60 disabled:cursor-wait ${
-          large ? "h-12 px-8 text-lg" : "px-8 py-3.5"
+        className={`btn btn-primary relative gap-2 disabled:opacity-60 disabled:cursor-wait ${
+          large ? "btn-lg" : ""
         }`}
       >
         {!loading && <PixelArt {...SPARKLE} px={2} />}

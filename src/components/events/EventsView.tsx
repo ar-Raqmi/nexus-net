@@ -242,7 +242,7 @@ export default function EventsView() {
                 key={s.id}
                 type="button"
                 onClick={() => login(s.id)}
-                className="inline-flex items-center gap-1.5 rounded-full bg-white shadow-card px-4 py-2 text-sm font-bold text-ink hover:bg-primary hover:text-white"
+                className="btn btn-sm gap-1.5"
               >
                 <CompanyLogo id={s.id} name={s.name} size={20} />
                 {s.name}
@@ -290,7 +290,7 @@ export default function EventsView() {
           <button
             type="button"
             onClick={retry}
-            className="mt-4 rounded-full bg-primary px-5 py-2.5 text-sm font-bold text-white hover:brightness-110"
+            className="btn btn-primary mt-4"
           >
             Try again
           </button>
@@ -337,7 +337,7 @@ export default function EventsView() {
                 type="button"
                 onClick={() => setShowPast((v) => !v)}
                 aria-expanded={showPast}
-                className="mx-auto flex items-center gap-2 rounded-full bg-white shadow-card px-5 py-2.5 text-sm font-bold hover:bg-ink hover:text-white"
+                className="btn mx-auto gap-2"
               >
                 {showPast ? "Hide" : "Show"} past events ({past.length}) {showPast ? "▲" : "▼"}
               </button>

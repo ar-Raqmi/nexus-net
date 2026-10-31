@@ -21,7 +21,7 @@ export default function QuestProof({ quest }: { quest: Quest }) {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="mt-3 w-full rounded-full bg-primary px-4 py-2.5 text-sm font-bold text-white hover:brightness-110"
+        className="btn btn-primary btn-sm mt-3 w-full"
       >
         {quest.status === "rejected" ? "Try new proof" : "Submit proof"}
       </button>
@@ -126,7 +126,7 @@ function ProofModal({ quest, onClose }: { quest: Quest; onClose: () => void }) {
             type="button"
             onClick={close}
             aria-label="Close"
-            className="shrink-0 rounded-full px-2 text-2xl leading-none text-subtle transition-colors hover:text-ink"
+            className="btn btn-sm text-xl leading-none"
           >
             ×
           </button>
@@ -138,7 +138,7 @@ function ProofModal({ quest, onClose }: { quest: Quest; onClose: () => void }) {
             <button
               type="button"
               onClick={close}
-              className="rounded-full bg-primary px-6 py-3 font-bold text-white hover:brightness-110"
+              className="btn btn-primary"
             >
               {result.approved ? `Collect +${quest.xp} XP` : "Close"}
             </button>
@@ -182,7 +182,7 @@ function ProofModal({ quest, onClose }: { quest: Quest; onClose: () => void }) {
               type="button"
               onClick={submit}
               disabled={!image || busy}
-              className="rounded-full bg-primary px-6 py-3 font-bold text-white hover:brightness-110 disabled:opacity-50"
+              className="btn btn-primary disabled:opacity-50"
             >
               {busy ? "Gemma is checking your proof…" : simulate ? "Submit (simulation)" : "Check with Gemma"}
             </button>

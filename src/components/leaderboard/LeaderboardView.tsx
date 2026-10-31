@@ -33,39 +33,43 @@ export default function LeaderboardView() {
   const rows = boards[tab];
 
   return (
-    <div className="flex flex-col gap-8">
-      <header className="text-center">
-        <h1 className="font-display text-3xl sm:text-4xl">Leaderboard</h1>
-        <p className="mt-2 text-muted">Top startups, countries and events by verified outcomes.</p>
+    <section className="flex flex-col gap-8 py-6">
+      <header className="flex flex-col gap-2">
+        <div className="flex flex-wrap items-center gap-3">
+          <h1 className="font-display text-3xl text-ink sm:text-4xl">Leaderboard</h1>
+          <span className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 text-xs font-bold text-ink shadow-card">
+            <span className="size-2 rounded-full bg-green animate-pulse-ring" />
+            Live
+          </span>
+        </div>
+        <p className="text-muted">Top startups, countries and events by verified outcomes.</p>
       </header>
 
-      <section className="bg-grid-dark flex flex-col gap-8 rounded-[32px] p-4 sm:p-8">
-        <LeaderboardTabs active={tab} onChange={setTab} />
-        <div
-          role="tabpanel"
-          id="leaderboard-panel"
-          aria-labelledby={`tab-${tab}`}
-          className="flex flex-col gap-8"
-        >
-          {!hydrated ? (
-            <p className="py-16 text-center text-white/70">Loading the leaderboard…</p>
-          ) : rows.length === 0 ? (
-            <p className="py-16 text-center text-white/70">
-              No results yet. Verify a quest to get on the board.
-            </p>
-          ) : (
-            <>
-              <Podium key={tab} rows={rows} tab={tab} />
-              <RankList
-                key={`${tab}-list`}
-                rows={rows.slice(PODIUM_SIZE)}
-                tab={tab}
-                highlightId={currentStartupId}
-              />
-            </>
-          )}
-        </div>
-      </section>
-    </div>
+      <LeaderboardTabs active={tab} onChange={setTab} />
+      <div
+        role="tabpanel"
+        id="leaderboard-panel"
+        aria-labelledby={`tab-${tab}`}
+        className="flex flex-col gap-8"
+      >
+        {!hydrated ? (
+          <p className="py-16 text-center text-muted">Loading the leaderboard…</p>
+        ) : rows.length === 0 ? (
+          <p className="py-16 text-center text-muted">
+            No results yet. Verify a quest to get on the board.
+          </p>
+        ) : (
+          <>
+            <Podium key={tab} rows={rows} tab={tab} />
+            <RankList
+              key={`${tab}-list`}
+              rows={rows.slice(PODIUM_SIZE)}
+              tab={tab}
+              highlightId={currentStartupId}
+            />
+          </>
+        )}
+      </div>
+    </section>
   );
 }

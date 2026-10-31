@@ -58,7 +58,7 @@ export default function OptionCard({ option, added, onAdd }: Props) {
           type="button"
           onClick={onAdd}
           disabled={added}
-          className="mt-auto rounded-full bg-primary px-5 py-3 font-bold text-white transition hover:brightness-110 active:scale-[0.98] disabled:bg-green disabled:cursor-default"
+          className={`btn mt-auto disabled:cursor-default ${added ? "btn-success" : "btn-primary"}`}
         >
           {added ? <><PixelIcon name="check" size={18} className="mr-1 inline-block align-text-bottom" />Added to my quests</> : "Add as a quest"}
         </button>

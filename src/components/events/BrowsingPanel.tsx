@@ -36,7 +36,7 @@ export default function BrowsingPanel({ startup, subscribedCount, boosterXp }: P
         )}
         <Link
           href="/quests"
-          className="rounded-full bg-primary px-5 py-2.5 text-sm font-bold text-white hover:brightness-110"
+          className="btn btn-primary btn-sm"
         >
           Quests →
         </Link>

@@ -174,7 +174,7 @@ export default function MapView() {
             onSelect={setSelectedId}
           />
           <div className="pointer-events-none absolute left-3 top-3 flex flex-wrap gap-2">
-            <div className="pointer-events-auto inline-flex rounded-full bg-white p-1 shadow-card" role="group" aria-label="Map layer">
+            <div className="pointer-events-auto seg" role="group" aria-label="Map layer">
               {(["outcomes", "events"] as const).map((value) => (
                 <button
                   key={value}
@@ -184,10 +184,7 @@ export default function MapView() {
                     setMode(value);
                     setSelectedId(null);
                   }}
-                  className={`min-h-9 rounded-full px-4 text-sm font-bold transition ${
-                    mode === value ? "bg-ink text-white" : "text-muted hover:text-ink"
-                  }`}
-                >
+                                  >
                   {value === "outcomes" ? "Outcomes" : "Events"}
                 </button>
               ))}
@@ -195,7 +192,7 @@ export default function MapView() {
             <button
               type="button"
               onClick={resetView}
-              className="pointer-events-auto min-h-9 rounded-full bg-white px-4 text-sm font-bold text-ink shadow-card transition hover:-translate-y-0.5"
+              className="btn btn-sm pointer-events-auto"
             >
               Reset view
             </button>
@@ -317,9 +314,7 @@ function TypeChip({ active, onClick, color, label }: { active: boolean; onClick:
       type="button"
       aria-pressed={active}
       onClick={onClick}
-      className={`inline-flex min-h-8 items-center gap-2 rounded-full border-2 px-3 text-xs font-bold transition ${
-        active ? "border-ink bg-ink text-white" : "border-ink/10 bg-white text-ink hover:border-ink/30"
-      }`}
+      className="chip gap-2"
     >
       <span className="size-2.5 rounded-full" style={{ backgroundColor: color }} />
       {label}
