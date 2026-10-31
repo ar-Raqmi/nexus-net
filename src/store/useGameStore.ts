@@ -14,6 +14,8 @@ interface GameState {
   login: (startupId: string) => void;
   logout: () => void;
   addQuests: (quests: Quest[]) => void;
+  /** Swap a startup's untouched open quests for a freshly generated set. */
+  replaceOpenQuests: (startupId: string, quests: Quest[]) => void;
   updateQuest: (questId: string, patch: Partial<Quest>) => void;
   /** Mark a quest verified and credit its XP to the owning startup. */
   completeQuest: (questId: string, patch?: Partial<Quest>) => void;
@@ -36,6 +38,16 @@ export const useGameStore = create<GameState>()(
 
       addQuests: (quests) =>
         set((state) => ({ quests: [...state.quests, ...quests] })),
+
+      replaceOpenQuests: (startupId, quests) =>
+        set((state) => ({
+          quests: [
+            ...state.quests.filter(
+              (q) => !(q.startupId === startupId && q.status === "open"),
+            ),
+            ...quests,
+          ],
+        })),
 
       updateQuest: (questId, patch) =>
         set((state) => ({
