@@ -8,7 +8,7 @@ const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
 export class GemmaError extends Error {}
 
 export interface GemmaOptions {
-  /** Ask Gemma 4 for minimal thinking + temperature 0: faster, steadier answers for vision checks. */
+  /** Temperature 0 for steadier answers on vision checks. */
   fast?: boolean;
 }
 
@@ -29,12 +29,10 @@ function geminiCompleter({ fast }: GemmaOptions): Completer {
       contents: [{ role: "user", parts: parts.map((p) => (typeof p === "string" ? { text: p } : p)) }],
       config: {
         abortSignal: AbortSignal.timeout(TIMEOUT_MS),
-        ...(fast
-          ? {
-              temperature: 0,
-              ...(model.startsWith("gemma-4-") ? { thinkingConfig: { thinkingLevel: ThinkingLevel.MINIMAL } } : {}),
-            }
-          : {}),
+        // Default Gemma 4 thinking takes ~40s for a quest list, close to the timeout;
+        // minimal thinking returns the same JSON in ~10s.
+        ...(model.startsWith("gemma-4-") ? { thinkingConfig: { thinkingLevel: ThinkingLevel.MINIMAL } } : {}),
+        ...(fast ? { temperature: 0 } : {}),
       },
     });
     return response.text ?? "";

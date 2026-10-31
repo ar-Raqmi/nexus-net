@@ -5,13 +5,14 @@ import { usePathname } from "next/navigation";
 import Logo from "./Logo";
 import PixelIcon, { type PixelIconName } from "./PixelIcon";
 
-const links: { href: string; label: string; icon: PixelIconName }[] = [
+const links: { href: string; label: string; short?: string; icon: PixelIconName }[] = [
   { href: "/profile", label: "Company", icon: "star" },
-  { href: "/needs", label: "My needs", icon: "compass" },
+  { href: "/needs", label: "My needs", short: "Needs", icon: "compass" },
   { href: "/quests", label: "Quests", icon: "sparkle" },
   { href: "/events", label: "Events", icon: "meeting" },
   { href: "/map", label: "Map", icon: "pin" },
-  { href: "/leaderboard", label: "Leaderboard", icon: "trophy" },
+  { href: "/leaderboard", label: "Leaderboard", short: "Board", icon: "trophy" },
+  { href: "/cradle", label: "Cradle view", short: "Cradle", icon: "funding" },
 ];
 
 export default function TopNav() {
@@ -64,7 +65,7 @@ export default function TopNav() {
         aria-label="Main"
         className="sm:hidden fixed inset-x-0 bottom-0 z-30 border-t border-black/10 bg-paper/95 backdrop-blur pb-[env(safe-area-inset-bottom)]"
       >
-        <ul className="grid grid-cols-6">
+        <ul className="grid grid-cols-7">
           {links.map((link) => {
             const active = isActive(link.href);
             return (
@@ -81,7 +82,7 @@ export default function TopNav() {
                     size={22}
                     className={`group-hover:animate-wiggle group-active:animate-wiggle ${active ? "animate-pop" : "opacity-70"}`}
                   />
-                  {link.label}
+                  {link.short ?? link.label}
                 </Link>
               </li>
             );
